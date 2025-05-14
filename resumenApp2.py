@@ -20,12 +20,12 @@ def resumen(consignaciones,incidentes,saidi):
     st.markdown("""
         <style>
         [data-testid="stMetricValue"] {
-            font-size: 2rem; /* Cambia el tamaño del valor */
+            font-size: 4rem; /* Cambia el tamaño del valor */
             font-weight: bold; /* Cambia el grosor del texto */
             color: #f7760c; /* Cambia el color del texto */
         }
         [data-testid="stMetricLabel"] {
-        font-size: 1.5rem; /* Cambia el tamaño del texto del label */
+        font-size: 5rem; /* Cambia el tamaño del texto del label */
         color: #FFFFFF; /* Cambia el color del texto del label */
         }
         </style>

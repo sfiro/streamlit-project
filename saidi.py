@@ -17,6 +17,19 @@ def load_lottie_url(url: str):
     return r.json()
 
 def saidi(datos):
+    st.markdown("""
+            <style>
+            [data-testid="stMetricValue"] {
+                font-size: 2rem; /* Cambia el tamaño del valor */
+                font-weight: bold; /* Cambia el grosor del texto */
+                color: #f7760c; /* Cambia el color del texto */
+            }
+            [data-testid="stMetricLabel"] {
+            font-size: 1.5rem; /* Cambia el tamaño del texto del label */
+            color: #FFFFFF; /* Cambia el color del texto del label */
+            }
+            </style>
+        """, unsafe_allow_html=True)
     # # Cargar la animación Lottie
     lottie_url ="https://lottie.host/dd1f24a2-7702-4f57-81ec-67f5d048e457/b1oz4hndQO.json"
     lottie_json = load_lottie_url(lottie_url)

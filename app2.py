@@ -122,7 +122,7 @@ def load_lottie_url(url: str):
 
 
 def main():
-    count = st_autorefresh(interval=3000, limit=100, key="fizzbuzzcounter")
+    count = st_autorefresh(interval=60000, limit=100, key="fizzbuzzcounter")
     #st.metric("Contador", count)
 
     #######################

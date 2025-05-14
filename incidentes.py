@@ -26,7 +26,19 @@ def incidentes(datos):
 
 
     st.title('Resumen visual de Incidentes')
-
+    st.markdown("""
+            <style>
+            [data-testid="stMetricValue"] {
+                font-size: 2rem; /* Cambia el tamaño del valor */
+                font-weight: bold; /* Cambia el grosor del texto */
+                color: #f7760c; /* Cambia el color del texto */
+            }
+            [data-testid="stMetricLabel"] {
+            font-size: 1.5rem; /* Cambia el tamaño del texto del label */
+            color: #FFFFFF; /* Cambia el color del texto del label */
+            }
+            </style>
+        """, unsafe_allow_html=True)
     #st.subheader('Incidentes actuales por zona')
     #st.dataframe(datos)
 
