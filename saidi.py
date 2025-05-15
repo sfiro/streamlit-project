@@ -18,28 +18,38 @@ def load_lottie_url(url: str):
 
 def saidi(datos):
     st.markdown("""
-            <style>
-            [data-testid="stMetricValue"] {
-                font-size: 2rem; /* Cambia el tamaño del valor */
-                font-weight: bold; /* Cambia el grosor del texto */
-                color: #f7760c; /* Cambia el color del texto */
-            }
-            [data-testid="stMetricLabel"] {
-            font-size: 1.5rem; /* Cambia el tamaño del texto del label */
-            color: #FFFFFF; /* Cambia el color del texto del label */
-            }
-            </style>
-        """, unsafe_allow_html=True)
-    # # Cargar la animación Lottie
-    lottie_url ="https://lottie.host/dd1f24a2-7702-4f57-81ec-67f5d048e457/b1oz4hndQO.json"
-    lottie_json = load_lottie_url(lottie_url)
-    st.markdown("<div style='display: flex; justify-content: flex-start;'>", unsafe_allow_html=True)
-    st.lottie(lottie_json, height=200, key="consigna")
-    st.markdown("</div>", unsafe_allow_html=True)
+        <style>
+        [data-testid="stMetricValue"] {
+            font-size: 4rem; /* Cambia el tamaño del valor */
+            font-weight: bold; /* Cambia el grosor del texto */
+            color: #f7760c; /* Cambia el color del texto */
+        }
+        [data-testid="stMetricLabel"] {
+        font-size: 5rem; /* Cambia el tamaño del texto del label */
+        color: #FFFFFF; /* Cambia el color del texto del label */
+        }
+        .centered-title {
+            display: flex;
+            justify-content: center; /* Centrar horizontalmente */
+            align-items: center; /* Centrar verticalmente */
+            height: 100%; /* Ocupa toda la altura del contenedor */
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
+    col1, col2 = st.columns([1,3])
+    with col1:
+        # # Cargar la animación Lottie
+        lottie_url ="https://lottie.host/18a320d9-0721-4a1c-97a5-47ed9557fcc8/mNWA3oVdyV.json"
+        lottie_json = load_lottie_url(lottie_url)
+        st.markdown("<div style='display: flex; justify-content: flex-start;'>", unsafe_allow_html=True)
+        st.lottie(lottie_json, height=200, key="consigna")
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    st.title("Resumen visual de SAIDI")
-    
+    with col2:
+        st.title('')
+        st.markdown("<div class='centered-title'><h1>SAIDI</h1></div>", unsafe_allow_html=True)
+
     #st.dataframe(datos)
 
     # ------------- limpieza de los datos y coerencia

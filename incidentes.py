@@ -17,30 +17,38 @@ def load_lottie_url(url: str):
     return r.json()
 
 def incidentes(datos):
-     # # Cargar la animación Lottie
-    lottie_url ="https://lottie.host/2579f833-b415-4d91-b4a5-51da50e27882/bpUVUyMsgL.json"
-    lottie_json = load_lottie_url(lottie_url)
-    st.markdown("<div style='display: flex; justify-content: flex-start;'>", unsafe_allow_html=True)
-    st.lottie(lottie_json, height=200, key="consigna")
-    st.markdown("</div>", unsafe_allow_html=True)
-
-
-    st.title('Resumen visual de Incidentes')
     st.markdown("""
-            <style>
-            [data-testid="stMetricValue"] {
-                font-size: 2rem; /* Cambia el tamaño del valor */
-                font-weight: bold; /* Cambia el grosor del texto */
-                color: #f7760c; /* Cambia el color del texto */
-            }
-            [data-testid="stMetricLabel"] {
-            font-size: 1.5rem; /* Cambia el tamaño del texto del label */
-            color: #FFFFFF; /* Cambia el color del texto del label */
-            }
-            </style>
-        """, unsafe_allow_html=True)
-    #st.subheader('Incidentes actuales por zona')
-    #st.dataframe(datos)
+        <style>
+        [data-testid="stMetricValue"] {
+            font-size: 4rem; /* Cambia el tamaño del valor */
+            font-weight: bold; /* Cambia el grosor del texto */
+            color: #f7760c; /* Cambia el color del texto */
+        }
+        [data-testid="stMetricLabel"] {
+        font-size: 5rem; /* Cambia el tamaño del texto del label */
+        color: #FFFFFF; /* Cambia el color del texto del label */
+        }
+        .centered-title {
+            display: flex;
+            justify-content: center; /* Centrar horizontalmente */
+            align-items: center; /* Centrar verticalmente */
+            height: 100%; /* Ocupa toda la altura del contenedor */
+        }  
+        </style>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns([1,3])
+    with col1:
+        # # Cargar la animación Lottie
+        lottie_url ="https://lottie.host/2579f833-b415-4d91-b4a5-51da50e27882/bpUVUyMsgL.json"
+        lottie_json = load_lottie_url(lottie_url)
+        st.markdown("<div style='display: flex; justify-content: flex-start;'>", unsafe_allow_html=True)
+        st.lottie(lottie_json, height=200, key="consigna")
+        st.markdown("</div>", unsafe_allow_html=True)
+    with col2:
+        st.title('')
+        st.markdown("<div class='centered-title'><h1>Incidentes</h1></div>", unsafe_allow_html=True)
+
 
     st.subheader('Cantidad de Incidentes por zona')
     description_counts = datos.groupby('SubregionName')['SubregionName'].count().reset_index(name='count')
@@ -51,6 +59,7 @@ def incidentes(datos):
 
     # Create two columns for layout
     col1, col2 = st.columns(2)
+
 
     # Pie chart in the first column
     with col1:
@@ -64,42 +73,23 @@ def incidentes(datos):
 
     st.subheader('Dashboard de incidentes por zona')
 
-    col1, col2, col3, col4 = st.columns(4)
+    #col1, col2, col3, col4 = st.columns(4)
 
-    # Pie chart in the first column
-    with col1:
-        st.metric(label=description_counts['SubregionName'].iloc[0], value=description_counts['count'].iloc[0])
-        grafico_torta(datos,description_counts['SubregionName'].iloc[0])
+      # Crear columnas dinámicamente
+    num_columns = len(description_counts)  # Número de columnas necesarias
+    columns = st.columns(num_columns)  # Crear tantas columnas como datos existan
 
-    with col2:
-        st.metric(label=description_counts['SubregionName'].iloc[1], value=description_counts['count'].iloc[1])
-        grafico_torta(datos,description_counts['SubregionName'].iloc[1])
+    # graficos de pie
+    for i, row in description_counts.iterrows():
+        with columns[i]:
+            st.metric(label=row['SubregionName'], value=row['count'])
+            grafico_torta(datos,row['SubregionName'])
 
-    with col3:
-        st.metric(label=description_counts['SubregionName'].iloc[2], value=description_counts['count'].iloc[2])
-        grafico_torta(datos,description_counts['SubregionName'].iloc[2])
-
-    with col4:
-        st.metric(label=description_counts['SubregionName'].iloc[3], value=description_counts['count'].iloc[3])
-        grafico_torta(datos,description_counts['SubregionName'].iloc[3])
-
-
- # Nuevo subheader para gráficos de donut
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    # Donut charts for the top 5 substations
-    with col1:
-        grafico_donut(datos, description_counts['SubregionName'].iloc[0])
-
-    with col2:
-        grafico_donut(datos, description_counts['SubregionName'].iloc[1])
-
-    with col3:
-        grafico_donut(datos, description_counts['SubregionName'].iloc[2])
-
-    with col4:
-        grafico_donut(datos, description_counts['SubregionName'].iloc[3])
+     # graficos de donut
+    for i, row in description_counts.iterrows():
+        with columns[i]:
+            st.metric(label=row['SubregionName'], value=row['count'])
+            grafico_donut(datos,row['SubregionName'])
 
     
 ###------Cantidad de clientes afectados -------

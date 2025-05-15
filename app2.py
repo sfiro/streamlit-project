@@ -17,9 +17,6 @@ from streamlit_lottie import st_lottie
 from streamlit_autorefresh import st_autorefresh
 
 
-# Capturar el tiempo de inicio
-start_time = time.time()
-
 #######################
 # Page configuration
 st.set_page_config(
@@ -28,7 +25,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded")
 
-alt.themes.enable("dark")
+#alt.themes.enable("dark")
+alt.themes.enable("default")
 
 #######################
 
@@ -88,7 +86,7 @@ st.markdown("""
     -webkit-transform: translateX(-50%);
     -ms-transform: translateX(-50%);
     transform: translateX(-50%);
-}
+}     
 
 </style>
 """, unsafe_allow_html=True)
@@ -123,40 +121,46 @@ def load_lottie_url(url: str):
 
 def main():
     count = st_autorefresh(interval=60000, limit=100, key="fizzbuzzcounter")
-    #st.metric("Contador", count)
+
+    last_update_time = time.time()
+
+    # Formatear la fecha y hora de la última actualización
+    formatted_last_update_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_update_time))
+
+ 
 
     #######################
     # Cargar datos
     consignaciones_datos, incidentes_datos, saidi_datos, consignaciones_last_modified, incidentes_last_modified, saidi_last_modified = cargar_datos()
 
-    st.write("Última actualización:") 
-    st.write(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(incidentes_last_modified)))
+    
    ##---------------------------------------------------------------
-    st.sidebar.title("Menú lateral")
-    opcion = st.sidebar.selectbox("Selecciona una opción", ["Resumen","consignaciones","incidentes", "Saidi", "Entrega"])
+    
+    with st.sidebar:
+    
+        st.image("/Users/debbiearredondo/Desktop/streamlit project/logo/logoCelsia.png", width=150)  # Cambia la ruta a tu imagen
+        opcion = st.sidebar.selectbox("Selecciona una opción", ["Resumen","Consignaciones","Incidentes", "Saidi", "Entrega turno"])
 
+        st.markdown("---")  # Línea divisoria
+        st.write("Última actualización:")
+        st.write(formatted_last_update_time)
     # Mostrar contenido según la opción seleccionada
     if opcion == "Resumen":
         resumen(consignaciones_datos, incidentes_datos, saidi_datos)
     #    resumen(datos)
 
-    if opcion == "consignaciones":
+    if opcion == "Consignaciones":
         consignaciones(consignaciones_datos)
 
-    if opcion == "incidentes":
+    if opcion == "Incidentes":
         incidentes(incidentes_datos)
 
     if opcion == "Saidi":
         saidi(saidi_datos)
 
-    if opcion == "Entrega":
+    if opcion == "Entrega turno":
         entrega(incidentes_datos)
     
-
-    ##---------------------------------------------------------------
-
-
-
 
   # Cargar datos de ejemplo
 if __name__ == '__main__':
