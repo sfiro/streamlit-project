@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import pandas as pd
+import plotly.graph_objects as go
 
 import requests  # Importar la librería para trabajar con APIs
 import json  # Importar la librería para trabajar con JSON
@@ -49,6 +50,7 @@ def incidentes(datos):
         st.title('')
         st.markdown("<div class='centered-title'><h1>Incidentes</h1></div>", unsafe_allow_html=True)
 
+    
 
     st.subheader('Cantidad de Incidentes por zona')
     description_counts = datos.groupby('SubregionName')['SubregionName'].count().reset_index(name='count')
@@ -56,6 +58,38 @@ def incidentes(datos):
     description_counts = description_counts.sort_values(by='count', ascending=False).head(10)
 
     st.dataframe(description_counts)
+
+    # Crear el gráfico de donut
+    fig_donut = px.pie(
+        description_counts,
+        values='count',
+        names='SubregionName',
+        hole=0.5,  # Crear el efecto de donut
+    )
+
+     # Configurar el gráfico para mostrar valores absolutos
+    fig_donut.update_traces(
+        textinfo='value',  # Mostrar valores absolutos en lugar de porcentajes
+        hoverinfo='label+value',  # Mostrar etiqueta y valor al pasar el cursor
+        textposition='inside',  # Posición del texto dentro de las secciones
+        textfont_size=14
+    )
+    # Configurar la posición de la leyenda fuera del gráfico
+    fig_donut.update_layout(
+        legend=dict(
+            orientation="h",  # Horizontal
+            yanchor="bottom",  # Anclar en la parte inferior
+            y=-0.2,  # Posición vertical (debajo del gráfico)
+            xanchor="center",  # Centrar horizontalmente
+            x=0.5  # Posición horizontal (centro)
+        ),
+
+    )
+
+    # Mostrar el gráfico en Streamlit
+    st.plotly_chart(fig_donut)
+
+
 
     # Create two columns for layout
     col1, col2 = st.columns(2)
@@ -77,6 +111,9 @@ def incidentes(datos):
 
       # Crear columnas dinámicamente
     num_columns = len(description_counts)  # Número de columnas necesarias
+    total = description_counts['count'].sum()
+    st.metric(label="Total de incidentes", value=total)
+
     columns = st.columns(num_columns)  # Crear tantas columnas como datos existan
 
     # graficos de pie
@@ -84,6 +121,7 @@ def incidentes(datos):
         with columns[i]:
             st.metric(label=row['SubregionName'], value=row['count'])
             grafico_torta(datos,row['SubregionName'])
+            st.plotly_chart(gauge_chart(row['count'], row['SubregionName'],min_val=0, max_val=total), use_container_width=True)
 
      # graficos de donut
     for i, row in description_counts.iterrows():
@@ -309,3 +347,37 @@ def grafico_donut(datos, zona):
 
     # Mostrar el gráfico en Streamlit
     st.plotly_chart(fig_donut)
+
+
+
+def gauge_chart(value, titulo="SAIDI", min_val=0, max_val=100):
+    """
+    Crea un gráfico de tipo gauge (indicador).
+
+    Parámetros:
+    - value: Valor actual que se mostrará en el indicador.
+    - titulo: Título del gráfico.
+    - min_val: Valor mínimo del rango del indicador.
+    - max_val: Valor máximo del rango del indicador.
+
+    Retorna:
+    - fig: Objeto de tipo Plotly Figure con el gráfico de gauge.
+    """
+    # Crear el gráfico de gauge
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",  # Modo: indicador con número
+        value=value,  # Valor actual
+        title={'text': titulo},  # Título del gráfico
+        domain={'x': [0, 1], 'y': [0, 1]},  # Posición del gráfico
+        gauge={
+            'axis': {'range': [min_val, max_val]},  # Rango del eje
+            'bar': {'color': "red"},  # Color de la barra
+            'bgcolor': "white",  # Color de fondo
+            'steps': [
+                {'range': [min_val, (max_val - min_val) * 0.5 + min_val], 'color': "green"},  # Rango bajo
+                {'range': [(max_val - min_val) * 0.5 + min_val, (max_val - min_val) * 0.75 + min_val], 'color': "yellow"},  # Rango medio
+                {'range': [(max_val - min_val) * 0.75 + min_val, max_val], 'color': "red"}  # Rango alto
+            ]
+        }
+    ))
+    return fig

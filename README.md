@@ -36,7 +36,7 @@ Asegúrate de tener instalados los siguientes componentes:
 
 1. Clona este repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/streamlit-project.git
+   git clone https://github.com/sfiro/streamlit-project.git
    cd streamlit-project
    ```
 
@@ -89,9 +89,6 @@ streamlit-project/
 - **Logo**: Puedes cambiar el logo ubicado en `logo/logoCelsia.png` por el de tu organización.
 - **Datos**: Asegúrate de que los archivos de datos en la carpeta `datos/` estén actualizados y sigan el formato esperado.
 
-## Créditos
-
-Este proyecto fue desarrollado por [Debbie Arredondo](mailto:debbie@example.com). Si tienes preguntas o sugerencias, no dudes en ponerte en contacto.
 
 ## Licencia
 
