@@ -55,7 +55,7 @@ Asegúrate de tener instalados los siguientes componentes:
 
 1. Ejecuta la aplicación:
    ```bash
-   streamlit run app2.py
+   streamlit run Dashboard.py
    ```
 
 2. Abre tu navegador en la dirección que aparece en la terminal (por defecto, [http://localhost:8501](http://localhost:8501)).
@@ -71,8 +71,9 @@ Asegúrate de tener instalados los siguientes componentes:
 
 ```
 streamlit-project/
-├── app2.py                # Archivo principal de la aplicación
+├── Dashboard.py           # Archivo principal de la aplicación
 ├── consignaciones.py      # Módulo para la sección de consignaciones
+├── incidentes.py          # Módulo para la sección de incidentes
 ├── resumenApp2.py         # Módulo para la sección de resumen
 ├── datos/                 # Carpeta con los archivos de datos
 │   ├── Consignaciones.csv
@@ -80,6 +81,7 @@ streamlit-project/
 │   └── SAIDIPendientes.csv
 ├── logo/                  # Carpeta con el logo del proyecto
 │   └── logoCelsia.png
+├── estilo.css             # Archivo de estilos personalizados
 ├── README.md              # Documentación del proyecto
 └── requirements.txt       # Lista de dependencias
 ```
@@ -88,7 +90,7 @@ streamlit-project/
 
 - **Logo**: Puedes cambiar el logo ubicado en `logo/logoCelsia.png` por el de tu organización.
 - **Datos**: Asegúrate de que los archivos de datos en la carpeta `datos/` estén actualizados y sigan el formato esperado.
-
+- **Estilos**: Puedes personalizar los estilos de la aplicación modificando el archivo `estilo.css`.
 
 ## Licencia
 

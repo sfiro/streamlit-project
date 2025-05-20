@@ -7,6 +7,7 @@ from incidentes import incidentes
 from saidi import saidi
 from resumenApp2 import resumen
 from entrega import entrega
+from Dashboard import dashboard
 import os
 import time
 
@@ -15,6 +16,8 @@ import json  # Importar la librería para trabajar con JSON
 import altair as alt
 from streamlit_lottie import st_lottie
 from streamlit_autorefresh import st_autorefresh
+import utils
+import gemini
 
 
 #######################
@@ -31,65 +34,18 @@ alt.themes.enable("default")
 #######################
 
 #######################
-# Agregar un temporizador de recarga automática en el frontend
-st.markdown("""
-    <script>
-        function reloadPage() {
-            setTimeout(function() {
-                window.location.reload();
-            }, 10000);  // Recargar cada 10 segundos
-        }
-        reloadPage();
-    </script>
-""", unsafe_allow_html=True)
+# # Agregar un temporizador de recarga automática en el frontend
+# st.markdown("""
+#     <script>
+#         function reloadPage() {
+#             setTimeout(function() {
+#                 window.location.reload();
+#             }, 10000);  // Recargar cada 10 segundos
+#         }
+#         reloadPage();
+#     </script>
+# """, unsafe_allow_html=True)
 
-# CSS styling
-st.markdown("""
-<style>
-
-[data-testid="block-container"] {
-    padding-left: 2rem;
-    padding-right: 2rem;
-    padding-top: 1rem;
-    padding-bottom: 0rem;
-    margin-bottom: -7rem;
-}
-
-[data-testid="stVerticalBlock"] {
-    padding-left: 0rem;
-    padding-right: 0rem;
-}
-
-[data-testid="stMetric"] {
-    background-color: #393939;
-    text-align: center;
-    padding: 15px 0;
-}
-
-[data-testid="stMetricLabel"] {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-[data-testid="stMetricDeltaIcon-Up"] {
-    position: relative;
-    left: 38%;
-    -webkit-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    transform: translateX(-50%);
-}
-
-[data-testid="stMetricDeltaIcon-Down"] {
-    position: relative;
-    left: 38%;
-    -webkit-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    transform: translateX(-50%);
-}     
-
-</style>
-""", unsafe_allow_html=True)
 
 
 #######################  Carga de base de datos  ####################
@@ -120,6 +76,8 @@ def load_lottie_url(url: str):
 
 
 def main():
+    utils.local_css('estilo.css')
+
     count = st_autorefresh(interval=60000, limit=100, key="fizzbuzzcounter")
 
     last_update_time = time.time()
@@ -127,7 +85,6 @@ def main():
     # Formatear la fecha y hora de la última actualización
     formatted_last_update_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(last_update_time))
 
- 
 
     #######################
     # Cargar datos
@@ -139,12 +96,15 @@ def main():
     with st.sidebar:
     
         st.image("/Users/debbiearredondo/Desktop/streamlit project/logo/logoCelsia.png", width=150)  # Cambia la ruta a tu imagen
-        opcion = st.sidebar.selectbox("Selecciona una opción", ["Resumen","Consignaciones","Incidentes", "Saidi", "Entrega turno"])
+        opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Resumen","Consignaciones","Incidentes", "Saidi", "Entrega turno","IA"])
 
         st.markdown("---")  # Línea divisoria
         st.write("Última actualización:")
         st.write(formatted_last_update_time)
     # Mostrar contenido según la opción seleccionada
+    if opcion == "Dashboard":
+        dashboard(consignaciones_datos, incidentes_datos, saidi_datos)
+
     if opcion == "Resumen":
         resumen(consignaciones_datos, incidentes_datos, saidi_datos)
     #    resumen(datos)
@@ -160,6 +120,9 @@ def main():
 
     if opcion == "Entrega turno":
         entrega(incidentes_datos)
+    
+    if opcion == "IA":
+        gemini.chat()
     
 
   # Cargar datos de ejemplo

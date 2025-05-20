@@ -18,26 +18,6 @@ def load_lottie_url(url: str):
 
 def resumen(consignaciones,incidentes,saidi):
 
-    # st.markdown("""
-    #     <style>
-    #     [data-testid="stMetricValue"] {
-    #         font-size: 4rem; /* Cambia el tamaño del valor */
-    #         font-weight: bold; /* Cambia el grosor del texto */
-    #         color: #f7760c; /* Cambia el color del texto */
-    #     }
-    #     [data-testid="stMetricLabel"] {
-    #     font-size: 5rem; /* Cambia el tamaño del texto del label */
-    #     color: #FFFFFF; /* Cambia el color del texto del label */
-    #     }
-    #     .centered-title {
-    #         display: flex;
-    #         justify-content: center; /* Centrar horizontalmente */
-    #         align-items: center; /* Centrar verticalmente */
-    #         height: 100%; /* Ocupa toda la altura del contenedor */
-    #     }  
-    #     </style>
-    # """, unsafe_allow_html=True)
-    # Cargamos archivo de estilos
     utils.local_css('estilo.css')
     
     col1, col2 = st.columns([1,3])

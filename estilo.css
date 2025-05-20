@@ -13,16 +13,69 @@ h3,
 label[data-testid="stMetricLabel"] p{  
     font-size:2em;
     font-weight:bold;
-    color:#D5752D
-    
+    color:#D5752D;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+h1 {
+    text-align: center; /* Centra el texto horizontalmente */
+    font-size: 2.5em; /* Ajusta el tamaño del texto si es necesario */
+    font-weight: bold; /* Asegura que el texto sea negrita */
+    color: #D5752D; /* Aplica el color deseado */
 }
 
 /* Estilo de valor de métricas*/
 div[data-testid="stMetricValue"]{
     font-size:2.5em;
     font-weight:bold;
-    color: #59595B;
+    color: #ffffff;
+    justify-content: center;
+    align-items: center;
 }
+
+
+[data-testid="block-container"] {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 0rem;
+    margin-bottom: -7rem;
+}
+
+[data-testid="stVerticalBlock"] {
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+
+[data-testid="stMetric"] {
+    background-color: #393939;
+    text-align: center;
+    padding: 15px 0;
+}
+
+[data-testid="stMetricLabel"] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+[data-testid="stMetricDeltaIcon-Up"] {
+    position: relative;
+    left: 38%;
+    -webkit-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+
+[data-testid="stMetricDeltaIcon-Down"] {
+    position: relative;
+    left: 38%;
+    -webkit-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
+}     
 
 /*Estilos para tablas*/
 
@@ -52,3 +105,5 @@ div[data-testid="stMetricValue"]{
 .dashboardTable tbody tr:nth-of-type(even) {
     background-color: #f3f3f3;
 }
+
+
