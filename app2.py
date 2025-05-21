@@ -51,9 +51,10 @@ alt.themes.enable("default")
 #######################  Carga de base de datos  ####################
 @st.cache_data(ttl=10) 
 def cargar_datos():
-    consignaciones_path = '/Users/debbiearredondo/Desktop/streamlit project/datos/BICC/Consignaciones.csv'
-    incidentes_path = '/Users/debbiearredondo/Desktop/streamlit project/datos/BICC/IncidentesActual.csv'
-    saidi_path = '/Users/debbiearredondo/Desktop/streamlit project/datos/BICC/SAIDIPendientes.csv'
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    consignaciones_path = os.path.join(base_path, 'datos', 'BICC', 'Consignaciones.csv')
+    incidentes_path = os.path.join(base_path, 'datos', 'BICC', 'IncidentesActual.csv')
+    saidi_path = os.path.join(base_path, 'datos', 'BICC', 'SAIDIPendientes.csv')
 
     # Obtener la última fecha de modificación de los archivos
     consignaciones_last_modified = os.path.getmtime(consignaciones_path)
@@ -94,8 +95,10 @@ def main():
    ##---------------------------------------------------------------
     
     with st.sidebar:
-    
-        st.image("/Users/debbiearredondo/Desktop/streamlit project/logo/logoCelsia.png", width=150)  # Cambia la ruta a tu imagen
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        logo_path = os.path.join(base_path, 'logo', 'logoCelsia.png')
+   
+        st.image(logo_path, width=150)  # Cambia la ruta a tu imagen
         opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Resumen","Consignaciones","Incidentes", "Saidi", "Entrega turno","IA"])
 
         st.markdown("---")  # Línea divisoria
@@ -122,7 +125,8 @@ def main():
         entrega(incidentes_datos)
     
     if opcion == "IA":
-        gemini.chat()
+        pass
+        #gemini.chat()
     
 
   # Cargar datos de ejemplo
