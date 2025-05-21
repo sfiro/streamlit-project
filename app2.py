@@ -17,7 +17,7 @@ import altair as alt
 from streamlit_lottie import st_lottie
 from streamlit_autorefresh import st_autorefresh
 import utils
-import gemini
+
 
 
 #######################
