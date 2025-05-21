@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -19,6 +18,15 @@ def load_lottie_url(url: str):
     return r.json()
 
 def consignaciones(datos):
+    
+    # Convertir StartDateTime a tipo datetime
+    if 'StartDateTime' in datos.columns:
+        datos['StartDateTime'] = pd.to_datetime(datos['StartDateTime'])
+        # Filtrar consignaciones cuyo StartDateTime es hoy (fecha del sistema)
+        hoy = pd.Timestamp.now().date()
+        consignaciones_hoy = datos[datos['StartDateTime'].dt.date == hoy]
+        st.subheader('Consignaciones con fecha de inicio hoy')
+        st.dataframe(consignaciones_hoy)
     
     utils.local_css('estilo.css')
     # Cargamos archivo de estilos

@@ -83,8 +83,19 @@ def dashboard(consignaciones,incidentes,saidi):
     # ------------ Gráficos consignaciones -----------------
     #st.title('Consignaciones')
 
-    consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('ISLAS', 'TRANSMISION ANALISIS')
-    description_counts = consignaciones.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
+    # Convertir StartDateTime a tipo datetime
+    if 'StartDateTime' in consignaciones.columns:
+        consignaciones['StartDateTime'] = pd.to_datetime(consignaciones['StartDateTime'])
+        # Filtrar consignaciones cuyo StartDateTime es hoy (fecha del sistema)
+        hoy = pd.Timestamp.now().date()
+        consignaciones_hoy = consignaciones[consignaciones['StartDateTime'].dt.date == hoy]
+
+
+    #consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('ISLAS', 'TRANSMISION ANALISIS')
+    #description_counts = consignaciones.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
+   
+    consignaciones_hoy['SubstationName'] = consignaciones_hoy['SubstationName'].replace('ISLAS', 'TRANSMISION ANALISIS')
+    description_counts = consignaciones_hoy.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
     description_counts = description_counts.sort_values(by='count', ascending=False)
 
     
