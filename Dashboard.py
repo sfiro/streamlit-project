@@ -111,7 +111,7 @@ def dashboard(consignaciones,incidentes,saidi):
             #grafico_donut(consignaciones, row['SubstationName'])
             st.plotly_chart(gauge_chart(row['count'], row['SubstationName'],min_val=0, max_val=total), use_container_width=True)
 
-
+#--------------  Total de clientes afectados ------------------------------------
     usuarios_afectados = incidentes.groupby('SubregionName')['NumCustomers'].sum().reset_index()
     #st.dataframe(usuarios_afectados)
     num_columns = len(usuarios_afectados)  # Número de columnas necesarias

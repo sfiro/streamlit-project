@@ -19,17 +19,17 @@ def load_lottie_url(url: str):
 
 def consignaciones(datos):
     
+    datos['SubstationName'] = datos['SubstationName'].replace('ISLAS', 'TRANSMISION ANALISIS')
     # Convertir StartDateTime a tipo datetime
     if 'StartDateTime' in datos.columns:
         datos['StartDateTime'] = pd.to_datetime(datos['StartDateTime'])
         # Filtrar consignaciones cuyo StartDateTime es hoy (fecha del sistema)
         hoy = pd.Timestamp.now().date()
         consignaciones_hoy = datos[datos['StartDateTime'].dt.date == hoy]
-        st.subheader('Consignaciones con fecha de inicio hoy')
-        st.dataframe(consignaciones_hoy)
     
     utils.local_css('estilo.css')
-    # Cargamos archivo de estilos
+
+# ------------------------------ Animación y Titulo de la pagina  -----------------------------------------
     col1, col2 = st.columns([1,3])
     with col1:
         # # Cargar la animación Lottie
@@ -43,13 +43,14 @@ def consignaciones(datos):
         st.title('')
         st.markdown("<div class='centered-title'><h1>Consignaciones</h1></div>", unsafe_allow_html=True)
 
+# ------------------------------ Tabla de consignaciones por zona  -----------------------------------------
     st.subheader('Cantidad de consignaciones por zona')
     description_counts = datos.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
-
     description_counts = description_counts.sort_values(by='count', ascending=False).head(10)
-
     st.dataframe(description_counts)
 
+
+# ------------------------------ Graficos de consignaciones por zona  -----------------------------------------
     # Create two columns for layout
     col1, col2 = st.columns(2)
 
@@ -63,10 +64,12 @@ def consignaciones(datos):
         fig_bar = px.bar(description_counts, x='SubstationName', y='count', title="Número de consignaciones por zona")
         st.plotly_chart(fig_bar)
 
+# ------------------------------ Tabla de consignaciones  -----------------------------------------
     st.subheader('Dashboard de consignaciones por zona')
-
     st.dataframe(datos)
 
+
+# ------------------------------ GRaficos de torta cantidad de consignaciones por zona y estado  -----------------------------------------
     # Crear columnas dinámicamente
     num_columns = len(description_counts)  # Número de columnas necesarias
     columns = st.columns(num_columns)  # Crear tantas columnas como datos existan
@@ -77,19 +80,12 @@ def consignaciones(datos):
             st.metric(label=row['SubstationName'], value=row['count'])
             grafico_torta(datos, row['SubstationName'], key="grafico_torta_" + str(i))
 
-
+# ------------------------------ GRaficos de donut cantidad de consignaciones por zona y estado  -----------------------------------------
     # Nuevo subheader para gráficos de donut
     for i, row in description_counts.iterrows():
         with columns[i]:
             st.metric(label=row['SubstationName'], value=row['count'])
-            grafico_donut(datos, row['SubstationName'])
-
-
- 
-
- 
-
-
+            grafico_donut(datos, row['SubstationName'], key="grafico_donut_" + str(i))
 
 
 def grafico_torta(datos,zona,key):
@@ -123,7 +119,7 @@ def grafico_torta(datos,zona,key):
     st.plotly_chart(fig_pie, key=key)
     
 
-def grafico_donut(datos, zona):
+def grafico_donut(datos, zona, key):
     # Filtrar los datos para la zona especificada
     zona_data = datos[datos['SubstationName'] == zona]
 
@@ -140,7 +136,13 @@ def grafico_donut(datos, zona):
     )
 
     # Calcular la cantidad de consignaciones iniciadas
-    consignaciones_iniciadas = estado_counts[estado_counts['EstadoConsignacion'] == 'Iniciadas'].loc[0]
+    if "Iniciadas" in estado_counts['EstadoConsignacion'].values:
+    # Existe el estado "Iniciadas"
+        consignaciones_iniciadas = estado_counts[estado_counts['EstadoConsignacion'] == 'Iniciadas'].iloc[0]
+    else:
+        consignaciones_iniciadas = 0
+        
+
 
     # Agregar texto interno al gráfico
     fig_donut.update_traces(
@@ -173,4 +175,4 @@ def grafico_donut(datos, zona):
     )
 
     # Mostrar el gráfico en Streamlit
-    st.plotly_chart(fig_donut)
+    st.plotly_chart(fig_donut, key=key)
