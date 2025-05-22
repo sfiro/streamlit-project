@@ -1,61 +1,64 @@
-
 import streamlit as st
 import pandas as pd
-import plotly.express as px
-import pandas as pd
-
-
 
 def entrega(df):
-    # Mostrar título
     st.title("📊 Dashboard de Incidentes Eléctricos")
+
     if df.empty:
         st.warning("No hay datos disponibles para mostrar.")
-    else:
-        # Agrupación por zona
-        st.header("🔹 Total de incidentes por zona")
-        incidentes_zona = df.groupby("SubregionName").size().reset_index(name="Cantidad de Incidentes")
-        incidentes_zona = incidentes_zona.sort_values(by="Cantidad de Incidentes", ascending=False)
-        st.dataframe(incidentes_zona)
-        st.bar_chart(incidentes_zona.set_index("SubregionName"))
+        return
 
-        # Separar por origen
-        df_llamadas = df[df["Origen"] == "PhoneCallCreated"]
-        df_eventos = df[df["Origen"] != "PhoneCallCreated"]
+    # 🔢 Métricas generales
+    st.header("🔹 Resumen General")
+    df_llamadas = df[df["Origen"] == "PhoneCallCreated"]
+    df_eventos = df[df["Origen"] != "PhoneCallCreated"]
 
-        # Mostrar cantidad de incidentes por zona
-        st.header("🔹 Incidentes por zona (según origen)")
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Total incidentes", len(df))
+    col2.metric("📞 Llamadas", len(df_llamadas))
+    col3.metric("🛠️ Eventos de campo", len(df_eventos))
 
-        col1, col2 = st.columns(2)
+    st.markdown("---")
 
-        with col1:
-            st.subheader("📞 Por llamadas (PhoneCallCreated)")
-            incidentes_llamadas = df_llamadas.groupby("SubregionName").size().reset_index(name="Cantidad de Incidentes")
-            incidentes_llamadas = incidentes_llamadas.sort_values(by="Cantidad de Incidentes", ascending=False)
-            st.dataframe(incidentes_llamadas)
-            st.bar_chart(incidentes_llamadas.set_index("SubregionName"))
+    # Agrupación por zona
+    st.header("🔹 Total de incidentes por zona")
+    incidentes_zona = df.groupby("SubregionName").size().reset_index(name="Cantidad de Incidentes")
+    incidentes_zona = incidentes_zona.sort_values(by="Cantidad de Incidentes", ascending=False)
+    st.dataframe(incidentes_zona)
+    st.bar_chart(incidentes_zona.set_index("SubregionName"))
 
-        with col2:
-            st.subheader("⚙️ Por eventos de campo / operador")
-            incidentes_eventos = df_eventos.groupby("SubregionName").size().reset_index(name="Cantidad de Incidentes")
-            incidentes_eventos = incidentes_eventos.sort_values(by="Cantidad de Incidentes", ascending=False)
-            st.dataframe(incidentes_eventos)
-            st.bar_chart(incidentes_eventos.set_index("SubregionName"))
+    st.markdown("---")
 
-        # Sumar clientes sin servicio por zona
-        st.header("🔹 Clientes sin servicio por zona")
-        col1, col2 = st.columns(2)
+    # 🔌 Clientes sin servicio por zona (eventos)
+    st.header("🔹 Clientes sin servicio por zona (eventos de campo)")
+    eventos = df_eventos.groupby("SubregionName")["NumUnrestCustomers"].sum().reset_index()
+    eventos = eventos.rename(columns={"NumUnrestCustomers": "Clientes sin servicio"})
+    eventos = eventos.sort_values(by="Clientes sin servicio", ascending=False)
 
-        with col1:
-            st.subheader("📞 Por llamadas (PhoneCallCreated)")
-            llamadas = df_llamadas.groupby("SubregionName")["NumUnrestCustomers"].sum().reset_index()
-            llamadas = llamadas.rename(columns={"NumUnrestCustomers": "Clientes sin servicio"})
-            llamadas = llamadas.sort_values(by="Clientes sin servicio", ascending=False)
-            st.dataframe(llamadas)
+    st.dataframe(eventos)
+    st.bar_chart(eventos.set_index("SubregionName"))
 
-        with col2:
-            st.subheader("⚙️ Por eventos de campo / operador")
-            eventos = df_eventos.groupby("SubregionName")["NumUnrestCustomers"].sum().reset_index()
-            eventos = eventos.rename(columns={"NumUnrestCustomers": "Clientes sin servicio"})
-            eventos = eventos.sort_values(by="Clientes sin servicio", ascending=False)
-            st.dataframe(eventos)
+    st.markdown("---")
+
+    # 📅 Detalles de eventos de campo por subregión
+    st.header("🔹 Detalles de eventos de campo por subregión")
+
+    # Asegurar que CreateTime es datetime y limpiar fechas inválidas
+    df_eventos["Fecha"] = pd.to_datetime(df_eventos["CreateTime"], errors='coerce')
+    df_eventos = df_eventos.dropna(subset=["Fecha"])
+    df_eventos["Fecha"] = df_eventos["Fecha"].dt.strftime("%d/%m/%Y")
+
+    # Renombrar columnas para mejor presentación
+    df_eventos_detalle = df_eventos.rename(columns={
+        "UID": "Incidente",
+        "SubstationName": "Subestación",
+        "FeederName": "Circuito",
+        "Name": "BOL",
+        "NumUnrestCustomers": "Clientes sin servicio"
+    })[["Fecha", "Incidente", "Subestación", "Circuito", "Dispositivo", "BOL", "SubregionName", "Clientes sin servicio"]]
+
+    # Mostrar una tabla por cada subregión
+    for subregion in sorted(df_eventos_detalle["SubregionName"].dropna().unique()):
+        st.subheader(f"📍 Subregión: {subregion}")
+        tabla_subregion = df_eventos_detalle[df_eventos_detalle["SubregionName"] == subregion].drop(columns=["SubregionName"])
+        st.dataframe(tabla_subregion)
