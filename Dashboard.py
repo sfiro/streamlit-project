@@ -100,7 +100,8 @@ def dashboard(consignaciones,incidentes,saidi):
 
     
     total = description_counts['count'].sum()
-    st.metric(label="Total consignaciones", value=total)
+    #st.metric(label="Total consignaciones", value=total)
+    st.title('Consignaciones'+ f" ({total})")
     num_columns = len(description_counts)  # Número de columnas necesarias
     columns = st.columns(num_columns)  # Crear tantas columnas como datos existan
 
@@ -116,8 +117,8 @@ def dashboard(consignaciones,incidentes,saidi):
     #st.dataframe(usuarios_afectados)
     num_columns = len(usuarios_afectados)  # Número de columnas necesarias
     total = usuarios_afectados['NumCustomers'].sum()
-    st.metric(label="Total clientes afectados", value=total)
-
+    #st.metric(label="Total clientes afectados", value=total)
+    st.title('Clientes Afectados'+ f" ({total})")
     columns = st.columns(num_columns)  # Crear tantas columnas como datos existan
      # graficos de donut
     for i, row in usuarios_afectados.iterrows():
@@ -177,7 +178,8 @@ def incidentesGrafico(datos, titulo="Incidentes"):
 
     num_columns = len(inc)  # Número de columnas necesarias
     total = inc['count'].sum()
-    st.metric(label=titulo, value=total)
+    #st.metric(label=titulo, value=total)
+    st.title(titulo + f" ({total})")
 
     columns = st.columns(num_columns)  # Crear tantas columnas como datos existan
      # graficos de donut

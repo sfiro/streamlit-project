@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -11,6 +10,15 @@ import altair as alt
 from streamlit_lottie import st_lottie
 import utils
 
+color_map = {
+        'Naraja': '#D5752D',  
+        'Gris': '#59595B',  # Blanco
+        'Azul': '#13A2E1', 
+        'Verde': '#00BE91',
+        'Amarillo': '#FFF65E',
+        'Azul oscuro': '#003FA2',
+        'Rojo': '#CA0045',
+    }
 #####  funcion para importarn animaciones ######
 def load_lottie_url(url: str):
     r = requests.get(url)
@@ -23,6 +31,7 @@ def incidentes(datos):
     # Cargamos archivo de estilos
     utils.local_css('estilo.css')
 
+#--------------  Incidentes animación y titulo  ------------------------------------
     col1, col2 = st.columns([1,3])
     with col1:
         # # Cargar la animación Lottie
@@ -35,14 +44,13 @@ def incidentes(datos):
         st.title('')
         st.markdown("<div class='centered-title'><h1>Incidentes</h1></div>", unsafe_allow_html=True)
 
-    
-
+#--------------  Tabla de incidentes en el sistema por sector  ------------------------------------
     st.subheader('Cantidad de Incidentes por zona')
     description_counts = datos.groupby('SubregionName')['SubregionName'].count().reset_index(name='count')
-
     description_counts = description_counts.sort_values(by='count', ascending=False).head(10)
-
     st.dataframe(description_counts)
+
+#-------------- Grafico de tipo dona donde se muestran los incidentes por zona --------------------
 
     # Crear el gráfico de donut
     fig_donut = px.pie(
@@ -50,6 +58,8 @@ def incidentes(datos):
         values='count',
         names='SubregionName',
         hole=0.5,  # Crear el efecto de donut
+        color='SubregionName',
+        color_discrete_map=color_map
     )
 
      # Configurar el gráfico para mostrar valores absolutos
@@ -74,7 +84,7 @@ def incidentes(datos):
     # Mostrar el gráfico en Streamlit
     st.plotly_chart(fig_donut)
 
-
+#--------------  Grafico de incidentes por zona tipo torta y barras ------------------------------------
 
     # Create two columns for layout
     col1, col2 = st.columns(2)
@@ -82,12 +92,23 @@ def incidentes(datos):
 
     # Pie chart in the first column
     with col1:
-        fig_pie = px.pie(description_counts, values='count', names='SubregionName',title="Número de incidentes por zona")
+        fig_pie = px.pie(description_counts, 
+                         values='count', 
+                         names='SubregionName',
+                         title="Número de incidentes por zona",
+                         color='SubregionName',
+                        color_discrete_map=color_map)
         st.plotly_chart(fig_pie)
 
     # Bar chart in the second column
     with col2:
-        fig_bar = px.bar(description_counts, x='SubregionName', y='count', title="Número de incidentes por zona")
+        fig_bar = px.bar(description_counts, 
+                         x='SubregionName', 
+                         y='count', 
+                         title="Número de incidentes por zona",
+                         color='SubregionName',  # Colorea cada barra diferente
+                        color_discrete_map=color_map,
+    )
         st.plotly_chart(fig_bar)
 
     st.subheader('Dashboard de incidentes por zona')

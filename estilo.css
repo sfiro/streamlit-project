@@ -21,9 +21,10 @@ label[data-testid="stMetricLabel"] p{
 
 h1 {
     text-align: center; /* Centra el texto horizontalmente */
-    font-size: 2.5em; /* Ajusta el tamaño del texto si es necesario */
+    font-size: 4.5em; /* Ajusta el tamaño del texto si es necesario */
     font-weight: bold; /* Asegura que el texto sea negrita */
     color: #D5752D; /* Aplica el color deseado */
+    font-family: 'Arial Black', Arial, sans-serif; /* Cambia la fuente */
 }
 
 /* Estilo de valor de métricas*/
