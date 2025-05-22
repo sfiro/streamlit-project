@@ -51,7 +51,7 @@ def incidentes(datos):
     st.dataframe(description_counts)
 
 #-------------- Grafico de tipo dona donde se muestran los incidentes por zona --------------------
-
+    st.title("Incidentes por zona")
     # Crear el gráfico de donut
     fig_donut = px.pie(
         description_counts,
@@ -72,11 +72,14 @@ def incidentes(datos):
     # Configurar la posición de la leyenda fuera del gráfico
     fig_donut.update_layout(
         legend=dict(
-            orientation="h",  # Horizontal
-            yanchor="bottom",  # Anclar en la parte inferior
-            y=-0.2,  # Posición vertical (debajo del gráfico)
-            xanchor="center",  # Centrar horizontalmente
-            x=0.5  # Posición horizontal (centro)
+            orientation="v",  # Horizontal
+            yanchor="middle",  # Anclar en la parte inferior
+            y=0.5,  # Posición vertical (debajo del gráfico)
+            xanchor="left",  # Centrar horizontalmente
+            x=1,  # Posición horizontal (centro)
+            font=dict(
+                size=30           # Tamaño de fuente de la leyenda
+            )
         ),
 
     )
@@ -95,9 +98,10 @@ def incidentes(datos):
         fig_pie = px.pie(description_counts, 
                          values='count', 
                          names='SubregionName',
-                         title="Número de incidentes por zona",
+                         title="",
                          color='SubregionName',
                         color_discrete_map=color_map)
+        fig_pie.update_layout(showlegend=False)
         st.plotly_chart(fig_pie)
 
     # Bar chart in the second column
@@ -105,10 +109,11 @@ def incidentes(datos):
         fig_bar = px.bar(description_counts, 
                          x='SubregionName', 
                          y='count', 
-                         title="Número de incidentes por zona",
+                         title="",
                          color='SubregionName',  # Colorea cada barra diferente
                         color_discrete_map=color_map,
     )
+        fig_bar.update_layout(showlegend=False)
         st.plotly_chart(fig_bar)
 
     st.subheader('Dashboard de incidentes por zona')
