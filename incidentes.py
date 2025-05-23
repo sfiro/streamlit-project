@@ -67,7 +67,7 @@ def incidentes(datos):
         textinfo='value',  # Mostrar valores absolutos en lugar de porcentajes
         hoverinfo='label+value',  # Mostrar etiqueta y valor al pasar el cursor
         textposition='inside',  # Posición del texto dentro de las secciones
-        textfont_size=14
+        textfont_size=30
     )
     # Configurar la posición de la leyenda fuera del gráfico
     fig_donut.update_layout(
@@ -111,11 +111,20 @@ def incidentes(datos):
                          y='count', 
                          title="",
                          color='SubregionName',  # Colorea cada barra diferente
+                        labels={'SubregionName': 'Zona', 'count': 'Cantidad de Incidentes'},
                         color_discrete_map=color_map,
     )
+    
+        fig_bar.update_layout(
+                font=dict(size=50),  # <-- Aumenta el tamaño general de los textos (ejes, leyenda)
+                xaxis_title_font=dict(size=20),  # Tamaño del título del eje X
+                yaxis_title_font=dict(size=20),  # Tamaño del título del eje Y
+        )
+        
         fig_bar.update_layout(showlegend=False)
         st.plotly_chart(fig_bar)
 
+#--------------  Metricas de total de incidentes y zonas  ------------------------------------
     st.subheader('Dashboard de incidentes por zona')
 
     #col1, col2, col3, col4 = st.columns(4)

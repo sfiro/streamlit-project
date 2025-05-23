@@ -28,22 +28,6 @@ def load_lottie_url(url: str):
 def dashboard(consignaciones,incidentes,saidi):
     # Cargamos archivo de estilos
     utils.local_css('estilo.css')
-
-    st.markdown("""
-    <style>
-        .custom-column {
-            height: 200px; /* Altura fija para las columnas */
-            display: flex;
-            flex-direction: column;
-            justify-content: center; /* Centrar contenido verticalmente */
-            align-items: center; /* Centrar contenido horizontalmente */
-            border: 1px solid #D5752D; /* Opcional: agregar un borde */
-            border-radius: 10px; /* Opcional: bordes redondeados */
-            padding: 10px; /* Opcional: espacio interno */
-            background-color: #f4f4f9; /* Opcional: color de fondo */
-        }
-        </style>
-    """, unsafe_allow_html=True)
     
     # ------------ Título -----------------
     col1, col2 = st.columns([1,3])
@@ -83,34 +67,37 @@ def dashboard(consignaciones,incidentes,saidi):
     # ------------ Gráficos consignaciones -----------------
     #st.title('Consignaciones')
 
-    # Convertir StartDateTime a tipo datetime
-    if 'StartDateTime' in consignaciones.columns:
-        consignaciones['StartDateTime'] = pd.to_datetime(consignaciones['StartDateTime'])
-        # Filtrar consignaciones cuyo StartDateTime es hoy (fecha del sistema)
-        hoy = pd.Timestamp.now().date()
-        consignaciones_hoy = consignaciones[consignaciones['StartDateTime'].dt.date == hoy]
+    # Seleccion de consignaciones por fecha dia actual 
 
-
-    #consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('ISLAS', 'TRANSMISION ANALISIS')
-    #description_counts = consignaciones.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
-   
-    consignaciones_hoy['SubstationName'] = consignaciones_hoy['SubstationName'].replace('ISLAS', 'TRANSMISION ANALISIS')
-    description_counts = consignaciones_hoy.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
-    description_counts = description_counts.sort_values(by='count', ascending=False)
-
+    # if 'StartDateTime' in consignaciones.columns:
+    #     consignaciones['StartDateTime'] = pd.to_datetime(consignaciones['StartDateTime'])
+    #     # Filtrar consignaciones cuyo StartDateTime es hoy (fecha del sistema)
+    #     hoy = pd.Timestamp.now().date()
+    #     consignaciones_hoy = consignaciones[consignaciones['StartDateTime'].dt.date == hoy]
     
-    total = description_counts['count'].sum()
-    #st.metric(label="Total consignaciones", value=total)
-    st.title('Consignaciones'+ f" ({total})")
-    num_columns = len(description_counts)  # Número de columnas necesarias
-    columns = st.columns(num_columns)  # Crear tantas columnas como datos existan
+    consignaciones_hoy = consignaciones   
 
-    # Nuevo subheader para gráficos de donut
-    for i, row in description_counts.iterrows():
-        with columns[i]:
-            #st.metric(label=row['SubstationName'], value=row['count'])
-            #grafico_donut(consignaciones, row['SubstationName'])
-            st.plotly_chart(gauge_chart(row['count'], row['SubstationName'],min_val=0, max_val=total), use_container_width=True)
+    if consignaciones_hoy.empty:
+        st.warning("No hay consignaciones para mostrar.")
+    else:
+
+        consignaciones_hoy['SubstationName'] = consignaciones_hoy['SubstationName'].replace('ISLAS', 'TRANSMISION ANALISIS')
+        description_counts = consignaciones_hoy.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
+        description_counts = description_counts.sort_values(by='count', ascending=False)
+
+        
+        total = description_counts['count'].sum()
+        #st.metric(label="Total consignaciones", value=total)
+        st.title('Consignaciones'+ f" ({total})")
+        num_columns = len(description_counts)  # Número de columnas necesarias
+        columns = st.columns(num_columns)  # Crear tantas columnas como datos existan
+
+        # Nuevo subheader para gráficos de donut
+        for i, row in description_counts.iterrows():
+            with columns[i]:
+                #st.metric(label=row['SubstationName'], value=row['count'])
+                #grafico_donut(consignaciones, row['SubstationName'])
+                st.plotly_chart(gauge_chart(row['count'], row['SubstationName'],min_val=0, max_val=total), use_container_width=True)
 
 #--------------  Total de clientes afectados ------------------------------------
     usuarios_afectados = incidentes.groupby('SubregionName')['NumCustomers'].sum().reset_index()
@@ -126,48 +113,6 @@ def dashboard(consignaciones,incidentes,saidi):
             #st.metric(label=row['SubregionName'], value=row['count'])
             st.plotly_chart(gauge_chart(row['NumCustomers'], row['SubregionName'],min_val=0, max_val=total), use_container_width=True)
 
-
-
-
-
-
-
-    #st.title('Consignaciones')
-    # ------------ Gráficos consignaciones -----------------
-    # Crear columnas dinámicamente
-    # consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('ISLAS', 'TRANSMISION ANALISIS')
-    # description_counts = consignaciones.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
-    # description_counts = description_counts.sort_values(by='count', ascending=False)
-
-    # num_columns = len(description_counts)  # Número de columnas necesarias
-    # columns = st.columns(num_columns)  # Crear tantas columnas como datos existan
-    # total = description_counts['count'].sum()
-
-    # # Nuevo subheader para gráficos de donut
-    # for i, row in description_counts.iterrows():
-    #     with columns[i]:
-    #         st.metric(label=row['SubstationName'], value=row['count'])
-    #         grafico_donut(consignaciones, row['SubstationName'])
-    #         st.plotly_chart(gauge_chart(row['count'], row['SubstationName'],min_val=0, max_val=total), use_container_width=True)
-
-
-    # ------------ Gráficos Incidentes -----------------
-    # st.title('Incidentes')
-
-    # description_counts = incidentes.groupby('SubregionName')['SubregionName'].count().reset_index(name='count')
-
-    # description_counts = description_counts.sort_values(by='count', ascending=False)
-
-    # num_columns = len(description_counts)  # Número de columnas necesarias
-    # total = description_counts['count'].sum()
-    # st.metric(label="Total de incidentes", value=total)
-
-    # columns = st.columns(num_columns)  # Crear tantas columnas como datos existan
-    #  # graficos de donut
-    # for i, row in description_counts.iterrows():
-    #     with columns[i]:
-    #         st.metric(label=row['SubregionName'], value=row['count'])
-    #         st.plotly_chart(gauge_chart(row['count'], row['SubregionName'],min_val=0, max_val=total), use_container_width=True)
 
 
 
