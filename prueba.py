@@ -1,46 +1,113 @@
-import requests
-import json
-import pandas as pd
-import matplotlib.pyplot as plt
+import streamlit as st
+import plotly.graph_objects as go
 
-dataset_id = 'EC6945'
-start_date = '2025-05-03'
-end_date = '2025-05-03'
-columnDestinyName = 'null' # Ingrese el nombre de la columna destino a filtrar. De lo contrario null
-values= 'null' # Ingrese el valor(es) por lo que desea filtrar. Obligatorio si ingresa columnDestinyName. Ejm:1,3,2 De lo contrario null
+# Configurar página
+st.set_page_config(page_title="Dashboard de Incidentes", layout="wide")
 
-url = f"https://www.simem.co/backend-files/api/PublicData?startDate={start_date}&enddate={end_date}&datasetId={dataset_id}&columnDestinyName={columnDestinyName}&values={values}"
-response = requests.get(url)
+# Mapa de colores
+color_map = {
+    'Naraja': '#D5752D',
+    'Gris': '#59595B',
+    'Azul': '#13A2E1',
+    'Verde': '#00BE91',
+    'Amarillo': '#FFF65E',
+    'Azul oscuro': '#003FA2',
+    'Rojo': '#CA0045',
+}
 
+# Estilos
+st.markdown("""
+    <style>
+    .big-font {
+        font-size:32px !important;
+        font-weight: bold;
+    }
+    .card {
+        padding: 30px;
+        border-radius: 15px;
+        color: white;
+        font-weight: bold;
+        text-align: center;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-# Organizar la respuesta en un formato legible
-if response.status_code == 200:
-    data = json.loads(response.content)
-    print(json.dumps(data, indent=4))  # Imprimir la respuesta con formato JSON legible
-    records = data.get("result", {}).get("records", [])
-    if not records:
-        print("No se encontraron datos en la respuesta de la API.")
-    else:
-        # Convertir los registros a un DataFrame
-        df = pd.DataFrame(records)
+# Datos por KPI
+zonas = ['Valle Norte', 'Valle Sur', 'Tolima Norte', 'Tolima Sur']
+datos_kpi = {
+    "Llamadas": {
+        "color": color_map["Azul oscuro"],
+        "icono": "📞",
+        "valor": 125,
+        "zonas": [40, 35, 25, 25]
+    },
+    "SCADA": {
+        "color": color_map["Naraja"],
+        "icono": "⚡",
+        "valor": 15,
+        "zonas": [3, 5, 4, 3]
+    },
+    "Consignaciones": {
+        "color": color_map["Gris"],
+        "icono": "📝",
+        "valor": 78,
+        "zonas": [20, 18, 25, 15]
+    },
+    "Clientes Afectados": {
+        "color": color_map["Rojo"],
+        "icono": "🚨",
+        "valor": 2340,
+        "zonas": [800, 700, 500, 340]
+    }
+}
 
-        # Mostrar el DataFrame
-        print("Datos extraídos:")
-        print(df)
+# KPIs en tarjetas
+col1, col2, col3, col4 = st.columns(4)
+columnas = [col1, col2, col3, col4]
 
-    df['FechaHora'] = pd.to_datetime(df['FechaHora'])
+for col, kpi in zip(columnas, datos_kpi.keys()):
+    datos = datos_kpi[kpi]
+    col.markdown(
+        f'<div class="card" style="background-color:{datos["color"]}">'
+        f'{datos["icono"]}<br>{kpi}<br>'
+        f'<span class="big-font">{datos["valor"]}</span></div>',
+        unsafe_allow_html=True
+    )
 
-    # Graficar
-    plt.figure(figsize=(10, 6))
-    for variable in df['CodigoVariable'].unique():
-        subset = df[df['CodigoVariable'] == variable]
-        plt.plot(subset['FechaHora'], subset['Valor'], label=variable)
+# Título
+st.markdown("## Radar de Incidentes por Zona")
 
-    plt.title('Valores por FechaHora')
-    plt.xlabel('FechaHora')
-    plt.ylabel('Valor (COP/kWh)')
-    plt.legend()
-    plt.grid()
-    plt.show()
-else:
-    print(f"Error en la solicitud: {response.status_code}")
+# Función para crear radar
+def crear_grafico_radar(nombre, color, valores):
+    fig = go.Figure()
+    fig.add_trace(go.Scatterpolar(
+        r=valores + [valores[0]],
+        theta=zonas + [zonas[0]],
+        fill='toself',
+        name=nombre,
+        line_color=color,
+        fillcolor=color,
+        opacity=0.6
+    ))
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(visible=True)
+        ),
+        showlegend=False,
+        paper_bgcolor="#0F172A",
+        font_color="white",
+        margin=dict(l=30, r=30, t=30, b=30),
+        height=350
+    )
+    return fig
+
+# Mostrar gráficos en filas
+kpis = list(datos_kpi.keys())
+for i in range(0, len(kpis), 2):
+    col_a, col_b = st.columns(2)
+    for j, col in enumerate([col_a, col_b]):
+        if i + j < len(kpis):
+            kpi = kpis[i + j]
+            datos = datos_kpi[kpi]
+            col.subheader(f'{datos["icono"]} {kpi}')
+            col.plotly_chart(crear_grafico_radar(kpi, datos["color"], datos["zonas"]), use_container_width=True)

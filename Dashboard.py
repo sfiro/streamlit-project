@@ -43,26 +43,42 @@ def dashboard(consignaciones,incidentes,saidi):
         st.markdown("<div class='centered-title'><h1>Dashboard</h1></div>", unsafe_allow_html=True)
 
     # ------------ Resumen de datos -----------------
-    colum1, colum2, colum3 = st.columns(3)
+    # colum1, colum2, colum3 = st.columns(3)
 
-    with colum1:
-        st.metric( label=":books: Consignaciones ",value=consignaciones.shape[0])
+    # with colum1:
+    #     st.metric( label=":books: Consignaciones ",value=consignaciones.shape[0])
     
-    with colum2:
-        st.metric(label=" :warning: Incidentes ", value=incidentes.shape[0])
+    # with colum2:
+    #     st.metric(label=" :warning: Incidentes ", value=incidentes.shape[0])
     
-    with colum3:   
-        st.metric(label=" :bar_chart: SAIDI ", value=saidi.shape[0])
+    # with colum3:   
+    #     st.metric(label=" :bar_chart: SAIDI ", value=saidi.shape[0])
 
     # ------------ Gráficos Incidentes -----------------
     #st.title('Incidentes')
 
+    
+
     incidentesScada =  incidentes[incidentes['Origen'] == 'SCADACreated']
     incidentesLlamadas =  incidentes[incidentes['Origen'] == 'PhoneCallCreated']
 
+    colum1, colum2, colum3, colum4 = st.columns(4)
+    with colum1:
+        st.metric( label=":books: Incidentes SCADA ",value=incidentesScada.shape[0])
+    with colum2:
+        st.metric( label=":phone: Incidentes Llamadas ",value=incidentesLlamadas.shape[0])
+    with colum3:
+        st.metric(label=" :warning: Incidentes Totales ", value=consignaciones.shape[0])
+    with colum4:
+        st.metric(label=" :bar_chart: SAIDI ", value=saidi.shape[0])
+
     incidentesGrafico(incidentesScada, "Incidentes SCADA")
 
+    incidentesRadar(incidentesScada, titulo="Incidentes por Scada")
+
     incidentesGrafico(incidentesLlamadas, "Incidentes Llamadas")
+
+    incidentesRadar(incidentesLlamadas, titulo="Incidentes llamadas")
     
     # ------------ Gráficos consignaciones -----------------
     #st.title('Consignaciones')
@@ -99,6 +115,9 @@ def dashboard(consignaciones,incidentes,saidi):
                 #grafico_donut(consignaciones, row['SubstationName'])
                 st.plotly_chart(gauge_chart(row['count'], row['SubstationName'],min_val=0, max_val=total), use_container_width=True)
 
+    
+    consignacionesRadar(consignaciones_hoy, titulo="Consignaciones por Subestación")
+
 #--------------  Total de clientes afectados ------------------------------------
     usuarios_afectados = incidentes.groupby('SubregionName')['NumCustomers'].sum().reset_index()
     #st.dataframe(usuarios_afectados)
@@ -113,6 +132,7 @@ def dashboard(consignaciones,incidentes,saidi):
             #st.metric(label=row['SubregionName'], value=row['count'])
             st.plotly_chart(gauge_chart(row['NumCustomers'], row['SubregionName'],min_val=0, max_val=total), use_container_width=True)
 
+    usuariosRadar(usuarios_afectados, titulo="Consignaciones por Subestación")
 
 
 
@@ -226,3 +246,171 @@ def gauge_chart(value, titulo="SAIDI", min_val=0, max_val=100):
         }
     ))
     return fig
+
+def incidentesRadar(datos, titulo="Incidentes por Subregión"):
+    # Agrupa los datos por subregión y cuenta los incidentes
+    inc = datos.groupby('SubregionName')['SubregionName'].count().reset_index(name='count')
+    inc = inc.sort_values(by='count', ascending=False)
+
+    # Prepara los datos para el radar
+    categorias = inc['SubregionName'].tolist()
+    valores = inc['count'].tolist()
+    # Para cerrar el radar, repetimos el primer valor al final
+    categorias += [categorias[0]]
+    valores += [valores[0]]
+
+    print(categorias, valores)
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatterpolar(
+        r=valores,
+        theta=categorias,
+        fill='toself',
+        name=titulo,
+        marker=dict(color='#13A2E1'),
+        line=dict(width=3)
+    ))
+    if max(valores) < 20:  # Solo si el valor máximo es mayor a 10
+        dtick=1,  # Ticks enteros
+    else:  # Si el valor máximo es menor o igual a 10
+        dtick=int(max(valores)/10)  # <-- Solo ticks enteros
+
+    fig.update_layout(
+        polar=dict(
+            bgcolor='rgba(0,0,0,0)',
+            radialaxis=dict(
+                visible=True,
+                range=[0, max(valores)],
+                tickfont=dict(size=20),
+                dtick=dtick,  # Ajuste de los ticks
+            ),
+            angularaxis=dict(
+                tickfont=dict(size=14)
+            )
+        ),
+        plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de la gráfica transparente
+        paper_bgcolor='rgba(0,0,0,0)',  # Fondo del "papel" transparente
+        showlegend=False,
+        title=dict(
+            text=titulo,
+            font=dict(size=30, color='#D5752D'),
+            x=0.5,  # <-- Centra el título
+            xanchor='center'
+        )
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+
+def consignacionesRadar(datos, titulo="Incidentes por Subregión"):
+    # Agrupa los datos por subregión y cuenta los incidentes
+    inc = datos.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
+    inc = inc.sort_values(by='count', ascending=False)
+
+    # Prepara los datos para el radar
+    categorias = inc['SubstationName'].tolist()
+    valores = inc['count'].tolist()
+    # Para cerrar el radar, repetimos el primer valor al final
+    categorias += [categorias[0]]
+    valores += [valores[0]]
+
+    print(categorias, valores)
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatterpolar(
+        r=valores,
+        theta=categorias,
+        fill='toself',
+        name=titulo,
+        marker=dict(color='#13A2E1'),
+        line=dict(width=3)
+    ))
+    if max(valores) < 20:  # Solo si el valor máximo es mayor a 10
+        dtick=1,  # Ticks enteros
+    else:  # Si el valor máximo es menor o igual a 10
+        dtick=int(max(valores)/10)  # <-- Solo ticks enteros
+
+    fig.update_layout(
+        polar=dict(
+            bgcolor='rgba(0,0,0,0)',
+            radialaxis=dict(
+                visible=True,
+                range=[0, max(valores)],
+                tickfont=dict(size=20),
+                dtick=dtick,  # Ajuste de los ticks
+            ),
+            angularaxis=dict(
+                tickfont=dict(size=14)
+            )
+        ),
+        plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de la gráfica transparente
+        paper_bgcolor='rgba(0,0,0,0)',  # Fondo del "papel" transparente
+        showlegend=False,
+        title=dict(
+            text=titulo,
+            font=dict(size=30, color='#D5752D'),
+            x=0.5,  # <-- Centra el título
+            xanchor='center'
+        )
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+def usuariosRadar(datos, titulo="Incidentes por Subregión"):
+
+
+    # Agrupa los datos por subregión y cuenta los incidentes
+    inc = datos.groupby('SubregionName')['NumCustomers'].sum().reset_index(name='count')
+    inc = inc.sort_values(by='count', ascending=False)
+
+    # Prepara los datos para el radar
+    categorias = inc['SubregionName'].tolist()
+    valores = inc['count'].tolist()
+    # Para cerrar el radar, repetimos el primer valor al final
+    categorias += [categorias[0]]
+    valores += [valores[0]]
+
+    print(categorias, valores)
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatterpolar(
+        r=valores,
+        theta=categorias,
+        fill='toself',
+        name=titulo,
+        marker=dict(color='#13A2E1'),
+        line=dict(width=3)
+    ))
+    if max(valores) < 20:  # Solo si el valor máximo es mayor a 10
+        dtick=1,  # Ticks enteros
+    else:  # Si el valor máximo es menor o igual a 10
+        dtick=int(max(valores)/10)  # <-- Solo ticks enteros
+
+    fig.update_layout(
+        polar=dict(
+            bgcolor='rgba(0,0,0,0)',
+            radialaxis=dict(
+                visible=True,
+                range=[0, max(valores)],
+                tickfont=dict(size=20),
+                dtick=dtick,  # Ajuste de los ticks
+            ),
+            angularaxis=dict(
+                tickfont=dict(size=14)
+            )
+        ),
+        plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de la gráfica transparente
+        paper_bgcolor='rgba(0,0,0,0)',  # Fondo del "papel" transparente
+        showlegend=False,
+        title=dict(
+            text=titulo,
+            font=dict(size=30, color='#D5752D'),
+            x=0.5,  # <-- Centra el título
+            xanchor='center'
+        )
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
