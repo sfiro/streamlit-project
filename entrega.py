@@ -18,7 +18,7 @@ def entrega(df):
     col2.metric("📞 Llamadas", len(df_llamadas))
     col3.metric("🛠️ Eventos de campo", len(df_eventos))
 
-    st.markdown("---")
+    #st.markdown("---")
 
     # Agrupación por zona
     st.header("🔹 Total de incidentes por zona")
