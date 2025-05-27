@@ -85,13 +85,13 @@ def dashboard(consignaciones,incidentes,saidi):
 
     # Seleccion de consignaciones por fecha dia actual 
 
-    # if 'StartDateTime' in consignaciones.columns:
-    #     consignaciones['StartDateTime'] = pd.to_datetime(consignaciones['StartDateTime'])
-    #     # Filtrar consignaciones cuyo StartDateTime es hoy (fecha del sistema)
-    #     hoy = pd.Timestamp.now().date()
-    #     consignaciones_hoy = consignaciones[consignaciones['StartDateTime'].dt.date == hoy]
+    if 'StartDateTime' in consignaciones.columns:
+        consignaciones['StartDateTime'] = pd.to_datetime(consignaciones['StartDateTime'])
+        # Filtrar consignaciones cuyo StartDateTime es hoy (fecha del sistema)
+        hoy = pd.Timestamp.now().date()
+        consignaciones_hoy = consignaciones[consignaciones['StartDateTime'].dt.date == hoy]
     
-    consignaciones_hoy = consignaciones   
+    #consignaciones_hoy = consignaciones   
 
     if consignaciones_hoy.empty:
         st.warning("No hay consignaciones para mostrar.")
@@ -113,10 +113,14 @@ def dashboard(consignaciones,incidentes,saidi):
             with columns[i]:
                 #st.metric(label=row['SubstationName'], value=row['count'])
                 #grafico_donut(consignaciones, row['SubstationName'])
-                st.plotly_chart(gauge_chart(row['count'], row['SubstationName'],min_val=0, max_val=total), use_container_width=True)
+                st.plotly_chart(gauge_chart(row['count'], row['SubstationName'],
+                                            min_val=0, 
+                                            max_val=total), 
+                                            use_container_width=True,
+                                            key=f"gauge_{row['SubstationName']}")
 
     
-    consignacionesRadar(consignaciones_hoy, titulo="Consignaciones por Subestación")
+    consignacionesRadar(consignaciones_hoy, titulo="Consignaciones por zona")
 
 #--------------  Total de clientes afectados ------------------------------------
     usuarios_afectados = incidentes.groupby('SubregionName')['NumCustomers'].sum().reset_index()
@@ -132,7 +136,7 @@ def dashboard(consignaciones,incidentes,saidi):
             #st.metric(label=row['SubregionName'], value=row['count'])
             st.plotly_chart(gauge_chart(row['NumCustomers'], row['SubregionName'],min_val=0, max_val=total), use_container_width=True)
 
-    usuariosRadar(usuarios_afectados, titulo="Consignaciones por Subestación")
+    usuariosRadar(usuarios_afectados, titulo="Clientes afectados por Subregión")
 
 
 
