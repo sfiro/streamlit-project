@@ -8,6 +8,7 @@ from saidi import saidi
 from resumenApp2 import resumen
 from entrega import entrega
 from Dashboard import dashboard
+from gestion import gestion
 import os
 import time
 
@@ -104,7 +105,7 @@ def main():
         logo_path = os.path.join(base_path, 'logo', 'logoCelsia.png')
    
         st.image(logo_path, width=150)  # Cambia la ruta a tu imagen
-        opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Resumen","Consignaciones","Incidentes", "Saidi", "Entrega turno","IA"])
+        opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Resumen","Consignaciones","Incidentes", "Saidi", "Entrega turno","Gestion","IA"])
 
         st.markdown("---")  # Línea divisoria
         st.write("Última actualización:")
@@ -128,6 +129,9 @@ def main():
 
     if opcion == "Entrega turno":
         entrega(incidentes_datos)
+
+    if opcion == "Gestion":
+        gestion()
     
     if opcion == "IA":
         pass
