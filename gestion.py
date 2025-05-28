@@ -2,10 +2,13 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import pandas as pd
+<<<<<<< HEAD
 from datetime import datetime
 from pytz import timezone
 import io
 import contextlib
+=======
+>>>>>>> e2257ca0d9d71bbe42890ae09dd74379d30903aa
 
 def gestion():
     
@@ -22,13 +25,20 @@ def gestion():
             #st.write(detalle_archivo)
 
             if detalle_archivo["Tipo de archivo"] == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+<<<<<<< HEAD
                 df_incidentes = pd.read_excel(archivo_datos, engine="openpyxl")
             elif detalle_archivo["Tipo de archivo"] == "text/csv":
                 df_incidentes = pd.read_csv(archivo_datos, sep=';', skiprows=3)
+=======
+                datos = pd.read_excel(archivo_datos, engine="openpyxl")
+            elif detalle_archivo["Tipo de archivo"] == "text/csv":
+                datos = pd.read_csv(archivo_datos, sep=';', skiprows=3)
+>>>>>>> e2257ca0d9d71bbe42890ae09dd74379d30903aa
             else:
                 st.error("Formato de archivo no soportado.")
                 return
 
+<<<<<<< HEAD
             if df_incidentes.empty:
                 st.warning("El archivo cargado está vacío.")
                 return
@@ -187,7 +197,19 @@ def gestion():
 
 
 
+=======
+            if datos.empty:
+                st.warning("El archivo cargado está vacío.")
+                return
+
+            st.dataframe(datos)
+>>>>>>> e2257ca0d9d71bbe42890ae09dd74379d30903aa
 
         except Exception as e:
             st.error(f"Error al procesar el archivo: {e}")
     
+<<<<<<< HEAD
+=======
+    # Eliminar los excluibles
+    df_incidentes = df_incidentes[~df_incidentes['Causa'].str.startswith('Exc_')]
+>>>>>>> e2257ca0d9d71bbe42890ae09dd74379d30903aa
