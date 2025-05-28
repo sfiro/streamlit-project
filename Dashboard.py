@@ -68,7 +68,7 @@ def dashboard(consignaciones,incidentes,saidi):
     with colum2:
         st.metric( label=":phone: Incidentes Llamadas ",value=incidentesLlamadas.shape[0])
     with colum3:
-        st.metric(label=" :warning: Incidentes Totales ", value=consignaciones.shape[0])
+        st.metric(label=" :warning: Consignaciones ", value=consignaciones.shape[0])
     with colum4:
         st.metric(label=" :bar_chart: SAIDI ", value=saidi.shape[0])
 
@@ -96,7 +96,6 @@ def dashboard(consignaciones,incidentes,saidi):
     if consignaciones_hoy.empty:
         st.warning("No hay consignaciones para mostrar.")
     else:
-
         consignaciones_hoy['SubstationName'] = consignaciones_hoy['SubstationName'].replace('ISLAS', 'TRANSMISION ANALISIS')
         description_counts = consignaciones_hoy.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
         description_counts = description_counts.sort_values(by='count', ascending=False)
@@ -116,7 +115,7 @@ def dashboard(consignaciones,incidentes,saidi):
                 st.plotly_chart(gauge_chart(row['count'], row['SubstationName'],min_val=0, max_val=total), use_container_width=True)
 
     
-    consignacionesRadar(consignaciones_hoy, titulo="Consignaciones por Subestación")
+    consignacionesRadar(consignaciones_hoy, titulo="Consignaciones")
 
 #--------------  Total de clientes afectados ------------------------------------
     usuarios_afectados = incidentes.groupby('SubregionName')['NumCustomers'].sum().reset_index()
@@ -132,7 +131,7 @@ def dashboard(consignaciones,incidentes,saidi):
             #st.metric(label=row['SubregionName'], value=row['count'])
             st.plotly_chart(gauge_chart(row['NumCustomers'], row['SubregionName'],min_val=0, max_val=total), use_container_width=True)
 
-    usuariosRadar(usuarios_afectados, titulo="Consignaciones por Subestación")
+    usuariosRadar(usuarios_afectados, titulo="Usuarios Afectados por Subregión")
 
 
 
@@ -259,7 +258,7 @@ def incidentesRadar(datos, titulo="Incidentes por Subregión"):
     categorias += [categorias[0]]
     valores += [valores[0]]
 
-    print(categorias, valores)
+    #print(categorias, valores)
 
     fig = go.Figure()
 
@@ -315,7 +314,7 @@ def consignacionesRadar(datos, titulo="Incidentes por Subregión"):
     categorias += [categorias[0]]
     valores += [valores[0]]
 
-    print(categorias, valores)
+    #print(categorias, valores)
 
     fig = go.Figure()
 
@@ -372,7 +371,7 @@ def usuariosRadar(datos, titulo="Incidentes por Subregión"):
     categorias += [categorias[0]]
     valores += [valores[0]]
 
-    print(categorias, valores)
+    #print(categorias, valores)
 
     fig = go.Figure()
 
