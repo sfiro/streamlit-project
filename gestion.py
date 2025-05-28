@@ -197,12 +197,12 @@ def gestion():
             # Imprimir los incidentes para Valle, solo el más antiguo por sector
             print(f'🚨 *Para **Valle** tenemos {total_valle} pendientes mtto, distribuidos por sector así:*\n')
             for i in lista_valle:
-                print(f'     - {i[0]}: {i[1]} (más antiguo del {i[2]} INC {i[3]} - {i[4]})\n')
-            print('\n')
+                print(f' - {i[0]}: {i[1]} (más antiguo del {i[2]} INC {i[3]} - {i[4]})')
+            print("\n")
             # Imprimir los incidentes para Tolima, solo el más antiguo por sector
             print(f'🚨 *Para **Tolima** tenemos {total_tolima} pendientes mtto, distribuidos por sector así:*\n')
             for i in lista_tolima:
-                print(f'     - {i[0]}: {i[1]} (más antiguo del {i[2]} INC {i[3]} - {i[4]})\n')
+                print(f' - {i[0]}: {i[1]} (más antiguo del {i[2]} INC {i[3]} - {i[4]})')
 
         # Obtener el valor del output generado
         inc = output_inc.getvalue()
@@ -277,14 +277,14 @@ def gestion():
 
             # Imprimir los incidentes para Valle
             for i in lista_valle_tr:
-                print(f'     - {i[0]}: {i[1]} (más antiguo del {i[2]} INC {i[3]}) \n')
+                print(f'- {i[0]}: {i[1]} (más antiguo del {i[2]} INC {i[3]})')
 
             # Salto de línea para separar las zonas
             print('\n')
 
             # Imprimir los incidentes para Tolima
             for i in lista_tolima_tr:
-                print(f'     - {i[0]}: {i[1]} (más antiguo del {i[2]} INC {i[3]}) \n')
+                print(f'- {i[0]}: {i[1]} (más antiguo del {i[2]} INC {i[3]})')
 
         # Obtener el valor de la salida
         inc_tr = output_inc_tr.getvalue()
@@ -340,13 +340,15 @@ def gestion():
             print(f'🚨 *Incidentes pendientes BOL en el WFM a las {hora_actual} hrs.*\n')
             for key, value in lista_tolima_tr_wfm:
                 print(f'    {key}: {value}')
+            print('\n')
             print(f'    *Total Tolima: {sum(i[1] for i in lista_tolima_tr_wfm)}*')
             print('\n')
-
+            
             for key, value in lista_valle_tr_wfm:
                 print(f'    {key}: {value}')
+            print('\n')     
             print(f'    *Total Valle: {sum(i[1] for i in lista_valle_tr_wfm)}*')
-
+            print('\n')
             total_ot = sum(lista_ot.to_dict().values())
 
             print(f'*Total incidentes con corte a las {hora_actual} h del {fecha_actual}: {total_ot}*')
