@@ -119,11 +119,7 @@ def dashboard(consignaciones,incidentes,saidi):
                                             key=f"gauge_{row['SubstationName']}")
 
     
-<<<<<<< HEAD
-    consignacionesRadar(consignaciones_hoy, titulo="Consignaciones")
-=======
     consignacionesRadar(consignaciones_hoy, titulo="Consignaciones por zona")
->>>>>>> e2257ca0d9d71bbe42890ae09dd74379d30903aa
 
 #--------------  Total de clientes afectados ------------------------------------
     usuarios_afectados = incidentes.groupby('SubregionName')['NumCustomers'].sum().reset_index()
@@ -139,11 +135,7 @@ def dashboard(consignaciones,incidentes,saidi):
             #st.metric(label=row['SubregionName'], value=row['count'])
             st.plotly_chart(gauge_chart(row['NumCustomers'], row['SubregionName'],min_val=0, max_val=total), use_container_width=True)
 
-<<<<<<< HEAD
     usuariosRadar(usuarios_afectados, titulo="Usuarios Afectados por Subregión")
-=======
-    usuariosRadar(usuarios_afectados, titulo="Clientes afectados por Subregión")
->>>>>>> e2257ca0d9d71bbe42890ae09dd74379d30903aa
 
 
 

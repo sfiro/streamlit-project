@@ -135,10 +135,10 @@ def grafico_donut(datos, zona, key):
         hole=0.7,  # Crear el efecto de donut
     )
 
-    # Calcular la cantidad de consignaciones iniciadas
+     # Calcular la cantidad de consignaciones iniciadas
     if "Iniciadas" in estado_counts['EstadoConsignacion'].values:
-    # Existe el estado "Iniciadas"
-        consignaciones_iniciadas = estado_counts[estado_counts['EstadoConsignacion'] == 'Iniciadas'].iloc[0]
+        # Existe el estado "Iniciadas"
+        consignaciones_iniciadas = int(estado_counts[estado_counts['EstadoConsignacion'] == 'Iniciadas']['count'].iloc[0])
     else:
         consignaciones_iniciadas = 0
         
@@ -150,7 +150,7 @@ def grafico_donut(datos, zona, key):
         hoverinfo='label+percent',  # Mostrar información al pasar el cursor
         textposition='inside',
         textfont_size=14,
-        text=[f"{consignaciones_iniciadas['count']}"]
+        text=[f"{consignaciones_iniciadas}"]
     )
 
     # Configurar la posición de la leyenda fuera del gráfico
@@ -164,7 +164,7 @@ def grafico_donut(datos, zona, key):
         ),
         annotations=[
             dict(
-                text=f"<b>{consignaciones_iniciadas['count']}</b>",  # Texto en el centro del donut
+                text=f"<b>{consignaciones_iniciadas}</b>",  # Texto en el centro del donut
                 x=0.5,  # Posición horizontal (centro del gráfico)
                 y=0.5,  # Posición vertical (centro del gráfico)
                 font_size=60,  # Tamaño de la fuente
