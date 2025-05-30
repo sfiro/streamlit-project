@@ -52,7 +52,7 @@ alt.themes.enable("default")
 #######################  Carga de base de datos  ####################
 @st.cache_data(ttl=10) 
 def cargar_datos():
-    base_path = os.path.dirname(os.path.abspath(__file__))
+    #base_path = os.path.dirname(os.path.abspath(__file__))
     #print(base_path)
     base_path = "\\Users\\gestioncc\\OneDrive - CELSIA S.A E.S.P"
     consignaciones_path = os.path.join(base_path, 'BICC', 'Consignaciones.csv')

@@ -117,9 +117,11 @@ def dashboard(consignaciones,incidentes,saidi):
                                             max_val=total), 
                                             use_container_width=True,
                                             key=f"gauge_{row['SubstationName']}")
+                
+        consignacionesRadar(consignaciones_hoy, titulo="Consignaciones por zona")
 
     
-    consignacionesRadar(consignaciones_hoy, titulo="Consignaciones por zona")
+    
 
 #--------------  Total de clientes afectados ------------------------------------
     usuarios_afectados = incidentes.groupby('SubregionName')['NumCustomers'].sum().reset_index()

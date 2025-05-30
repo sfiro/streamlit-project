@@ -124,6 +124,31 @@ def incidentes(datos):
         fig_bar.update_layout(showlegend=False)
         st.plotly_chart(fig_bar)
 
+#--------------  Metricas de estados de incidentes y zonas  ------------------------------------
+    st.subheader('Dashboard de Estado de incidentes por zona')
+
+    #col1, col2, col3, col4 = st.columns(4)
+    EstadoInc_counts = datos.groupby('EstadoInc')['SubregionName'].count().reset_index(name='count')
+    EstadoInc_counts = EstadoInc_counts.sort_values(by='count', ascending=False)
+    #st.dataframe(EstadoInc_counts)
+
+    # Agrupa por SubregionName y EstadoInc, y cuenta la cantidad de incidentes en cada combinación
+    estado_por_subregion = datos.groupby(['SubregionName', 'EstadoInc']).size().reset_index(name='count')
+
+    # Opcional: mostrar la tabla en Streamlit
+    #st.dataframe(estado_por_subregion)
+
+    # Obtén las subregiones únicas que quieres graficar
+    subregiones = estado_por_subregion['SubregionName'].unique()
+    num_columns = len(subregiones)
+    columns = st.columns(num_columns)  # Crear tantas columnas como subregiones existan
+
+    # graficos de pie
+    for i, subregion in enumerate(subregiones):
+        with columns[i]:
+            st.subheader(subregion)
+            grafico_torta(datos, subregion, key=f"Estado_Incidentes_{i}")
+ 
 #--------------  Metricas de total de incidentes y zonas  ------------------------------------
     st.subheader('Dashboard de incidentes por zona')
 
@@ -140,14 +165,14 @@ def incidentes(datos):
     for i, row in description_counts.iterrows():
         with columns[i]:
             st.metric(label=row['SubregionName'], value=row['count'])
-            grafico_torta(datos,row['SubregionName'])
+            grafico_torta(datos,row['SubregionName'], key=f"grafico_torta_{i}")
             st.plotly_chart(gauge_chart(row['count'], row['SubregionName'],min_val=0, max_val=total), use_container_width=True)
 
      # graficos de donut
     for i, row in description_counts.iterrows():
         with columns[i]:
             st.metric(label=row['SubregionName'], value=row['count'])
-            grafico_donut(datos,row['SubregionName'])
+            grafico_donut(datos,row['SubregionName'], key=f"grafico_donut_{i}")
 
     
 ###------Cantidad de clientes afectados -------
@@ -274,7 +299,7 @@ def incidentes(datos):
 
 
 
-def grafico_torta(datos,zona):
+def grafico_torta(datos,zona, key):
     # Filtrar los datos para "Tolima Norte"
     data = datos[datos['SubregionName'] == zona]
 
@@ -303,10 +328,10 @@ def grafico_torta(datos,zona):
         )
     )
     # Mostrar el gráfico en Streamlit
-    st.plotly_chart(fig_pie)
+    st.plotly_chart(fig_pie, key=key)
     
 
-def grafico_donut(datos, zona):
+def grafico_donut(datos, zona, key):
     # Filtrar los datos para la zona especificada
     zona_data = datos[datos['SubregionName'] == zona]
 
@@ -366,7 +391,7 @@ def grafico_donut(datos, zona):
     )
 
     # Mostrar el gráfico en Streamlit
-    st.plotly_chart(fig_donut)
+    st.plotly_chart(fig_donut, key=key)
 
 
 
