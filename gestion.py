@@ -314,7 +314,7 @@ def gestion():
         
         
         
-        df_bol = pd.read_excel('C:\\Users\\gestioncc\\Downloads\\bol.xlsx')
+        df_bol = pd.read_excel('C:\\Users\\gestioncc\\Documents\\proyecto_streamlit\\streamlit-project\\datos\\bol.xlsx')
         df_bol.rename(columns={'BOL': 'RECURSO'}, inplace=True)
         df_bol['sector'] = df_bol['Mercado'] + ' ' + df_bol['Sector']
         df_bol['sector'] = df_bol['sector'].str.title()
