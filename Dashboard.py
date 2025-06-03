@@ -30,17 +30,17 @@ def dashboard(consignaciones,incidentes,saidi):
     utils.local_css('estilo.css')
     
     # ------------ Título -----------------
-    col1, col2 = st.columns([1,3])
-    with col1:
-        # # Cargar la animación Lottie
-        lottie_url ="https://lottie.host/ee49ee8b-a13d-40bc-aade-3cde94a58a28/kOexocr7It.json"
-        lottie_json = load_lottie_url(lottie_url)
-        st.markdown("<div style='display: flex; justify-content: flex-start;'>", unsafe_allow_html=True)
-        st.lottie(lottie_json, height=200, key="consigna")
-        st.markdown("</div>", unsafe_allow_html=True)
-    with col2:
-        st.title('')
-        st.markdown("<div class='centered-title'><h1>Dashboard</h1></div>", unsafe_allow_html=True)
+    #col1, col2 = st.columns([1,3])
+    #with col1:
+    #    # # Cargar la animación Lottie
+    #    lottie_url ="https://lottie.host/ee49ee8b-a13d-40bc-aade-3cde94a58a28/kOexocr7It.json"
+    #    lottie_json = load_lottie_url(lottie_url)
+    #    st.markdown("<div style='display: flex; justify-content: flex-start;'>", unsafe_allow_html=True)
+    #    st.lottie(lottie_json, height=200, key="consigna")
+    #    st.markdown("</div>", unsafe_allow_html=True)
+    #with col2:
+    #    st.title('')
+    #    st.markdown("<div class='centered-title'><h1>Dashboard</h1></div>", unsafe_allow_html=True)
 
     # ------------ Resumen de datos -----------------
     # colum1, colum2, colum3 = st.columns(3)
@@ -65,6 +65,95 @@ def dashboard(consignaciones,incidentes,saidi):
     colum1, colum2, colum3, colum4 = st.columns(4)
     with colum1:
         st.metric( label=":books: Incidentes SCADA ",value=incidentesScada.shape[0])
+
+        num_subregiones = incidentesScada['SubregionName'].nunique()
+        if num_subregiones > 2:
+            if  not incidentesScada.empty:
+                incidentesRadar(incidentesScada, titulo="Incidentes por Scada")
+        else:
+            description_counts = incidentesScada.groupby('SubregionName')['SubregionName'].count().reset_index(name='count')
+            description_counts = description_counts.sort_values(by='count', ascending=False)
+
+            fig_donut = px.pie(
+                description_counts,
+                values='count',
+                names='SubregionName',
+                hole=0.5,  # Crear el efecto de donut
+                color='SubregionName',
+                color_discrete_map=color_map
+            )
+
+            # Configurar el gráfico para mostrar valores absolutos
+            fig_donut.update_traces(
+                textinfo='value',  # Mostrar valores absolutos en lugar de porcentajes
+                hoverinfo='label+value',  # Mostrar etiqueta y valor al pasar el cursor
+                textposition='inside',  # Posición del texto dentro de las secciones
+                textfont_size=30
+            )
+            # Configurar la posición de la leyenda fuera del gráfico
+            fig_donut.update_layout(
+                width=100,
+                height=400,
+                title=dict(
+                    text="Incidentes SCADA",  # Cambia el texto por el título que desees
+                    font=dict(size=30, color='#D5752D'),
+                    x=0.5,  # Centrado
+                    xanchor='center'
+                ),
+                legend=dict(
+                    orientation="h",  # Horizontal
+                    yanchor="bottom",  # Anclar en la parte inferior
+                    y=-0.2,  # Posición vertical (debajo del gráfico)
+                    xanchor="center",  # Centrar horizontalmente
+                    x=0.5,  # Posición horizontal (centro)
+                    font=dict(
+                        size=18           # Tamaño de fuente de la leyenda
+                    )
+                ),
+            )
+            # Mostrar el gráfico en Streamlit
+            st.plotly_chart(fig_donut)
+
+    with colum2:
+        st.metric( label=":phone: Incidentes Llamadas ",value=incidentesLlamadas.shape[0])
+        if not incidentesLlamadas.empty:
+            incidentesRadar(incidentesLlamadas, titulo="Incidentes llamadas")
+    with colum3:
+        st.metric(label=" :warning: Consignaciones ", value=consignaciones.shape[0])
+
+        if 'StartDateTime' in consignaciones.columns:
+            consignaciones['StartDateTime'] = pd.to_datetime(consignaciones['StartDateTime'])
+            # Filtrar consignaciones cuyo StartDateTime es hoy (fecha del sistema)
+            hoy = pd.Timestamp.now().date()
+            consignaciones_hoy = consignaciones[consignaciones['StartDateTime'].dt.date == hoy]
+
+        if not consignaciones_hoy.empty:
+            consignacionesRadar(consignaciones_hoy, titulo="Consignaciones por zona")
+
+    with colum4:
+        st.metric(label=" :bar_chart: SAIDI ", value=saidi.shape[0])
+        usuarios_afectados = incidentes.groupby('SubregionName')['NumCustomers'].sum().reset_index()
+        
+        if not usuarios_afectados.empty:
+            usuariosRadar(usuarios_afectados, titulo="Usuarios Afectados por Subregión")
+
+
+    if  not incidentesScada.empty:
+        incidentesGrafico(incidentesScada, "Incidentes SCADA")
+        incidentesRadar(incidentesScada, titulo="Incidentes por Scada")
+
+    if not incidentesLlamadas.empty:
+        incidentesGrafico(incidentesLlamadas, "Incidentes Llamadas")
+        incidentesRadar(incidentesLlamadas, titulo="Incidentes llamadas")
+
+
+
+
+#----------------Metricas y graficos -------------------------
+
+    colum1, colum2, colum3, colum4 = st.columns(4)
+    with colum1:
+        st.metric( label=":books: Incidentes SCADA ",value=incidentesScada.shape[0])
     with colum2:
         st.metric( label=":phone: Incidentes Llamadas ",value=incidentesLlamadas.shape[0])
     with colum3:
@@ -72,13 +161,13 @@ def dashboard(consignaciones,incidentes,saidi):
     with colum4:
         st.metric(label=" :bar_chart: SAIDI ", value=saidi.shape[0])
 
-    incidentesGrafico(incidentesScada, "Incidentes SCADA")
+    if  not incidentesScada.empty:
+        incidentesGrafico(incidentesScada, "Incidentes SCADA")
+        incidentesRadar(incidentesScada, titulo="Incidentes por Scada")
 
-    incidentesRadar(incidentesScada, titulo="Incidentes por Scada")
-
-    incidentesGrafico(incidentesLlamadas, "Incidentes Llamadas")
-
-    incidentesRadar(incidentesLlamadas, titulo="Incidentes llamadas")
+    if not incidentesLlamadas.empty:
+        incidentesGrafico(incidentesLlamadas, "Incidentes Llamadas")
+        incidentesRadar(incidentesLlamadas, titulo="Incidentes llamadas")
     
     # ------------ Gráficos consignaciones -----------------
     #st.title('Consignaciones')
@@ -277,11 +366,13 @@ def incidentesRadar(datos, titulo="Incidentes por Subregión"):
         line=dict(width=3)
     ))
     if max(valores) < 20:  # Solo si el valor máximo es mayor a 10
-        dtick=1,  # Ticks enteros
-    else:  # Si el valor máximo es menor o igual a 10
-        dtick=int(max(valores)/10)  # <-- Solo ticks enteros
+        dtick=1,  # Ticks entero
+    else:
+        dtick=int(max(valores)/5)  # <-- Solo ticks enteros
 
     fig.update_layout(
+        width=300,
+        height=400,
         polar=dict(
             bgcolor='rgba(0,0,0,0)',
             radialaxis=dict(
@@ -329,15 +420,17 @@ def consignacionesRadar(datos, titulo="Incidentes por Subregión"):
         theta=categorias,
         fill='toself',
         name=titulo,
-        marker=dict(color='#13A2E1'),
+        marker=dict(color="#EE8D0E"),
         line=dict(width=3)
     ))
     if max(valores) < 20:  # Solo si el valor máximo es mayor a 10
-        dtick=1,  # Ticks enteros
-    else:  # Si el valor máximo es menor o igual a 10
-        dtick=int(max(valores)/10)  # <-- Solo ticks enteros
+        dtick=1,  # Ticks entero
+    else:
+        dtick=int(max(valores)/5)  # <-- Solo ticks enteros
 
     fig.update_layout(
+        width=300,
+        height=400,
         polar=dict(
             bgcolor='rgba(0,0,0,0)',
             radialaxis=dict(
@@ -347,7 +440,8 @@ def consignacionesRadar(datos, titulo="Incidentes por Subregión"):
                 dtick=dtick,  # Ajuste de los ticks
             ),
             angularaxis=dict(
-                tickfont=dict(size=14)
+                tickfont=dict(size=18),
+                rotation=0
             )
         ),
         plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de la gráfica transparente
@@ -386,15 +480,17 @@ def usuariosRadar(datos, titulo="Incidentes por Subregión"):
         theta=categorias,
         fill='toself',
         name=titulo,
-        marker=dict(color='#13A2E1'),
+        marker=dict(color="#36E713"),
         line=dict(width=3)
     ))
     if max(valores) < 20:  # Solo si el valor máximo es mayor a 10
-        dtick=1,  # Ticks enteros
-    else:  # Si el valor máximo es menor o igual a 10
-        dtick=int(max(valores)/10)  # <-- Solo ticks enteros
+        dtick=1,  # Ticks entero
+    else:
+        dtick=int(max(valores)/5)  # <-- Solo ticks enteros
 
     fig.update_layout(
+        width=300,
+        height=400,
         polar=dict(
             bgcolor='rgba(0,0,0,0)',
             radialaxis=dict(
@@ -412,7 +508,7 @@ def usuariosRadar(datos, titulo="Incidentes por Subregión"):
         showlegend=False,
         title=dict(
             text=titulo,
-            font=dict(size=30, color='#D5752D'),
+            font=dict(size=30, color="#D5752D"),
             x=0.5,  # <-- Centra el título
             xanchor='center'
         )
