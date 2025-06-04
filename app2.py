@@ -9,6 +9,7 @@ from resumenApp2 import resumen
 from entrega import entrega
 from Dashboard import dashboard
 from gestion import gestion
+from mapa import mapas
 import os
 import time
 
@@ -54,13 +55,16 @@ alt.themes.enable("default")
 def cargar_datos():
     #base_path = os.path.dirname(os.path.abspath(__file__))
     #print(base_path)
-    base_path = "\\Users\\gestioncc\\OneDrive - CELSIA S.A E.S.P"
+    #base_path = "\\Users\\gestioncc\\OneDrive - CELSIA S.A E.S.P"
+    base_path = "\\Users\\accontrol\\OneDrive - CELSIA S.A E.S.P"
     consignaciones_path = os.path.join(base_path, 'BICC', 'Consignaciones.csv')
     incidentes_path = os.path.join(base_path,'BICC', 'IncidentesActual.csv')
     saidi_path = os.path.join(base_path, 'BICC', 'SAIDIPendientes.csv')
     #consignaciones_path = os.path.join(base_path,'datos', 'BICC', 'Consignaciones.csv')
     #incidentes_path = os.path.join(base_path,'datos','BICC', 'IncidentesActual.csv')
     #saidi_path = os.path.join(base_path,'datos', 'BICC', 'SAIDIPendientes.csv')
+
+  
 
     # Obtener la última fecha de modificación de los archivos
     consignaciones_last_modified = os.path.getmtime(consignaciones_path)
@@ -105,7 +109,7 @@ def main():
         logo_path = os.path.join(base_path, 'logo', 'logoCelsia.png')
    
         st.image(logo_path, width=150)  # Cambia la ruta a tu imagen
-        opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Resumen","Consignaciones","Incidentes", "Saidi", "Entrega turno","Gestion","IA"])
+        opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Resumen","Consignaciones","Incidentes", "Saidi", "Entrega turno","Gestion","IA","Mapa"])
 
         st.markdown("---")  # Línea divisoria
         st.write("Última actualización:")
@@ -135,6 +139,9 @@ def main():
     
     if opcion == "IA":
         pass
+
+    if opcion == "Mapa":
+        mapas()
         #gemini.chat()
     
 
