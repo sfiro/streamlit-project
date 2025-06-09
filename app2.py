@@ -141,7 +141,7 @@ def main():
         pass
 
     if opcion == "Mapa":
-        mapas()
+        mapas(incidentes_datos)
         #gemini.chat()
     
 
