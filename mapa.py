@@ -23,7 +23,9 @@ def mapas(datos):
     # Cargar el GeoJSON en un GeoDataFrame
     #gdf = gpd.read_file(url)
 
-    colombia_map = gpd.read_file("\\Users\\accontrol\\Documents\\streamlit\\streamlit-project\\datos\\municipios_GeoJSON.geojson\\Colombia.geo.json")
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    geojson_path = os.path.join(base_path, "datos", "municipios_GeoJSON.geojson", "Colombia.geo.json")
+    colombia_map = gpd.read_file(geojson_path)
 
     # Filtrar solo Valle del Cauca y Tolima
     departments = ["VALLE DEL CAUCA", "TOLIMA"]
