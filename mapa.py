@@ -10,7 +10,7 @@ import os
 # Título de la app
 
 def mapas(datos):
-    st.title("Mapa de Incidentes - Valle del Cauca")
+    #st.title("Mapa de Incidentes - Valle del Cauca")
 
     # Cargar el archivo GeoJSON (usa la URL raw de GitHub)
     #url = "https://raw.githubusercontent.com/finiterank/mapa-colombia-js/master/colombia-municipios.json"
@@ -52,7 +52,7 @@ def mapas(datos):
         Subestaciones['LATITUDE'] = pd.to_numeric(Subestaciones['LATITUDE'], errors='coerce')
         Subestaciones['LONGITUDE'] = pd.to_numeric(Subestaciones['LONGITUDE'], errors='coerce')
 
-    #st.dataframe(Subestaciones)
+    
 
     # --- Agregar LATITUDE y LONGITUDE a Inc_substation por coincidencia aproximada con ALIAS ---
     def match_lat_lon(substation_name, subestaciones_df):
@@ -83,28 +83,40 @@ def mapas(datos):
         crs="EPSG:4326"
     )
 
+    #st.dataframe(Inc_substation)
+
     # Graficar
     fig, ax = plt.subplots(figsize=(8, 10))
-    fig.patch.set_facecolor('black')
+    fig.patch.set_facecolor('#0E1117')   ##0E1117
     ax.set_facecolor('black')
 
     # Dibujar mapa base con fondo oscuro
-    colombia_filtered.plot(ax=ax, color='#222222', edgecolor="#F78400")
-
+    colombia_filtered.plot(ax=ax, color="#59595B", edgecolor="#D5752D")
+    #color= '#D5752D'
+    #    color='#59595B',
+    
     subestation_gdf.plot(
         ax=ax,
         markersize=Inc_substation['count']*10,  # ajusta esta escala si quieres
-        color='red',
+        color='#D5752D',
         alpha=0.7,
-        edgecolor='black'
+        edgecolor='#D5752D'
     )
 
     # Anotar nombres de las ciudades en blanco
-    for x, y, label in zip(subestation_gdf.geometry.x, subestation_gdf.geometry.y, Inc_substation['SubstationName']):
-        ax.text(x, y, label, color='white', fontsize=3, ha='right', va='bottom')
+    # for x, y, label in zip(subestation_gdf.geometry.x, subestation_gdf.geometry.y, Inc_substation['count']):
+    #     ax.text(x, y, label, color='white', fontsize=10, ha='right', va='bottom')
 
+    for x, y in zip(subestation_gdf.geometry.x, subestation_gdf.geometry.y):
+         ax.text(x, y, "", color='white', fontsize=10, ha='right', va='bottom')
     # Título y visualización
-    plt.title("Valle y Tolima", fontsize=14, color='white')
+    plt.title(
+        "Distribución incidentes Valle y Tolima",
+        fontsize=14,
+        color='#D5752D',
+        fontname='Helvetica',
+        fontweight='bold'
+    )
     plt.axis('off')
     st.pyplot(fig)
 
