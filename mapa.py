@@ -114,7 +114,7 @@ def mapas(datos):
         "Distribución incidentes Valle y Tolima",
         fontsize=14,
         color='#D5752D',
-        fontname='Helvetica',
+        fontname='Arial',
         fontweight='bold'
     )
     plt.axis('off')

@@ -109,7 +109,9 @@ def main():
         logo_path = os.path.join(base_path, 'logo', 'logoCelsia.png')
    
         st.image(logo_path, width=150)  # Cambia la ruta a tu imagen
-        opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Resumen","Consignaciones","Incidentes", "Saidi", "Entrega turno","Gestion","IA","Mapa"])
+        #opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Mapa","Resumen","Consignaciones","Incidentes", "Saidi", "Entrega turno","Gestion"])
+        opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Mapa","Consignaciones", "Saidi", "Entrega turno","Gestion"])
+
 
         st.markdown("---")  # Línea divisoria
         st.write("Última actualización:")
@@ -136,13 +138,10 @@ def main():
 
     if opcion == "Gestion":
         gestion()
-    
-    if opcion == "IA":
-        pass
 
     if opcion == "Mapa":
         mapas(incidentes_datos)
-        #gemini.chat()
+
     
 
   # Cargar datos de ejemplo

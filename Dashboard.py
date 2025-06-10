@@ -138,95 +138,95 @@ def dashboard(consignaciones,incidentes,saidi):
             usuariosRadar(usuarios_afectados, titulo="Usuarios Afectados por Subregión")
 
 
-    if  not incidentesScada.empty:
-        incidentesGrafico(incidentesScada, "Incidentes SCADA")
-        incidentesRadar(incidentesScada, titulo="Incidentes por Scada")
+    # if  not incidentesScada.empty:
+    #     incidentesGrafico(incidentesScada, "Incidentes SCADA")
+    #     incidentesRadar(incidentesScada, titulo="Incidentes por Scada")
 
-    if not incidentesLlamadas.empty:
-        incidentesGrafico(incidentesLlamadas, "Incidentes Llamadas")
-        incidentesRadar(incidentesLlamadas, titulo="Incidentes llamadas")
+    # if not incidentesLlamadas.empty:
+    #     incidentesGrafico(incidentesLlamadas, "Incidentes Llamadas")
+    #     incidentesRadar(incidentesLlamadas, titulo="Incidentes llamadas")
 
 
 
 
 #----------------Metricas y graficos -------------------------
 
-    colum1, colum2, colum3, colum4 = st.columns(4)
-    with colum1:
-        st.metric( label=":books: Incidentes SCADA ",value=incidentesScada.shape[0])
-    with colum2:
-        st.metric( label=":phone: Incidentes Llamadas ",value=incidentesLlamadas.shape[0])
-    with colum3:
-        st.metric(label=" :warning: Consignaciones ", value=consignaciones.shape[0])
-    with colum4:
-        st.metric(label=" :bar_chart: SAIDI ", value=saidi.shape[0])
+    # colum1, colum2, colum3, colum4 = st.columns(4)
+    # with colum1:
+    #     st.metric( label=":books: Incidentes SCADA ",value=incidentesScada.shape[0])
+    # with colum2:
+    #     st.metric( label=":phone: Incidentes Llamadas ",value=incidentesLlamadas.shape[0])
+    # with colum3:
+    #     st.metric(label=" :warning: Consignaciones ", value=consignaciones.shape[0])
+    # with colum4:
+    #     st.metric(label=" :bar_chart: SAIDI ", value=saidi.shape[0])
 
-    if  not incidentesScada.empty:
-        incidentesGrafico(incidentesScada, "Incidentes SCADA")
-        incidentesRadar(incidentesScada, titulo="Incidentes por Scada")
+    # if  not incidentesScada.empty:
+    #     incidentesGrafico(incidentesScada, "Incidentes SCADA")
+    #     incidentesRadar(incidentesScada, titulo="Incidentes por Scada")
 
-    if not incidentesLlamadas.empty:
-        incidentesGrafico(incidentesLlamadas, "Incidentes Llamadas")
-        incidentesRadar(incidentesLlamadas, titulo="Incidentes llamadas")
+    # if not incidentesLlamadas.empty:
+    #     incidentesGrafico(incidentesLlamadas, "Incidentes Llamadas")
+    #     incidentesRadar(incidentesLlamadas, titulo="Incidentes llamadas")
     
     # ------------ Gráficos consignaciones -----------------
     #st.title('Consignaciones')
 
     # Seleccion de consignaciones por fecha dia actual 
 
-    if 'StartDateTime' in consignaciones.columns:
-        consignaciones['StartDateTime'] = pd.to_datetime(consignaciones['StartDateTime'])
-        # Filtrar consignaciones cuyo StartDateTime es hoy (fecha del sistema)
-        hoy = pd.Timestamp.now().date()
-        consignaciones_hoy = consignaciones[consignaciones['StartDateTime'].dt.date == hoy]
+#     if 'StartDateTime' in consignaciones.columns:
+#         consignaciones['StartDateTime'] = pd.to_datetime(consignaciones['StartDateTime'])
+#         # Filtrar consignaciones cuyo StartDateTime es hoy (fecha del sistema)
+#         hoy = pd.Timestamp.now().date()
+#         consignaciones_hoy = consignaciones[consignaciones['StartDateTime'].dt.date == hoy]
     
-    #consignaciones_hoy = consignaciones   
+#     #consignaciones_hoy = consignaciones   
 
-    if consignaciones_hoy.empty:
-        st.warning("No hay consignaciones para mostrar.")
-    else:
-        consignaciones_hoy['SubstationName'] = consignaciones_hoy['SubstationName'].replace('ISLAS', 'TRANSMISION ANALISIS')
-        description_counts = consignaciones_hoy.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
-        description_counts = description_counts.sort_values(by='count', ascending=False)
+#     if consignaciones_hoy.empty:
+#         st.warning("No hay consignaciones para mostrar.")
+#     else:
+#         consignaciones_hoy['SubstationName'] = consignaciones_hoy['SubstationName'].replace('ISLAS', 'TRANSMISION ANALISIS')
+#         description_counts = consignaciones_hoy.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
+#         description_counts = description_counts.sort_values(by='count', ascending=False)
 
         
-        total = description_counts['count'].sum()
-        #st.metric(label="Total consignaciones", value=total)
-        st.title('Consignaciones'+ f" ({total})")
-        num_columns = len(description_counts)  # Número de columnas necesarias
-        columns = st.columns(num_columns)  # Crear tantas columnas como datos existan
+#         total = description_counts['count'].sum()
+#         #st.metric(label="Total consignaciones", value=total)
+#         st.title('Consignaciones'+ f" ({total})")
+#         num_columns = len(description_counts)  # Número de columnas necesarias
+#         columns = st.columns(num_columns)  # Crear tantas columnas como datos existan
 
-        # Nuevo subheader para gráficos de donut
-        for i, row in description_counts.iterrows():
-            with columns[i]:
-                #st.metric(label=row['SubstationName'], value=row['count'])
-                #grafico_donut(consignaciones, row['SubstationName'])
-                st.plotly_chart(gauge_chart(row['count'], row['SubstationName'],
-                                            min_val=0, 
-                                            max_val=total), 
-                                            use_container_width=True,
-                                            key=f"gauge_{row['SubstationName']}")
+#         # Nuevo subheader para gráficos de donut
+#         for i, row in description_counts.iterrows():
+#             with columns[i]:
+#                 #st.metric(label=row['SubstationName'], value=row['count'])
+#                 #grafico_donut(consignaciones, row['SubstationName'])
+#                 st.plotly_chart(gauge_chart(row['count'], row['SubstationName'],
+#                                             min_val=0, 
+#                                             max_val=total), 
+#                                             use_container_width=True,
+#                                             key=f"gauge_{row['SubstationName']}")
                 
-        consignacionesRadar(consignaciones_hoy, titulo="Consignaciones por zona")
+#         consignacionesRadar(consignaciones_hoy, titulo="Consignaciones por zona")
 
     
     
 
-#--------------  Total de clientes afectados ------------------------------------
-    usuarios_afectados = incidentes.groupby('SubregionName')['NumCustomers'].sum().reset_index()
-    #st.dataframe(usuarios_afectados)
-    num_columns = len(usuarios_afectados)  # Número de columnas necesarias
-    total = usuarios_afectados['NumCustomers'].sum()
-    #st.metric(label="Total clientes afectados", value=total)
-    st.title('Clientes Afectados'+ f" ({total})")
-    columns = st.columns(num_columns)  # Crear tantas columnas como datos existan
-     # graficos de donut
-    for i, row in usuarios_afectados.iterrows():
-        with columns[i]:
-            #st.metric(label=row['SubregionName'], value=row['count'])
-            st.plotly_chart(gauge_chart(row['NumCustomers'], row['SubregionName'],min_val=0, max_val=total), use_container_width=True)
+# #--------------  Total de clientes afectados ------------------------------------
+#     usuarios_afectados = incidentes.groupby('SubregionName')['NumCustomers'].sum().reset_index()
+#     #st.dataframe(usuarios_afectados)
+#     num_columns = len(usuarios_afectados)  # Número de columnas necesarias
+#     total = usuarios_afectados['NumCustomers'].sum()
+#     #st.metric(label="Total clientes afectados", value=total)
+#     st.title('Clientes Afectados'+ f" ({total})")
+#     columns = st.columns(num_columns)  # Crear tantas columnas como datos existan
+#      # graficos de donut
+#     for i, row in usuarios_afectados.iterrows():
+#         with columns[i]:
+#             #st.metric(label=row['SubregionName'], value=row['count'])
+#             st.plotly_chart(gauge_chart(row['NumCustomers'], row['SubregionName'],min_val=0, max_val=total), use_container_width=True)
 
-    usuariosRadar(usuarios_afectados, titulo="Usuarios Afectados por Subregión")
+#     usuariosRadar(usuarios_afectados, titulo="Usuarios Afectados por Subregión")
 
 
 
