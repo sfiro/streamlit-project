@@ -53,20 +53,20 @@ def mapas(datos):
         Subestaciones['LATITUDE'] = pd.to_numeric(Subestaciones['LATITUDE'], errors='coerce')
         Subestaciones['LONGITUDE'] = pd.to_numeric(Subestaciones['LONGITUDE'], errors='coerce')
 
-    
+    #st.dataframe(Subestaciones)
 
-    # --- Agregar LATITUDE y LONGITUDE a Inc_substation por coincidencia aproximada con ALIAS ---
+    
+    # --- Agregar LATITUDE y LONGITUDE a Inc_substation por coincidencia exacta con ALIAS ---
     def match_lat_lon(substation_name, subestaciones_df):
-        # Tomar las primeras 2 palabras del nombre de la subestación para el match
-        key = str(substation_name).split()[:2]
-        key = ' '.join(key).lower()
+        # Coincidencia exacta (ignorando mayúsculas/minúsculas y espacios)
+        key = str(substation_name).strip().lower()
         for _, row in subestaciones_df.iterrows():
-            alias = str(row['ALIAS']).lower()
-            if alias.startswith(key):
+            alias = str(row['SUBESTACION']).strip().lower()
+            if alias == key:
                 return row['LATITUDE'], row['LONGITUDE']
         return None, None
 
-    if 'SubstationName' in Inc_substation.columns and 'ALIAS' in Subestaciones.columns:
+    if 'SubstationName' in Inc_substation.columns and 'SUBESTACION' in Subestaciones.columns:
         latitudes = []
         longitudes = []
         for name in Inc_substation['SubstationName']:
@@ -92,25 +92,42 @@ def mapas(datos):
     ax.set_facecolor('black')
 
     # Dibujar mapa base con fondo oscuro
-    colombia_filtered.plot(ax=ax, color="#59595B", edgecolor="#D5752D")
+    colombia_filtered.plot(ax=ax, color="#707072", edgecolor="#D5752D")
     #color= '#D5752D'
     #    color='#59595B',
     
-    subestation_gdf.plot(
-        ax=ax,
-        markersize=Inc_substation['count']*10,  # ajusta esta escala si quieres
-        color='#D5752D',
-        alpha=0.7,
-        edgecolor='#D5752D'
-    )
+    # Ordenar por 'count' descendente y tomar los tres primeros
+    top3 = Inc_substation.sort_values(by='count', ascending=False).head(3)
 
-    # Anotar nombres de las ciudades en blanco
-    # for x, y, label in zip(subestation_gdf.geometry.x, subestation_gdf.geometry.y, Inc_substation['count']):
-    #     ax.text(x, y, label, color='white', fontsize=10, ha='right', va='bottom')
+    st.dataframe(top3)
+   
+    collection = subestation_gdf.plot(
+        ax=ax,
+        markersize=Inc_substation['count']*10,   # Tamaño proporcional
+        column='count',                          # Color según la columna 'count'
+        cmap='OrRd',                             # Puedes usar otros colormaps como 'viridis', 'plasma', etc.
+        alpha=0.7,
+        edgecolor='#D5752D',
+        legend=True                              # Muestra la leyenda de colores
+    )
+    # Hacer la barra de color más pequeña
+    if hasattr(collection, 'get_figure'):
+        cbar = collection.get_figure().axes[1]  # El colorbar es el último eje
+        cbar.set_position([0.75, 0.33, 0.03, 0.3])  # [left, bottom, width, height] (ajusta a tu gusto)
+
 
     for x, y in zip(subestation_gdf.geometry.x, subestation_gdf.geometry.y):
          ax.text(x, y, "", color='white', fontsize=10, ha='right', va='bottom')
     # Título y visualización
+
+    # Anotar solo los tres con más datos
+    for _, row in top3.iterrows():
+        x = row['LONGITUDE']
+        y = row['LATITUDE']
+        label = row['SubstationName']
+        ax.text(x, y, label, color='white', fontsize=10, ha='right', va='bottom', fontweight='bold')
+
+
     plt.title(
         "Distribución incidentes Valle y Tolima",
         fontsize=14,
