@@ -17,14 +17,13 @@ def mapas(datos):
 
     #st.dataframe(datos)
     Inc_substation = datos.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
-    #EstadoInc_counts = EstadoInc_counts.sort_values(by='count', ascending=False)
     #st.dataframe(Inc_substation)
 
     # Cargar el GeoJSON en un GeoDataFrame
     #gdf = gpd.read_file(url)
 
     base_path = os.path.dirname(os.path.abspath(__file__))
-    geojson_path = os.path.join(base_path, "datos", "municipios_GeoJSON.geojson", "Colombia.geo.json")
+    geojson_path = os.path.join(base_path, "datos", "Mapa", "Colombia.geo.json")
     colombia_map = gpd.read_file(geojson_path)
 
     # Filtrar solo Valle del Cauca y Tolima
