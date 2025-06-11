@@ -57,85 +57,54 @@ def dashboard(consignaciones,incidentes,saidi):
     # ------------ Gráficos Incidentes -----------------
     #st.title('Incidentes')
 
-    
+    incidentes['SubregionName'] = incidentes['SubregionName'].replace('VALLE NORTE', 'Vn')
+    incidentes['SubregionName'] = incidentes['SubregionName'].replace('VALLE SUR', 'Vs')
+    incidentes['SubregionName'] = incidentes['SubregionName'].replace('TOLIMA NORTE', 'Tn')
+    incidentes['SubregionName'] = incidentes['SubregionName'].replace('TOLIMA SUR', 'Ts')
 
     incidentesScada =  incidentes[incidentes['Origen'] == 'SCADACreated']
     incidentesLlamadas =  incidentes[incidentes['Origen'] == 'PhoneCallCreated']
 
     colum1, colum2, colum3, colum4 = st.columns(4)
     with colum1:
-        st.metric( label=":books: Incidentes SCADA ",value=incidentesScada.shape[0])
-
-        num_subregiones = incidentesScada['SubregionName'].nunique()
-        if num_subregiones > 2:
-            if  not incidentesScada.empty:
-                incidentesRadar(incidentesScada, titulo="Incidentes por Scada")
-        else:
-            description_counts = incidentesScada.groupby('SubregionName')['SubregionName'].count().reset_index(name='count')
-            description_counts = description_counts.sort_values(by='count', ascending=False)
-
-            fig_donut = px.pie(
-                description_counts,
-                values='count',
-                names='SubregionName',
-                hole=0.5,  # Crear el efecto de donut
-                color='SubregionName',
-                color_discrete_map=color_map
-            )
-
-            # Configurar el gráfico para mostrar valores absolutos
-            fig_donut.update_traces(
-                textinfo='value',  # Mostrar valores absolutos en lugar de porcentajes
-                hoverinfo='label+value',  # Mostrar etiqueta y valor al pasar el cursor
-                textposition='inside',  # Posición del texto dentro de las secciones
-                textfont_size=30
-            )
-            # Configurar la posición de la leyenda fuera del gráfico
-            fig_donut.update_layout(
-                width=100,
-                height=400,
-                title=dict(
-                    text="Incidentes SCADA",  # Cambia el texto por el título que desees
-                    font=dict(size=30, color='#D5752D'),
-                    x=0.5,  # Centrado
-                    xanchor='center'
-                ),
-                legend=dict(
-                    orientation="h",  # Horizontal
-                    yanchor="bottom",  # Anclar en la parte inferior
-                    y=-0.2,  # Posición vertical (debajo del gráfico)
-                    xanchor="center",  # Centrar horizontalmente
-                    x=0.5,  # Posición horizontal (centro)
-                    font=dict(
-                        size=18           # Tamaño de fuente de la leyenda
-                    )
-                ),
-            )
-            # Mostrar el gráfico en Streamlit
-            st.plotly_chart(fig_donut)
+        incidentes_subregion_llamadas = incidentesLlamadas.groupby('SubregionName')['SubregionName'].count().reset_index(name='count')
+        incidentes_subregion_llamadas = incidentes_subregion_llamadas.sort_values(by='count', ascending=False)
+        st.metric( label=":phone: Llamadas ",value=incidentesLlamadas.shape[0])
+        if not incidentesLlamadas.empty:
+            incidentesRadar(incidentes_subregion_llamadas, titulo="")
 
     with colum2:
-        st.metric( label=":phone: Incidentes Llamadas ",value=incidentesLlamadas.shape[0])
-        if not incidentesLlamadas.empty:
-            incidentesRadar(incidentesLlamadas, titulo="Incidentes llamadas")
+        st.metric( label=" :zap: SCADA ",value=incidentesScada.shape[0])
+
+        num_subregiones = incidentesScada['SubregionName'].nunique()
+        incidentes_subregion_scada = incidentesScada.groupby('SubregionName')['SubregionName'].count().reset_index(name='count')
+        incidentes_subregion_scada = incidentes_subregion_scada.sort_values(by='count', ascending=False)
+
+        if num_subregiones > 2:
+            if  not incidentesScada.empty:
+                incidentesRadar(incidentes_subregion_scada, titulo="")
+        else:
+            incidentesDonut(incidentes_subregion_scada, titulo="")  
+
     with colum3:
-        st.metric(label=" :warning: Consignaciones ", value=consignaciones.shape[0])
+        st.metric(label=" :books: Consignaciones ", value=consignaciones.shape[0])
+        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('ISLAS', 'Tr')
+        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('TRANSMISION ANALISIS', 'Tr')
+        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('TOLIMA NORTE', 'Tn')
+        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('TOLIMA SUR', 'Ts')
+        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('VALLE NORTE', 'Vn')
+        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('VALLE SUR', 'Vs')
 
-        if 'StartDateTime' in consignaciones.columns:
-            consignaciones['StartDateTime'] = pd.to_datetime(consignaciones['StartDateTime'])
-            # Filtrar consignaciones cuyo StartDateTime es hoy (fecha del sistema)
-            hoy = pd.Timestamp.now().date()
-            consignaciones_hoy = consignaciones[consignaciones['StartDateTime'].dt.date == hoy]
-
+        consignaciones_hoy = consignaciones
         if not consignaciones_hoy.empty:
-            consignacionesRadar(consignaciones_hoy, titulo="Consignaciones por zona")
+            consignacionesRadar(consignaciones_hoy, titulo="")
 
     with colum4:
-        st.metric(label=" :bar_chart: SAIDI ", value=saidi.shape[0])
+        st.metric(label=" :warning: SAIDI ", value=saidi.shape[0])
         usuarios_afectados = incidentes.groupby('SubregionName')['NumCustomers'].sum().reset_index()
         
         if not usuarios_afectados.empty:
-            usuariosRadar(usuarios_afectados, titulo="Usuarios Afectados por Subregión")
+            usuariosRadar(usuarios_afectados, titulo="Usuarios")
 
 
     # if  not incidentesScada.empty:
@@ -341,10 +310,49 @@ def gauge_chart(value, titulo="SAIDI", min_val=0, max_val=100):
     ))
     return fig
 
-def incidentesRadar(datos, titulo="Incidentes por Subregión"):
+def incidentesDonut(datos, titulo="Incidentes por Subregión"):
+    fig_donut = px.pie(
+        datos,
+        values='count',
+        names='SubregionName',
+        hole=0.5,  # Crear el efecto de donut
+        color='SubregionName',
+        color_discrete_map=color_map
+    )
+
+    # Configurar el gráfico para mostrar valores absolutos
+    fig_donut.update_traces(
+        textinfo='value',  # Mostrar valores absolutos en lugar de porcentajes
+        hoverinfo='label+value',  # Mostrar etiqueta y valor al pasar el cursor
+        textposition='inside',  # Posición del texto dentro de las secciones
+        textfont_size=30
+    )
+    # Configurar la posición de la leyenda fuera del gráfico
+    fig_donut.update_layout(
+        width=100,
+        height=400,
+        title=dict(
+            text="Incidentes SCADA",  # Cambia el texto por el título que desees
+            font=dict(size=30, color='#D5752D'),
+            x=0.5,  # Centrado
+            xanchor='center'
+        ),
+        legend=dict(
+            orientation="h",  # Horizontal
+            yanchor="bottom",  # Anclar en la parte inferior
+            y=-0.2,  # Posición vertical (debajo del gráfico)
+            xanchor="center",  # Centrar horizontalmente
+            x=0.5,  # Posición horizontal (centro)
+            font=dict(
+                size=18           # Tamaño de fuente de la leyenda
+            )
+        ),
+    )
+    # Mostrar el gráfico en Streamlit
+    st.plotly_chart(fig_donut)
+
+def incidentesRadar(inc, titulo="Incidentes por Subregión"):
     # Agrupa los datos por subregión y cuenta los incidentes
-    inc = datos.groupby('SubregionName')['SubregionName'].count().reset_index(name='count')
-    inc = inc.sort_values(by='count', ascending=False)
 
     # Prepara los datos para el radar
     categorias = inc['SubregionName'].tolist()
@@ -382,7 +390,8 @@ def incidentesRadar(datos, titulo="Incidentes por Subregión"):
                 dtick=dtick,  # Ajuste de los ticks
             ),
             angularaxis=dict(
-                tickfont=dict(size=14)
+                tickfont=dict(size=18),
+                tickangle=0
             )
         ),
         plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de la gráfica transparente
@@ -400,33 +409,72 @@ def incidentesRadar(datos, titulo="Incidentes por Subregión"):
 
 
 def consignacionesRadar(datos, titulo="Incidentes por Subregión"):
-    # Agrupa los datos por subregión y cuenta los incidentes
-    inc = datos.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
-    inc = inc.sort_values(by='count', ascending=False)
-
-    # Prepara los datos para el radar
-    categorias = inc['SubstationName'].tolist()
-    valores = inc['count'].tolist()
-    # Para cerrar el radar, repetimos el primer valor al final
-    categorias += [categorias[0]]
-    valores += [valores[0]]
-
-    #print(categorias, valores)
-
+    # Definir categorías base con todas las subestaciones posibles
+    categorias_base = sorted(datos['SubstationName'].unique().tolist())
     fig = go.Figure()
 
+    # --- Consignaciones del día actual ---
+    categorias = []
+    valores = []
+    if 'StartDateTime' in datos.columns:
+        datos['StartDateTime'] = pd.to_datetime(datos['StartDateTime'])
+        hoy = pd.Timestamp.now().date()
+        consignaciones_hoy = datos[datos['StartDateTime'].dt.date == hoy]
+        if not consignaciones_hoy.empty:
+            consignaciones_hoy = consignaciones_hoy.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
+            consignaciones_hoy = consignaciones_hoy.set_index('SubstationName').reindex(categorias_base, fill_value=0).reset_index()
+            categorias = consignaciones_hoy['SubstationName'].tolist()
+            valores = consignaciones_hoy['count'].tolist()
+        else:
+            categorias = categorias_base
+            valores = [0] * len(categorias_base)
+    else:
+        categorias = categorias_base
+        valores = [0] * len(categorias_base)
+
+    # Cerrar el radar
+    categorias_cierre = categorias + [categorias[0]]
+    valores_cierre = valores + [valores[0]]
+
+    # --- Consignaciones Iniciadas ---
+    consignaciones_en_ejecucion = datos[datos['EstadoConsignacion'] == 'Iniciadas']
+    if not consignaciones_en_ejecucion.empty:
+        iniciado = consignaciones_en_ejecucion.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
+        iniciado = iniciado.set_index('SubstationName').reindex(categorias[:-1], fill_value=0).reset_index()
+        categoriasIniciado = iniciado['SubstationName'].tolist()
+        valoresIniciado = iniciado['count'].tolist()
+    else:
+        categoriasIniciado = categorias.copy()
+        valoresIniciado = [0] * len(categorias)
+
+    categoriasIniciado_cierre = categoriasIniciado + [categoriasIniciado[0]]
+    valoresIniciado_cierre = valoresIniciado + [valoresIniciado[0]]
+
+    # --- Graficar ambas líneas ---
     fig.add_trace(go.Scatterpolar(
-        r=valores,
-        theta=categorias,
-        fill='toself',
-        name=titulo,
+        r=valores_cierre,
+        theta=categorias_cierre,
+        fill='none',
+        name="hoy",
         marker=dict(color="#EE8D0E"),
         line=dict(width=3)
     ))
-    if max(valores) < 20:  # Solo si el valor máximo es mayor a 10
-        dtick=1,  # Ticks entero
-    else:
-        dtick=int(max(valores)/5)  # <-- Solo ticks enteros
+    fig.add_trace(go.Scatterpolar(
+        r=valoresIniciado_cierre,
+        theta=categoriasIniciado_cierre,
+        fill='none',
+        name='Iniciadas',
+        marker=dict(color="#13A2E1"),
+        line=dict(width=3)
+    ))
+
+    max_radar = max(max(valores_cierre), max(valoresIniciado_cierre))
+    if max_radar == 0:
+        max_radar = 1  # Para evitar rango cero y que el radar sea visible
+    # Ajuste de los ticks
+    dtick = 1
+    if max_radar > 10:
+        dtick = int((max_radar)/5) 
 
     fig.update_layout(
         width=300,
@@ -435,22 +483,30 @@ def consignacionesRadar(datos, titulo="Incidentes por Subregión"):
             bgcolor='rgba(0,0,0,0)',
             radialaxis=dict(
                 visible=True,
-                range=[0, max(valores)],
+                range=[0, max_radar],
                 tickfont=dict(size=20),
-                dtick=dtick,  # Ajuste de los ticks
+                dtick=dtick,
             ),
             angularaxis=dict(
                 tickfont=dict(size=18),
                 rotation=0
             )
         ),
-        plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de la gráfica transparente
-        paper_bgcolor='rgba(0,0,0,0)',  # Fondo del "papel" transparente
-        showlegend=False,
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        showlegend=True,
+        legend=dict(
+            orientation="h",      # Horizontal
+            yanchor="bottom",     # Anclar en la parte inferior
+            y=-0.2,               # Debajo del gráfico
+            xanchor="center",     # Centrar horizontalmente
+            x=0.5,                # Posición horizontal (centro)
+            font=dict(size=16)
+        ),
         title=dict(
             text=titulo,
             font=dict(size=30, color='#D5752D'),
-            x=0.5,  # <-- Centra el título
+            x=0.5,
             xanchor='center'
         )
     )
@@ -500,7 +556,7 @@ def usuariosRadar(datos, titulo="Incidentes por Subregión"):
                 dtick=dtick,  # Ajuste de los ticks
             ),
             angularaxis=dict(
-                tickfont=dict(size=14)
+                tickfont=dict(size=18)
             )
         ),
         plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de la gráfica transparente

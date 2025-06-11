@@ -28,7 +28,7 @@ st.set_page_config(
     page_title="Dashboard centro de control",
     page_icon="🏂",
     layout="wide",
-    initial_sidebar_state="expanded")
+    initial_sidebar_state="collapsed")
 
 #alt.themes.enable("dark")
 alt.themes.enable("default")

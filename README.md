@@ -5,23 +5,23 @@ Este proyecto es una aplicación interactiva desarrollada con [Streamlit](https:
 ## Características
 
 - **Visualización de datos**:
-  - Gráficos de torta y barras para analizar consignaciones por zona.
+  - Gráficos de torta, barras, radar y donut para analizar consignaciones e incidentes por zona y subregión.
   - Métricas clave como el número total de consignaciones, incidentes y SAIDI.
   - Tablas interactivas para explorar los datos.
 
 - **Interfaz dinámica**:
-  - Barra lateral con opciones de navegación.
-  - Actualización automática de datos cada 60 segundos.
-  - Animaciones Lottie para mejorar la experiencia visual.
+  - Barra lateral con navegación por secciones.
+  - Actualización automática de datos.
+  - Animaciones Lottie para una mejor experiencia visual.
 
-- **Datos procesados**:
+- **Procesamiento de datos**:
   - Consignaciones agrupadas por subestaciones.
-  - Incidentes agrupados por subregiones.
-  - Métricas de SAIDI.
+  - Incidentes agrupados por subregiones y estados.
+  - Métricas y reportes de SAIDI.
 
 ## Requisitos previos
 
-Asegúrate de tener instalados los siguientes componentes:
+Asegúrate de tener instalado:
 
 - Python 3.8 o superior
 - [Streamlit](https://streamlit.io/)
@@ -31,6 +31,9 @@ Asegúrate de tener instalados los siguientes componentes:
   - `altair`
   - `requests`
   - `streamlit-lottie`
+  - `geopandas` (para mapas)
+  - `matplotlib` (para algunos gráficos)
+  - Cualquier otra que esté en `requirements.txt`
 
 ## Instalación
 
@@ -55,7 +58,7 @@ Asegúrate de tener instalados los siguientes componentes:
 
 1. Ejecuta la aplicación:
    ```bash
-   streamlit run Dashboard.py
+   streamlit run app2.py
    ```
 
 2. Abre tu navegador en la dirección que aparece en la terminal (por defecto, [http://localhost:8501](http://localhost:8501)).
@@ -63,9 +66,10 @@ Asegúrate de tener instalados los siguientes componentes:
 3. Navega por las diferentes secciones de la barra lateral:
    - **Resumen**: Métricas generales de consignaciones, incidentes y SAIDI.
    - **Consignaciones**: Visualización de consignaciones por zona.
-   - **Incidentes**: Análisis de incidentes por subregión.
+   - **Incidentes**: Análisis de incidentes por subregión y estado.
    - **SAIDI**: Métricas relacionadas con SAIDI.
    - **Entrega turno**: Información adicional sobre la entrega de turnos.
+   - **Mapas**: Visualización geográfica de subestaciones y zonas.
 
 ## Estructura del proyecto
 
@@ -75,6 +79,7 @@ streamlit-project/
 ├── consignaciones.py      # Módulo para la sección de consignaciones
 ├── incidentes.py          # Módulo para la sección de incidentes
 ├── resumenApp2.py         # Módulo para la sección de resumen
+├── mapa.py                # Módulo para visualización geográfica
 ├── datos/                 # Carpeta con los archivos de datos
 │   ├── Consignaciones.csv
 │   ├── IncidentesActual.csv
