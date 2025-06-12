@@ -138,6 +138,53 @@ def mapas(datos):
     plt.axis('off')
     st.pyplot(fig)
 
+    ##------------prueba de mapa con pydeck----------------
+             
+    # Crear DataFrame para pydeck
+    map_data = Inc_substation[['LATITUDE', 'LONGITUDE', 'count', 'SubstationName']].rename(
+        columns={'LATITUDE': 'lat', 'LONGITUDE': 'lon'}
+    )
 
+    with st.container(border=True):
+        st.subheader("🟣 Mapa de Operaciones en Tiempo Real")
+        
+        # Configurar vista inicial centrada entre Valle del Cauca y Tolima
+        view_state = pdk.ViewState(
+            latitude=4.2,   # Aproximadamente entre ambos departamentos
+            longitude=-75.5,
+            zoom=7,
+            pitch=0,
+        )
 
+        # Capa de puntos de calor
+        heatmap_layer = pdk.Layer(
+            "HeatmapLayer",
+            data=map_data,
+            get_position='[lon, lat]',
+            get_weight="count",
+            radius_pixels=30,
+            aggregation='"SUM"',
+            threshold=0.05,
+        )
 
+        # Capa de puntos (opcional, para ver las subestaciones)
+        scatter_layer = pdk.Layer(
+            "ScatterplotLayer",
+            data=map_data,
+            get_position='[lon, lat]',
+            get_radius=200,
+            get_fill_color='[255, 140, 0, 160]',
+            pickable=True,
+            tooltip=True,
+        )
+
+        st.subheader("🟣 Mapa de incidentes por subestación (Valle del Cauca y Tolima)")
+        st.pydeck_chart(
+            pdk.Deck(
+                map_style="mapbox://styles/mapbox/dark-v11",
+                initial_view_state=view_state,
+                layers=[heatmap_layer, scatter_layer],
+                tooltip={"text": "{SubstationName}\nIncidentes: {count}"}
+            ),
+            use_container_width=True,
+        )
