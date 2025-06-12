@@ -63,13 +63,20 @@ Asegúrate de tener instalado:
 
 2. Abre tu navegador en la dirección que aparece en la terminal (por defecto, [http://localhost:8501](http://localhost:8501)).
 
-3. Navega por las diferentes secciones de la barra lateral:
-   - **Resumen**: Métricas generales de consignaciones, incidentes y SAIDI.
-   - **Consignaciones**: Visualización de consignaciones por zona.
-   - **Incidentes**: Análisis de incidentes por subregión y estado.
-   - **SAIDI**: Métricas relacionadas con SAIDI.
-   - **Entrega turno**: Información adicional sobre la entrega de turnos.
-   - **Mapas**: Visualización geográfica de subestaciones y zonas.
+3. **Navegación por páginas:**  
+   Esta aplicación utiliza un sistema de páginas basado en parámetros de la URL.  
+   Para acceder a cada sección principal, debes agregar el parámetro `?page=` en la URL:
+
+   - Para el dashboard principal:
+     ```
+     http://localhost:8501/?page=dashboard
+     ```
+   - Para la página de mapas:
+     ```
+     http://localhost:8501/?page=mapa
+     ```
+
+   Si accedes a la aplicación sin el parámetro `?page=`, se mostrará una pantalla de bienvenida.
 
 ## Estructura del proyecto
 

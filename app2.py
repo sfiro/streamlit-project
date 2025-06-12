@@ -87,6 +87,22 @@ def load_lottie_url(url: str):
         return None
     return r.json()
 
+page = st.query_params.get("page")
+
+# Contenido dinámico
+if page is None:
+    pass
+    #st.title("Bienvenido")
+    #st.write("Selecciona una página desde el menú lateral o agrega ?page=dashboard o ?page=mapa en la URL.")
+elif page == "dashboard":
+    consignaciones_datos, incidentes_datos, saidi_datos, consignaciones_last_modified, incidentes_last_modified, saidi_last_modified = cargar_datos()
+    dashboard(consignaciones_datos, incidentes_datos, saidi_datos)
+elif page == "mapa":
+    consignaciones_datos, incidentes_datos, saidi_datos, consignaciones_last_modified, incidentes_last_modified, saidi_last_modified = cargar_datos()
+    mapas(incidentes_datos)
+else:
+    st.title("Página no encontrada")
+    st.write("El valor en la URL no es válido.")
 
 def main():
     utils.local_css('estilo.css')
@@ -150,18 +166,7 @@ def main():
         mapas(incidentes_datos)
 
 
-page = st.query_params.get("dashboard", "mapa")
 
-# Contenido dinámico
-if page == "dashboard":
-    consignaciones_datos, incidentes_datos, saidi_datos, consignaciones_last_modified, incidentes_last_modified, saidi_last_modified = cargar_datos()
-    dashboard(consignaciones_datos, incidentes_datos, saidi_datos)
-elif page == "mapa":
-    consignaciones_datos, incidentes_datos, saidi_datos, consignaciones_last_modified, incidentes_last_modified, saidi_last_modified = cargar_datos()
-    mapas(incidentes_datos)
-else:
-    st.title("Página no encontrada")
-    st.write("El valor en la URL no es válido.")
     
 
   # Cargar datos de ejemplo
