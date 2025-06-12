@@ -315,7 +315,7 @@ def incidentesDonut(datos, titulo="Incidentes por Subregión"):
         datos,
         values='count',
         names='SubregionName',
-        hole=0.5,  # Crear el efecto de donut
+        hole=0.6,  # Crear el efecto de donut
         color='SubregionName',
         color_discrete_map=color_map
     )
@@ -329,10 +329,10 @@ def incidentesDonut(datos, titulo="Incidentes por Subregión"):
     )
     # Configurar la posición de la leyenda fuera del gráfico
     fig_donut.update_layout(
-        width=100,
-        height=400,
+        width=80,
+        height=380,
         title=dict(
-            text="Incidentes SCADA",  # Cambia el texto por el título que desees
+            text="",  # Cambia el texto por el título que desees
             font=dict(size=30, color='#D5752D'),
             x=0.5,  # Centrado
             xanchor='center'
@@ -373,9 +373,9 @@ def incidentesRadar(inc, titulo="Incidentes por Subregión"):
         marker=dict(color='#13A2E1'),
         line=dict(width=3)
     ))
-    if max(valores) < 20:  # Solo si el valor máximo es mayor a 10
-        dtick=1,  # Ticks entero
-    else:
+    
+    dtick=3,  # Ticks entero
+    if max(valores) >= 20:  # Solo si el valor máximo es mayor a 10
         dtick=int(max(valores)/5)  # <-- Solo ticks enteros
 
     fig.update_layout(
@@ -472,7 +472,7 @@ def consignacionesRadar(datos, titulo="Incidentes por Subregión"):
     if max_radar == 0:
         max_radar = 1  # Para evitar rango cero y que el radar sea visible
     # Ajuste de los ticks
-    dtick = 1
+    dtick = 3
     if max_radar > 10:
         dtick = int((max_radar)/5) 
 
@@ -498,7 +498,7 @@ def consignacionesRadar(datos, titulo="Incidentes por Subregión"):
         legend=dict(
             orientation="h",      # Horizontal
             yanchor="bottom",     # Anclar en la parte inferior
-            y=-0.2,               # Debajo del gráfico
+            y=-0.3,               # Debajo del gráfico
             xanchor="center",     # Centrar horizontalmente
             x=0.5,                # Posición horizontal (centro)
             font=dict(size=16)

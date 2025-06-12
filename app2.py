@@ -10,6 +10,7 @@ from entrega import entrega
 from Dashboard import dashboard
 from gestion import gestion
 from mapa import mapas
+
 import os
 import time
 
@@ -54,16 +55,16 @@ alt.themes.enable("default")
 #######################  Carga de base de datos  ####################
 @st.cache_data(ttl=10) 
 def cargar_datos():
-    base_path = os.path.dirname(os.path.abspath(__file__))
+    #base_path = os.path.dirname(os.path.abspath(__file__))
     #print(base_path)
-    #base_path = "\\Users\\gestioncc\\OneDrive - CELSIA S.A E.S.P"
+    base_path = "\\Users\\gestioncc\\OneDrive - CELSIA S.A E.S.P"
     #base_path = "\\Users\\accontrol\\OneDrive - CELSIA S.A E.S.P"
-    # consignaciones_path = os.path.join(base_path, 'BICC', 'Consignaciones.csv')
-    # incidentes_path = os.path.join(base_path,'BICC', 'IncidentesActual.csv')
-    # saidi_path = os.path.join(base_path, 'BICC', 'SAIDIPendientes.csv')
-    consignaciones_path = os.path.join(base_path,'datos', 'BICC', 'Consignaciones.csv')
-    incidentes_path = os.path.join(base_path,'datos','BICC', 'IncidentesActual.csv')
-    saidi_path = os.path.join(base_path,'datos', 'BICC', 'SAIDIPendientes.csv')
+    consignaciones_path = os.path.join(base_path, 'BICC', 'Consignaciones.csv')
+    incidentes_path = os.path.join(base_path,'BICC', 'IncidentesActual.csv')
+    saidi_path = os.path.join(base_path, 'BICC', 'SAIDIPendientes.csv')
+    #consignaciones_path = os.path.join(base_path,'datos', 'BICC', 'Consignaciones.csv')
+    #incidentes_path = os.path.join(base_path,'datos','BICC', 'IncidentesActual.csv')
+    #saidi_path = os.path.join(base_path,'datos', 'BICC', 'SAIDIPendientes.csv')
 
   
 
@@ -103,8 +104,11 @@ def main():
     consignaciones_datos, incidentes_datos, saidi_datos, consignaciones_last_modified, incidentes_last_modified, saidi_last_modified = cargar_datos()
 
     
+    
    ##---------------------------------------------------------------
     
+
+
     with st.sidebar:
         base_path = os.path.dirname(os.path.abspath(__file__))
         logo_path = os.path.join(base_path, 'logo', 'logoCelsia.png')
@@ -117,6 +121,8 @@ def main():
         st.markdown("---")  # Línea divisoria
         st.write("Última actualización:")
         st.write(formatted_last_update_time)
+   
+
     # Mostrar contenido según la opción seleccionada
     if opcion == "Dashboard":
         dashboard(consignaciones_datos, incidentes_datos, saidi_datos)
@@ -143,6 +149,19 @@ def main():
     if opcion == "Mapa":
         mapas(incidentes_datos)
 
+
+page = st.query_params.get("dashboard", "mapa")
+
+# Contenido dinámico
+if page == "dashboard":
+    consignaciones_datos, incidentes_datos, saidi_datos, consignaciones_last_modified, incidentes_last_modified, saidi_last_modified = cargar_datos()
+    dashboard(consignaciones_datos, incidentes_datos, saidi_datos)
+elif page == "mapa":
+    consignaciones_datos, incidentes_datos, saidi_datos, consignaciones_last_modified, incidentes_last_modified, saidi_last_modified = cargar_datos()
+    mapas(incidentes_datos)
+else:
+    st.title("Página no encontrada")
+    st.write("El valor en la URL no es válido.")
     
 
   # Cargar datos de ejemplo
