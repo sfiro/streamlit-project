@@ -69,12 +69,45 @@ def dashboard(consignaciones,incidentes,saidi):
     with colum1:
         incidentes_subregion_llamadas = incidentesLlamadas.groupby('SubregionName')['SubregionName'].count().reset_index(name='count')
         incidentes_subregion_llamadas = incidentes_subregion_llamadas.sort_values(by='count', ascending=False)
-        st.metric( label=":phone: Llamadas ",value=incidentesLlamadas.shape[0])
+        #st.metric( label=":phone: Llamadas ",value=incidentesLlamadas.shape[0])
+        
+        #Metrica llamadas
+        with st.container(border=True):
+            st.markdown(
+                f"""
+                <div style='text-align:center;'>
+                    <span style='font-size: 28px; font-weight: bold; color: #D5752D; font-family: Arial, sans-serif;'>
+                        📞 LLAMADAS
+                    </span><br>
+                    <span style='font-size: 50px; font-weight: bold; color: #fff; font-family: Arial, sans-serif;'>
+                        {incidentesLlamadas.shape[0]}
+                    </span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
         if not incidentesLlamadas.empty:
             incidentesRadar(incidentes_subregion_llamadas, titulo="")
 
     with colum2:
-        st.metric( label=" :zap: SCADA ",value=incidentesScada.shape[0])
+        #st.metric( label=" :zap: SCADA ",value=incidentesScada.shape[0])
+
+        #metrica de SCADA
+        with st.container(border=True):
+            st.markdown(
+                f"""
+                <div style='text-align:center;'>
+                    <span style='font-size: 28px; font-weight: bold; color: #D5752D; font-family: Arial, sans-serif;'>
+                        ⚡ SCADA
+                    </span><br>
+                    <span style='font-size: 50px; font-weight: bold; color: #fff; font-family: Arial, sans-serif;'>
+                        {incidentesScada.shape[0]}
+                    </span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
 
         num_subregiones = incidentesScada['SubregionName'].nunique()
         incidentes_subregion_scada = incidentesScada.groupby('SubregionName')['SubregionName'].count().reset_index(name='count')
@@ -87,7 +120,24 @@ def dashboard(consignaciones,incidentes,saidi):
             incidentesDonut(incidentes_subregion_scada, titulo="")  
 
     with colum3:
-        st.metric(label=" :books: Consignaciones ", value=consignaciones.shape[0])
+
+        #st.metric(label=" :books: Consignaciones ", value=consignaciones.shape[0])
+        # METRICA CONSIGNACIONES
+        with st.container(border=True):
+            st.markdown(
+                f"""
+                <div style='text-align:center;'>
+                    <span style='font-size: 26px; font-weight: bold; color: #D5752D; font-family: Arial, sans-serif;'>
+                        📚 CONSIGNACIONES
+                    </span><br>
+                    <span style='font-size: 50px; font-weight: bold; color: #fff; font-family: Arial, sans-serif;'>
+                        {consignaciones.shape[0]}
+                    </span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        
         consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('ISLAS', 'Tr')
         consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('TRANSMISION ANALISIS', 'Tr')
         consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('TOLIMA NORTE', 'Tn')
@@ -100,7 +150,23 @@ def dashboard(consignaciones,incidentes,saidi):
             consignacionesRadar(consignaciones_hoy, titulo="")
 
     with colum4:
-        st.metric(label=" :warning: SAIDI ", value=saidi.shape[0])
+
+        #st.metric(label=" :warning: SAIDI ", value=saidi.shape[0])
+        with st.container(border=True):
+            st.markdown(
+                f"""
+                <div style='text-align:center;'>
+                    <span style='font-size: 26px; font-weight: bold; color: #D5752D; font-family: Arial, sans-serif;'>
+                        ⚠️ SAIDI
+                    </span><br>
+                    <span style='font-size: 50px; font-weight: bold; color: #fff; font-family: Arial, sans-serif;'>
+                        {saidi.shape[0]}
+                    </span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
         usuarios_afectados = incidentes.groupby('SubregionName')['NumCustomers'].sum().reset_index()
         
         if not usuarios_afectados.empty:
