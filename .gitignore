@@ -3,6 +3,7 @@ env/
 venv/
 .venv/
 
+
 # Ignorar archivos de dependencias de Python compilados
 __pycache__/
 *.pyc
@@ -17,5 +18,6 @@ __pycache__/
 
 # Ignorar archivos de sistema
 .DS_Store
+.env
 
 # Ignorar cualquier otra carpeta de librerías que no quieras subir
