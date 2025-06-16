@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
-from redespacho import mostrar_redespacho
+from redespacho import mostrar_redespacho, mostrar_despacho
 from agc import mostrar_agc,mostrar_agc_unidad
 from pruebas import mostrar_pruebas
 from ConexionFTP import conexion_ftp, ProcesarDataFTP
@@ -201,9 +201,19 @@ def app():
     with col3:
         st.write("última carga del FTP: ",st.session_state['UltimaCarga'] .strftime('%H:%M:%S'))
         st.write("última recarga de la página: ",horaderecarga.strftime('%H:%M:%S'))
+
+
     if seleccion !="Oferta":
         st.button("cambiar vista", on_click=DetectarCambio, args=("transponer",))
     ProcesarInformacion(df2,Data)
+
+    st.title("HOLA")
+
+    st.dataframe(df2)
+    Data2 = mostrar_despacho(fecha)
+    st.dataframe(Data2)
+    df2=CargarInformacionOferta(Data2,force_reload=Recargar)  
+    st.dataframe(df2)
 
     st.session_state["CambioDetectado"]=False
 

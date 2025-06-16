@@ -14,3 +14,15 @@ def mostrar_redespacho(fecha):
         "contenidoFTP":[],
         "error":{"Mensaje":"","Bandera":False}}
     return Data
+
+def mostrar_despacho(fecha):
+    st.header("Resdespacho")
+    fechatext = fecha.strftime("%m%d")
+    
+    ruta='DESPACHO/'
+    archivo="dDec"+fechatext+".txt"
+    ruta+= fecha.strftime("%Y-%m")
+    Data={"seleccionado":"Despacho","ruta":ruta,"archivo":archivo,
+        "contenidoFTP":[],
+        "error":{"Mensaje":"","Bandera":False}}
+    return Data
