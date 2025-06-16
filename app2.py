@@ -2,6 +2,14 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+
+st.set_page_config(
+    page_title="Dashboard centro de control",
+    # page_icon="🏂",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
 from consignaciones import consignaciones
 from incidentes import incidentes
 from saidi import saidi
@@ -11,9 +19,9 @@ from Dashboard import dashboard
 from gestion import gestion
 from mapa import mapas
 
-
 import os
 import time
+import sys
 
 import requests  # Importar la librería para trabajar con APIs
 import json  # Importar la librería para trabajar con JSON
@@ -22,50 +30,31 @@ from streamlit_lottie import st_lottie
 from streamlit_autorefresh import st_autorefresh
 import utils
 
+sys.path.append(os.path.join(os.path.dirname(__file__),'streamlit_ftp'))
 
+from streamlit_ftp import app as app_ftp
 
 #######################
 # Page configuration
-st.set_page_config(
-    page_title="Dashboard centro de control",
-    page_icon="🏂",
-    layout="wide",
-    initial_sidebar_state="collapsed")
 
-#alt.themes.enable("dark")
-alt.themes.enable("default")
-
-
-#######################
-
-#######################
-# # Agregar un temporizador de recarga automática en el frontend
-# st.markdown("""
-#     <script>
-#         function reloadPage() {
-#             setTimeout(function() {
-#                 window.location.reload();
-#             }, 10000);  // Recargar cada 10 segundos
-#         }
-#         reloadPage();
-#     </script>
-# """, unsafe_allow_html=True)
+alt.themes.enable("dark")
+# alt.themes.enable("default")
 
 
 
 #######################  Carga de base de datos  ####################
 @st.cache_data(ttl=10) 
 def cargar_datos():
-    base_path = os.path.dirname(os.path.abspath(__file__))
+    #base_path = os.path.dirname(os.path.abspath(__file__))
     #print(base_path)
     #base_path = "\\Users\\gestioncc\\OneDrive - CELSIA S.A E.S.P"
-    #base_path = "\\Users\\accontrol\\OneDrive - CELSIA S.A E.S.P"
-    #consignaciones_path = os.path.join(base_path, 'BICC', 'Consignaciones.csv')
-    #incidentes_path = os.path.join(base_path,'BICC', 'IncidentesActual.csv')
-    #saidi_path = os.path.join(base_path, 'BICC', 'SAIDIPendientes.csv')
-    consignaciones_path = os.path.join(base_path,'datos', 'BICC', 'Consignaciones.csv')
-    incidentes_path = os.path.join(base_path,'datos','BICC', 'IncidentesActual.csv')
-    saidi_path = os.path.join(base_path,'datos', 'BICC', 'SAIDIPendientes.csv')
+    base_path = "\\Users\\accontrol\\OneDrive - CELSIA S.A E.S.P"
+    consignaciones_path = os.path.join(base_path, 'BICC', 'Consignaciones.csv')
+    incidentes_path = os.path.join(base_path,'BICC', 'IncidentesActual.csv')
+    saidi_path = os.path.join(base_path, 'BICC', 'SAIDIPendientes.csv')
+    #consignaciones_path = os.path.join(base_path,'datos', 'BICC', 'Consignaciones.csv')
+    #incidentes_path = os.path.join(base_path,'datos','BICC', 'IncidentesActual.csv')
+    #saidi_path = os.path.join(base_path,'datos', 'BICC', 'SAIDIPendientes.csv')
 
   
 
@@ -168,8 +157,7 @@ def main():
 
     if opcion == "ftp":
         # Aquí puedes llamar a la función de tu aplicación FTP
-        pass
-        #app()
+        app_ftp.app()
 
 
 
