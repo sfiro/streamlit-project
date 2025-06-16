@@ -121,7 +121,7 @@ def main():
    
         st.image(logo_path, width=150)  # Cambia la ruta a tu imagen
         #opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Mapa","Resumen","Consignaciones","Incidentes", "Saidi", "Entrega turno","Gestion"])
-        opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Mapa","Consignaciones", "Saidi", "Entrega turno","Gestion","ftp"])
+        opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Mapa","Consignaciones", "Saidi", "Entrega turno","Gestion","FTP"])
 
 
         st.markdown("---")  # Línea divisoria
@@ -155,7 +155,7 @@ def main():
     if opcion == "Mapa":
         mapas(incidentes_datos)
 
-    if opcion == "ftp":
+    if opcion =="FTP":
         # Aquí puedes llamar a la función de tu aplicación FTP
         app_ftp.app()
 

@@ -8,7 +8,24 @@ def tabla_con_estilo(df, fila_resaltada):
         df=df[1:]
         df.columns = new_header  # Asignar la primera fila como encabezado
     
-    html = '<div class="table-wrapper"><div class="table-container"><table>'
+    html = """
+        <style>
+        .table-wrapper, .table-container, table {
+            background-color: #18191A !important;
+            color: #F5F6FA !important;
+        }
+        th, td {
+            background-color: #18191A !important;
+            color: #F5F6FA !important;
+            border: 1px solid #444 !important;
+        }
+        .resaltado {
+            background-color: #D5752D !important;
+            color: #fff !important;
+        }
+        </style>
+        """
+    html += '<div class="table-wrapper"><div class="table-container"><table>'
     html += '<table>'
     # Encabezados
     html += '<thead><tr>' + ''.join(
@@ -51,4 +68,3 @@ def notacion_estilo(data):
         </div>
         """
     return html
-    
