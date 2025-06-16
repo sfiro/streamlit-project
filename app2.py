@@ -11,6 +11,7 @@ from Dashboard import dashboard
 from gestion import gestion
 from mapa import mapas
 
+
 import os
 import time
 
@@ -131,7 +132,7 @@ def main():
    
         st.image(logo_path, width=150)  # Cambia la ruta a tu imagen
         #opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Mapa","Resumen","Consignaciones","Incidentes", "Saidi", "Entrega turno","Gestion"])
-        opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Mapa","Consignaciones", "Saidi", "Entrega turno","Gestion"])
+        opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Mapa","Consignaciones", "Saidi", "Entrega turno","Gestion","ftp"])
 
 
         st.markdown("---")  # Línea divisoria
@@ -164,6 +165,11 @@ def main():
 
     if opcion == "Mapa":
         mapas(incidentes_datos)
+
+    if opcion == "ftp":
+        # Aquí puedes llamar a la función de tu aplicación FTP
+        pass
+        #app()
 
 
 
