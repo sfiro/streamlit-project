@@ -55,16 +55,34 @@ def tabla_con_estilo(df, fila_resaltada):
     html += '</table></div></div>'
     return  html
 def notacion_estilo(data):
-    html=    """
-        <div class="notas">
-            <p><span><strong>Notación:</strong></span></p>
-            <ul>"""
-    for key,dato in data.items():
-        if key=="":
-            key="''"
-        html+=f'<li><span> {key}</span>: {dato}</li> ' 
-    html+="""
+    html = """
+        <style>
+        .notas {
+            background-color: #18191A !important;
+            color: #F5F6FA !important;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+        .notas ul {
+            color: #F5F6FA !important;
+        }
+        .notas li {
+            margin-bottom: 6px;
+        }
+        .notas strong, .notas span {
+            color: #D5752D !important;
+        }
+        </style>
+        
+    """
+    for key, dato in data.items():
+        if key == "":
+            key = "''"
+        html += f'<li><span> {key}</span>: {dato}</li>'
+    html += """
             </ul>
         </div>
-        """
+    """
     return html

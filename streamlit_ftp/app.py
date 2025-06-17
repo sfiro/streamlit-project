@@ -99,7 +99,9 @@ def ProcesarInformacion(df2, Data):
     """,height=40*Nfilas,width=3000,scrolling=True)
     if Data["seleccionado"] == "Pruebas":
         texto=notacion_estilo(Data["Notacion"])
+        st
         st.markdown(texto, unsafe_allow_html=True)
+
 
 
 def DetectarCambio(origen):
@@ -141,7 +143,7 @@ def app():
     col1,col2,col3 = st.columns(3)
     with col2:
         st.write("tiempo real o historico")
-        mensaje_dinamico = "🟢 Hoy" if st.session_state.get("estado", True) else "🔴 Histórico"
+        mensaje_dinamico = "🟢 Hoy" if st.session_state.get("estado", True) else "🔴 Histórico o Futuro"
         activarfecha = st.toggle(
             mensaje_dinamico,
             key="estado",
@@ -207,13 +209,13 @@ def app():
         st.button("cambiar vista", on_click=DetectarCambio, args=("transponer",))
     ProcesarInformacion(df2,Data)
 
-    st.title("HOLA")
+    # st.title("HOLA")
 
-    st.dataframe(df2)
-    Data2 = mostrar_despacho(fecha)
-    st.dataframe(Data2)
-    df2=CargarInformacionOferta(Data2,force_reload=Recargar)  
-    st.dataframe(df2)
+    # st.dataframe(df2)
+    # Data2 = mostrar_despacho(fecha)
+    # st.dataframe(Data2)
+    # df2=CargarInformacionOferta(Data2,force_reload=Recargar)  
+    # st.dataframe(df2)
 
     st.session_state["CambioDetectado"]=False
 

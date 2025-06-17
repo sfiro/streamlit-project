@@ -11,7 +11,12 @@ def mostrar_pruebas(fecha):
         archivo="dPru"+fechatext+".txt"
     ruta+= fecha.strftime("%Y-%m")
     Data={"seleccionado":"Pruebas","ruta":ruta,"archivo":archivo,
-          "Notacion":{"A":"Pruebas autorizadas","NA":"Pruebas no autorizadas","":"Sin Prueba","R":"Regulación","D":"Dsiponibilidad"},
+          "Notacion":{"A":"Pruebas autorizadas",
+                      "NA":"Pruebas no autorizadas",
+                      "":"Sin Prueba",
+                      "R":"Regulación",
+                      "D":"Dsiponibilidad"},
           "contenidoFTP":[],
-          "error":{"Mensaje":"","Bandera":False}}
+          "error":{"Mensaje":"","Bandera":False}
+          }
     return Data
