@@ -216,7 +216,27 @@ def app():
         df3=CargarInformacion(Data2,force_reload=True)
         #st.dataframe(df3)
 
-        barras(df3,df2, "Prado",key = "Generación barras Alban")
+        seleccion = st.selectbox(
+        "Seleccione una opción",
+        ("Alban", "Calima", "Salvajina","Prado","Cucuana","Merilectrica","Tesorito"))
+
+        if seleccion == "Alban":
+            barras(df3,df2, "Alban",key = "Generación barras"+seleccion)
+        elif seleccion == "Calima":
+            barras(df3,df2, "Calima",key = "Generación barras"+seleccion)
+        elif seleccion == "Salvajina":
+            barras(df3,df2, "Salvajina",key = "Generación barras"+seleccion) 
+        elif seleccion == "Prado":
+            barras(df3,df2, "Prado",key = "Generación barras"+seleccion)
+        elif seleccion=="Cucuana":
+            barras(df3,df2, "Cucuana",key = "Generación barras"+seleccion)
+        elif seleccion=="Merilectrica":
+            barras(df3,df2, "Merilectrica",key = "Generación barras"+seleccion)  
+        elif seleccion=="Tesorito":
+            barras(df3,df2, "Tesorito",key = "Generación barras"+seleccion)    
+
+
+        #barras(df3,df2, "Prado",key = "Generación barras Alban")
 
         #lineas(df3,df2, "Prado",key = "Generación lineas Alban")
 
@@ -262,7 +282,7 @@ def barras(despacho,redespacho,planta,key = "Generación Alban"):
         x=redespacho['Periodo'],
         y=redespacho[planta],
         name='reDespacho' + planta,
-        text=redespacho[planta],            # <-- Muestra el valor sobre la barra
+        text=redespacho[planta].round(0).astype(int),            # <-- Muestra el valor sobre la barra
         textposition='outside'              # <-- Posición del texto
     )
 
@@ -271,7 +291,7 @@ def barras(despacho,redespacho,planta,key = "Generación Alban"):
         x=despacho['Periodo'],
         y=despacho[planta],
         name='Despacho' + planta,
-        text=despacho[planta],            # <-- Muestra el valor sobre la barra
+        text=despacho[planta].round(0).astype(int),            # <-- Muestra el valor sobre la barra
         textposition='outside'              # <-- Posición del texto
     )
 
