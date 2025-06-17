@@ -8,6 +8,8 @@ from ConexionFTP import conexion_ftp, ProcesarDataFTP
 from streamlit_autorefresh import st_autorefresh
 from dfStyle import tabla_con_estilo, notacion_estilo
 from oferta import mostrar_oferta,CargarInformacionOferta
+import plotly.express as px
+import plotly.graph_objects as go
 
 def CargarInformacion(Data, force_reload=False):
     """Carga los datos desde el FTP o desde caché, según corresponda."""
@@ -195,9 +197,9 @@ def app():
         Data=mostrar_oferta(fecha)   
 
     if seleccion!="Oferta":
-        df2=CargarInformacion(Data,force_reload=Recargar)
+        df2=CargarInformacion(Data,force_reload=True)
     else:
-        df2=CargarInformacionOferta(Data,force_reload=Recargar)    
+        df2=CargarInformacionOferta(Data,force_reload=True)    
     horaderecarga = datetime.now()
     print(f"📥 Datos recargados a las {st.session_state['UltimaCarga'] .strftime('%H:%M:%S')}")
     with col3:
@@ -209,13 +211,19 @@ def app():
         st.button("cambiar vista", on_click=DetectarCambio, args=("transponer",))
     ProcesarInformacion(df2,Data)
 
-    # st.title("HOLA")
+    if seleccion == "Redespacho":
+        Data2 = mostrar_despacho(fecha)
+        df3=CargarInformacion(Data2,force_reload=True)
+        #st.dataframe(df3)
 
-    # st.dataframe(df2)
-    # Data2 = mostrar_despacho(fecha)
-    # st.dataframe(Data2)
-    # df2=CargarInformacionOferta(Data2,force_reload=Recargar)  
-    # st.dataframe(df2)
+        barras(df3,df2, "Prado",key = "Generación barras Alban")
+
+        #lineas(df3,df2, "Prado",key = "Generación lineas Alban")
+
+        #area(df3,df2, "Prado",key = "Generación Area Alban")
+
+
+    
 
     st.session_state["CambioDetectado"]=False
 
@@ -239,3 +247,100 @@ st_autorefresh(interval=interval_ms, key="precise_refresh")
 # Ejecutar la aplicación Streamlit
 if __name__ == '__main__':
     app()
+
+
+
+def barras(despacho,redespacho,planta,key = "Generación Alban"):
+    
+    redespacho[planta] = redespacho[planta].replace(0, 0.01)
+    despacho[planta] = despacho[planta].replace(0, 0.01)
+    
+    fig_bar = go.Figure()
+
+    # Primera barra (df2)
+    fig_bar.add_bar(
+        x=redespacho['Periodo'],
+        y=redespacho[planta],
+        name='reDespacho' + planta,
+        text=redespacho[planta],            # <-- Muestra el valor sobre la barra
+        textposition='outside'              # <-- Posición del texto
+    )
+
+    # Segunda barra (df3)
+    fig_bar.add_bar(
+        x=despacho['Periodo'],
+        y=despacho[planta],
+        name='Despacho' + planta,
+        text=despacho[planta],            # <-- Muestra el valor sobre la barra
+        textposition='outside'              # <-- Posición del texto
+    )
+
+    fig_bar.update_layout(
+        title="Despacho " + planta + "Comparativo",
+        barmode='group'  # Usa 'stack' para apilar, 'group' para barras lado a lado
+    )
+    fig_bar.update_xaxes(type='category', tickangle=0)  # <-- Fuerza mostrar todos los índices
+
+
+    st.plotly_chart(fig_bar,key = key)
+
+def lineas(despacho,redespacho,planta = "Alban",key = "Generación Alban"):
+    fig_line = go.Figure()
+
+    # Primera línea (df2)
+    fig_line.add_trace(go.Scatter(
+        x=redespacho['Periodo'],
+        y=redespacho[planta],
+        mode='lines+markers',
+        name='reDespacho' + planta
+    ))
+
+    # Segunda línea (df3)
+    fig_line.add_trace(go.Scatter(
+        x=despacho['Periodo'],
+        y=despacho[planta],
+        mode='lines+markers',
+        name='Despacho' + planta
+    ))
+
+    fig_line.update_layout(
+        title="Despacho " + planta + "Comparativo",
+        xaxis_title="Periodo",
+        yaxis_title= planta
+    )
+
+    st.plotly_chart(fig_line, key=key)
+
+def area(despacho,redespacho,planta = "Alban",key = "Generación Alban"):
+    fig_area = go.Figure()
+
+    # Primera área (df2)
+    fig_area.add_trace(go.Scatter(
+        x=redespacho['Periodo'],
+        y=redespacho[planta],
+        mode='lines',
+        name='reDespacho ' + planta,
+        stackgroup='one',  # Agrupa para apilar
+        line=dict(width=0.5),
+        marker=dict(size=4)
+    ))
+
+    # Segunda área (df3)
+    fig_area.add_trace(go.Scatter(
+        x=despacho['Periodo'],
+        y=despacho[planta],
+        mode='lines',
+        name='Despacho '+ planta,
+        stackgroup='Two',  # Mismo grupo para apilar
+        line=dict(width=2, color='#FFA500'),  # Naranja
+        marker=dict(size=4)
+    ))
+
+    fig_area.update_layout(
+        title="Despacho " + planta + " Comparativo",
+        xaxis_title="Periodo",
+        yaxis_title=planta,
+        showlegend=True
+    )
+
+    st.plotly_chart(fig_area, key=key)
