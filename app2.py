@@ -18,6 +18,7 @@ from entrega import entrega
 from Dashboard import dashboard
 from gestion import gestion
 from mapa import mapas
+from generacion import gen
 
 import os
 import time
@@ -47,8 +48,8 @@ alt.themes.enable("dark")
 def cargar_datos():
     #base_path = os.path.dirname(os.path.abspath(__file__))
     #print(base_path)
-    base_path = "\\Users\\gestioncc\\OneDrive - CELSIA S.A E.S.P"
-    #base_path = "\\Users\\accontrol\\OneDrive - CELSIA S.A E.S.P"
+    #base_path = "\\Users\\gestioncc\\OneDrive - CELSIA S.A E.S.P"
+    base_path = "\\Users\\accontrol\\OneDrive - CELSIA S.A E.S.P"
     consignaciones_path = os.path.join(base_path, 'BICC', 'Consignaciones.csv')
     incidentes_path = os.path.join(base_path,'BICC', 'IncidentesActual.csv')
     saidi_path = os.path.join(base_path, 'BICC', 'SAIDIPendientes.csv')
@@ -121,7 +122,7 @@ def main():
    
         st.image(logo_path, width=150)  # Cambia la ruta a tu imagen
         #opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Mapa","Resumen","Consignaciones","Incidentes", "Saidi", "Entrega turno","Gestion"])
-        opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Mapa","Consignaciones", "Saidi", "Entrega turno","Gestion","FTP"])
+        opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Mapa","Consignaciones", "Saidi", "Entrega turno","Gestion","FTP","Generación"])
 
 
         st.markdown("---")  # Línea divisoria
@@ -158,6 +159,10 @@ def main():
     if opcion =="FTP":
         # Aquí puedes llamar a la función de tu aplicación FTP
         app_ftp.app()
+
+    if opcion =="Generación":
+        # Aquí puedes llamar a la función de tu aplicación FTP
+        gen()
 
 
 

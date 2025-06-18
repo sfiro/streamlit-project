@@ -77,7 +77,7 @@ def dashboard(consignaciones,incidentes,saidi):
                 f"""
                 <div style='text-align:center;'>
                     <span style='font-size: 28px; font-weight: bold; color: #D5752D; font-family: Arial, sans-serif;'>
-                        📞 LLAMADAS
+                        📞 INC LLAMADAS
                     </span><br>
                     <span style='font-size: 50px; font-weight: bold; color: #fff; font-family: Arial, sans-serif;'>
                         {incidentesLlamadas.shape[0]}
@@ -98,7 +98,7 @@ def dashboard(consignaciones,incidentes,saidi):
                 f"""
                 <div style='text-align:center;'>
                     <span style='font-size: 28px; font-weight: bold; color: #D5752D; font-family: Arial, sans-serif;'>
-                        ⚡ SCADA
+                        ⚡ INC SCADA
                     </span><br>
                     <span style='font-size: 50px; font-weight: bold; color: #fff; font-family: Arial, sans-serif;'>
                         {incidentesScada.shape[0]}
