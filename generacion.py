@@ -101,15 +101,16 @@ def gen():
     mes = fecha_actual.strftime("%m")
     año = fecha_actual.strftime("%Y")
     nombre_archivo = f"GENERACION Y NIVELES {mes}-{año}.xlsm"
-    ruta_base = r"C:\Users\accontrol\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
-    
+    #ruta_base = r"C:\Users\accontrol\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
+    ruta_base = r"C:\Users\gestioncc\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
+  
     ruta_completa = fr"{ruta_base}\{nombre_archivo}"
 
     if os.path.exists(ruta_completa):
         df_plantas = pd.read_excel(ruta_completa, sheet_name="Plantas")
         df_cogeneradores = pd.read_excel(ruta_completa, sheet_name="Cogeneradores CELSIA")
-        st.dataframe(df_plantas)
-        st.dataframe(df_cogeneradores)
+        #st.dataframe(df_plantas)
+        #st.dataframe(df_cogeneradores)
 
         # Reemplaza saltos de línea y cambia la coma por punto antes de convertir a float
         df_cogeneradores.iloc[:, 1:] = df_cogeneradores.iloc[:, 1:].applymap(
@@ -123,19 +124,19 @@ def gen():
         df_sol = filtrado(df_cogeneradores,solares,"solar")
         df_term = filtrado(df_cogeneradores,termicas,"Termicas")
 
-        df_resultado = pd.concat([df_hidro, df_coge,df_sol,df_term], ignore_index=True)
-   
-        lineas(df_resultado,"Generacion Cogeneradores")
-
-        area(df_resultado)
-
+        df_resultado = pd.concat([df_term, df_hidro, df_coge,df_sol], ignore_index=True)
         
+        lineas(df_resultado,"Generacion Cogeneradores")
+        area(df_resultado)
         
         plantas_mayores=df_plantas[plantas_mayor_gen]
         plantas_mayores = plantas_mayores.iloc[1:].reset_index(drop=True)
         plantas_mayores.columns = plantas_mayor
-        st.dataframe(plantas_mayores)
-        lineas(plantas_mayores.T,"Generacion plantas")
+        #st.dataframe(plantas_mayores)
+        #lineas(plantas_mayores.T,"Generacion plantas")
+        
+        #st.dataframe(plantas_mayores.T)
+        lineasGeneracion(plantas_mayores,"key")
 
     else:
         st.error(f"El archivo no existe: {ruta_completa}")
@@ -143,7 +144,7 @@ def gen():
 
 
 def lineas(datos,key):
-    nombre_columna = datos.columns[0]
+    nombre_columna = datos.columns[0]    
     periodos = datos.columns[1:]
 
     fig = go.Figure()
@@ -173,6 +174,53 @@ def filtrado(data,plantas,titulo):
     df_suma.insert(0, data.columns[0], titulo)
     return df_suma
 
+
+def area(data):
+    nombre_columna = data.columns[0]
+    periodos = data.columns[1:]
+
+    fig = go.Figure()
+
+    for idx, row in data.iterrows():
+        fig.add_trace(go.Scatter(
+            x=periodos,
+            y=row[1:].astype(float),
+            mode='lines',
+            stackgroup='one',  # Esto hace el área apilada
+            name=row[nombre_columna]
+        ))
+
+    fig.update_layout(
+        title="Gráfico de área apilada de generación",
+        xaxis_title="Periodo",
+        yaxis_title="Energía",
+        legend_title="Planta"
+    )
+
+    st.plotly_chart(fig)
+
+
+def lineasGeneracion(datos,key):
+    x_vals = list(range(len(datos)))
+
+    fig = go.Figure()
+
+    for col in datos.columns:
+        fig.add_trace(go.Scatter(
+            x=x_vals,
+            y=datos[col].astype(float),
+            mode='lines+markers',
+            name=str(col)
+        ))
+
+    fig.update_layout(
+        title=key,
+        xaxis_title="Periodo",
+        yaxis_title="Energía",
+        legend_title="Planta"
+    )
+
+    st.plotly_chart(fig, key=key)
 
 def area(data):
     nombre_columna = data.columns[0]
