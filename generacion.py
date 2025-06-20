@@ -4,6 +4,7 @@ from datetime import datetime
 import os
 import plotly.graph_objects as go
 import numpy as np
+import os
 
 plantas_hidro = [
             "ALTO TULUA",
@@ -133,8 +134,13 @@ def gen():
     mes = fecha_actual.strftime("%m")
     año = fecha_actual.strftime("%Y")
     nombre_archivo = f"GENERACION Y NIVELES {mes}-{año}.xlsm"
-    #ruta_base = r"C:\Users\accontrol\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
-    ruta_base = r"C:\Users\gestioncc\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
+
+    # Obtén la ruta absoluta del directorio del proyecto (donde está este script)
+    ruta_proyecto = os.path.dirname(os.path.abspath(__file__))
+
+    
+    ruta_base = r"C:\Users\accontrol\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
+    #ruta_base = r"C:\Users\gestioncc\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
   
     ruta_completa = fr"{ruta_base}\{nombre_archivo}"
 
@@ -151,7 +157,7 @@ def gen():
         df_cogeneradores.iloc[:, 1:] = df_cogeneradores.iloc[:, 1:].applymap(
             lambda x: str(x).replace('\n', '').replace(',', '.')
         )
-        lineas(df_cogeneradores,"Generación diaria")
+        #lineas(df_cogeneradores,"Generación diaria")
 
         # Filtrar las plantas de interés
         df_hidro = filtrado(df_cogeneradores,plantas_hidro,"pequeñas hidro")
@@ -159,10 +165,10 @@ def gen():
         df_sol = filtrado(df_cogeneradores,solares,"solar")
         df_term = filtrado(df_cogeneradores,termicas,"Termicas")
 
-        df_resultado = pd.concat([df_term, df_hidro, df_coge,df_sol], ignore_index=True)
+        df_generacion_menores = pd.concat([df_term, df_hidro, df_coge,df_sol], ignore_index=True)
         
-        lineas(df_resultado,"Generacion Cogeneradores")
-        area(df_resultado)
+        #lineas(df_resultado,"Generacion Cogeneradores")
+        
         
         plantas_mayores=df_plantas[plantas_mayor_gen]
         plantas_mayores.columns = plantas_mayor
@@ -170,7 +176,7 @@ def gen():
         #lineas(plantas_mayores.T,"Generacion plantas")
         
         #st.dataframe(plantas_mayores.T)
-        lineasGeneracion(plantas_mayores,"Generación por planta mayor")
+        #lineasGeneracion(plantas_mayores,"Generación por planta mayor")
 
         # 1. Eliminar columnas cuya suma es cero
         plantas_mayores_filtrado = plantas_mayores.loc[:, plantas_mayores.sum(axis=0) != 0]
@@ -180,50 +186,91 @@ def gen():
         columnas_ordenadas = suma_columnas.sort_values(ascending=True).index
         plantas_mayores_ordenado = plantas_mayores_filtrado[columnas_ordenadas]
 
-        areaGen(plantas_mayores_ordenado,"prueba")
+        #st.dataframe(plantas_mayores_ordenado)
+        
+
+        #columna1, columna2 = st.columns(2)
+        #with columna1:
+        area(df_generacion_menores,"Generación plantas menores, solares, cogeneradores y termicos")
+        #with columna2:
+        areaGen(plantas_mayores_ordenado,"Generación plantas mayores")
+
+
 
         dia_actual = datetime.now().day  # Día del mes (1-31)
 
-        columna1, columna2 = st.columns([1,5])
-        with columna1:
-            st.image(r"C:\Users\gestioncc\Documents\proyecto_streamlit\streamlit-project\logo\solar.png", width=200)
-            
-        with columna2:
-            color = "#FFD700"
-            barras(df_sol,dia_actual,"sol", color)
+        # Construye la ruta al archivo deseado dentro del proyecto
 
-        ## plantas termicas
+        columnaA, columnaB = st.columns(2)
+        with columnaA:
+            columna1, columna2 = st.columns([1,5])
+            with columna1:
+                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'solar.png')
+                st.image(ruta_archivo, width=70, use_container_width =True)
+                
+                
 
-        columna1, columna2 = st.columns([1,5])
-        with columna1:
-            st.image(r"C:\Users\gestioncc\Documents\proyecto_streamlit\streamlit-project\logo\energia-hidro.png", width=200)
-            
-        with columna2:
-            color = "#095AF1"
-            barras(df_hidro,dia_actual,"hidro", color)
+                
+            with columna2:
+                color = "#FFD700"
+                barras(df_sol,dia_actual,"sol", color)
+        with columnaB:
+            ## plantas termicas
+            columna1, columna2 = st.columns([1,5])
+            with columna1:
+                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'engranaje.png')
+                st.image(ruta_archivo, width=70,use_container_width =True)
+            with columna2:
+                color = "#356CD3"
+                barras(df_hidro,dia_actual,"hidro", color)
 
+        columnaA, columnaB = st.columns(2)
+        with columnaA:
+            ## plantas cogeneradoras
+            columna1, columna2 = st.columns([1,5])
+            with columna1:
+                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'sustainable-energy.png')
+                st.image(ruta_archivo, width=70,use_container_width =True)
+            with columna2:
+                color = "#F18509"
+                barras(df_coge,dia_actual,"coge", color)
+        with columnaB:
+            ## plantas termicas
+            columna1, columna2 = st.columns([1,5])
+            with columna1:
+                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'industria2.png')
+                st.image(ruta_archivo, width=70,use_container_width =True)
+            with columna2:
+                color = "#FFFFFF"
+                #st.dataframe(df_term)
+                barras(df_term,dia_actual,"term", color)
 
-        ## plantas cogeneradoras
+        columnaA, columnaB = st.columns(2)
+        with columnaA:
+            #hidraulicas mayores
+            columna1, columna2 = st.columns([1,5])
+            with columna1:
+                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'represa.png')
+                st.image(ruta_archivo, width=70,use_container_width =True)
+            with columna2:
+                color = "#356CD3"
+                #st.dataframe(df_term)
+                # Si la primera columna es identificador y las demás son días:
+                suma_por_dia = plantas_mayores_ordenado.iloc[:, 1:].astype(float).sum(axis=1)
 
-        columna1, columna2 = st.columns([1,5])
-        with columna1:
-            st.image(r"C:\Users\gestioncc\Documents\proyecto_streamlit\streamlit-project\logo\sustainable-energy.png", width=200)
-            
-        with columna2:
-            color = "#F18509"
-            barras(df_coge,dia_actual,"coge", color)
-
-        
-        ## plantas termicas
-        
-        columna1, columna2 = st.columns([1,5])
-        with columna1:
-            st.image(r"C:\Users\gestioncc\Documents\proyecto_streamlit\streamlit-project\logo\industria.png", width=200)
-            
-        with columna2:
-            color = "#FFFFFF"
-            #st.dataframe(df_term)
-            barras(df_term,dia_actual,"term", color)
+                # Convertir la Serie resultante en DataFrame
+                df_suma_por_dia = suma_por_dia.reset_index()
+                df_suma_por_dia.columns = ['Día', 'Suma']
+                df_solo_suma = df_suma_por_dia[['Suma']].copy()
+                barras(df_solo_suma.T,dia_actual,"generacion", color)
+        with columnaB:
+            #Eolico
+            columna1, columna2 = st.columns([1,5])
+            with columna1:
+                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'eolico1.png')
+                st.image(ruta_archivo, width=70,use_container_width =True)
+            with columna2:
+                pass
 
             
 
@@ -267,7 +314,7 @@ def filtrado(data,plantas,titulo):
     return df_suma
 
 
-def area(data):
+def area(data,key = "Generacion"):
     nombre_columna = data.columns[0]
     periodos = data.columns[1:]
 
@@ -291,13 +338,18 @@ def area(data):
         ))
 
     fig.update_layout(
-        title="Gráfico de área apilada de generación",
+        title=key,
         xaxis_title="Día",
         yaxis_title="Energía kWh",
-        legend_title="Planta"
+        legend_title="Planta",
+        width=300,   # Ancho en píxeles
+        height=200,   # Alto en píxeles
+        plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de datos transparente
+        paper_bgcolor='rgba(0,0,0,0)',  # Fondo total de la figura transparente
+        margin=dict(t=20, b=0, l=10, r=10)  # Márgenes pequeños
     )
 
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, key = key)
 
 
 def lineasGeneracion(datos,key):
@@ -337,17 +389,26 @@ def areaGen(data,key):
         ))
 
     fig.update_layout(
-        title="Gráfico de área apilada de generación",
+        title=key,
         xaxis_title="Día",
         yaxis_title="Energía kWh",
-        legend_title="Planta"
+        legend_title="Planta",
+        width=300,   # Ancho en píxeles
+        height=200,   # Alto en píxeles
+        plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de datos transparente
+        paper_bgcolor='rgba(0,0,0,0)',  # Fondo total de la figura transparente
+        margin=dict(t=20, b=0, l=10, r=10)  # Márgenes pequeños
+
     )
+
+
 
     st.plotly_chart(fig, key=key)
 
 
 def barras(data,dia,key, color):
     data = data.iloc[0, 1:][data.iloc[0, 1:] > 0]
+
     if data.eq(0).all():
         pass
     else:
@@ -362,7 +423,7 @@ def barras(data,dia,key, color):
         fig.add_annotation(
             text=f"<b>{data.iloc[-1]:.0f} kWh</b>",  # HTML para negrita
             xref="paper", yref="paper",
-            x=0.5, y=1.15,  # Ajusta y para que quede fuera del área del gráfico
+            x=0.5, y=2.15,  # Ajusta y para que quede fuera del área del gráfico
             showarrow=False,
             font=dict(size=32, color=color, family="Arial"),
             align="center"
@@ -372,9 +433,9 @@ def barras(data,dia,key, color):
             xaxis_title="Día",
             yaxis_title="kWh",
             width=300,   # Ancho en píxeles
-            height=250,   # Alto en píxeles
+            height=150,   # Alto en píxeles
             plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de datos transparente
             paper_bgcolor='rgba(0,0,0,0)',  # Fondo total de la figura transparente
-            margin=dict(t=50, b=10, l=10, r=10)  # Márgenes pequeños
+            margin=dict(t=100, b=10, l=10, r=10)  # Márgenes pequeños
         )
         st.plotly_chart(fig,use_container_width=False)

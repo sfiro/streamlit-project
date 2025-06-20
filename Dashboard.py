@@ -57,10 +57,10 @@ def dashboard(consignaciones,incidentes,saidi):
     # ------------ Gráficos Incidentes -----------------
     #st.title('Incidentes')
 
-    incidentes['SubregionName'] = incidentes['SubregionName'].replace('VALLE NORTE', 'Vn')
-    incidentes['SubregionName'] = incidentes['SubregionName'].replace('VALLE SUR', 'Vs')
-    incidentes['SubregionName'] = incidentes['SubregionName'].replace('TOLIMA NORTE', 'Tn')
-    incidentes['SubregionName'] = incidentes['SubregionName'].replace('TOLIMA SUR', 'Ts')
+    incidentes['SubregionName'] = incidentes['SubregionName'].replace('VALLE NORTE', 'VN')
+    incidentes['SubregionName'] = incidentes['SubregionName'].replace('VALLE SUR', 'VS')
+    incidentes['SubregionName'] = incidentes['SubregionName'].replace('TOLIMA NORTE', 'TN')
+    incidentes['SubregionName'] = incidentes['SubregionName'].replace('TOLIMA SUR', 'TS')
 
     incidentesScada =  incidentes[incidentes['Origen'] == 'SCADACreated']
     incidentesLlamadas =  incidentes[incidentes['Origen'] == 'PhoneCallCreated']
@@ -138,12 +138,12 @@ def dashboard(consignaciones,incidentes,saidi):
                 unsafe_allow_html=True
             )
         
-        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('ISLAS', 'Tr')
-        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('TRANSMISION ANALISIS', 'Tr')
-        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('TOLIMA NORTE', 'Tn')
-        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('TOLIMA SUR', 'Ts')
-        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('VALLE NORTE', 'Vn')
-        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('VALLE SUR', 'Vs')
+        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('ISLAS', 'TR')
+        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('TRANSMISION ANALISIS', 'TR')
+        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('TOLIMA NORTE', 'TN')
+        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('TOLIMA SUR', 'TS')
+        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('VALLE NORTE', 'VN')
+        consignaciones['SubstationName'] = consignaciones['SubstationName'].replace('VALLE SUR', 'VS')
 
         consignaciones_hoy = consignaciones
         if not consignaciones_hoy.empty:
