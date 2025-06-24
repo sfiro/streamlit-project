@@ -109,7 +109,7 @@ def mapas(datos):
     
         collection = subestation_gdf.plot(
             ax=ax,
-            markersize=Inc_substation['count']*10,   # Tamaño proporcional
+            markersize=Inc_substation['count']*30,   # Tamaño proporcional
             column='count',                          # Color según la columna 'count'
             cmap='OrRd',                             # Puedes usar otros colormaps como 'viridis', 'plasma', etc.
             alpha=0.7,

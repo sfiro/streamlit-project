@@ -160,13 +160,43 @@ if __name__ == '__main__':
     if page is None:
         main()
     elif page == "dashboard":
+        st.markdown(
+            """
+            <style>
+            body, [data-testid="stAppViewContainer"] {
+                zoom: 1.05; /* Cambia este valor para simular zoom (1.0 = 100%) */
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
         consignaciones_datos, incidentes_datos, saidi_datos, consignaciones_last_modified, incidentes_last_modified, saidi_last_modified = cargar_datos()
         dashboard(consignaciones_datos, incidentes_datos, saidi_datos)
     elif page == "mapa":
+        st.markdown(
+            """
+            <style>
+            body, [data-testid="stAppViewContainer"] {
+                zoom: 1.05; /* Cambia este valor para simular zoom (1.0 = 100%) */
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
         consignaciones_datos, incidentes_datos, saidi_datos, consignaciones_last_modified, incidentes_last_modified, saidi_last_modified = cargar_datos()
         mapas(incidentes_datos)
     elif page == "generacion":
         #consignaciones_datos, incidentes_datos, saidi_datos, consignaciones_last_modified, incidentes_last_modified, saidi_last_modified = cargar_datos()
+        st.markdown(
+            """
+            <style>
+            body, [data-testid="stAppViewContainer"] {
+                zoom: 0.95; /* Cambia este valor para simular zoom (1.0 = 100%) */
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
         gen()
     else:
         st.title("Página no encontrada")

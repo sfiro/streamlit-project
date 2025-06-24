@@ -191,9 +191,9 @@ def gen():
 
         #columna1, columna2 = st.columns(2)
         #with columna1:
-        area(df_generacion_menores,"Generación plantas menores, solares, cogeneradores y termicos")
+        area(df_generacion_menores,"Generación diaria")
         #with columna2:
-        areaGen(plantas_mayores_ordenado,"Generación plantas mayores")
+        areaGen(plantas_mayores_ordenado,"Generación diaria plantas mayores")
 
 
 
@@ -205,7 +205,7 @@ def gen():
         with columnaA:
             columna1, columna2 = st.columns([1,5])
             with columna1:
-                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'solar.png')
+                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'solar1.png')
                 st.image(ruta_archivo, width=70, use_container_width =True)
                 
                 
@@ -218,7 +218,7 @@ def gen():
             ## plantas termicas
             columna1, columna2 = st.columns([1,5])
             with columna1:
-                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'engranaje.png')
+                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'agua.png')
                 st.image(ruta_archivo, width=70,use_container_width =True)
             with columna2:
                 color = "#356CD3"
@@ -229,7 +229,7 @@ def gen():
             ## plantas cogeneradoras
             columna1, columna2 = st.columns([1,5])
             with columna1:
-                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'sustainable-energy.png')
+                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'cogenerador.png')
                 st.image(ruta_archivo, width=70,use_container_width =True)
             with columna2:
                 color = "#F18509"
@@ -238,7 +238,7 @@ def gen():
             ## plantas termicas
             columna1, columna2 = st.columns([1,5])
             with columna1:
-                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'industria2.png')
+                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'termica.png')
                 st.image(ruta_archivo, width=70,use_container_width =True)
             with columna2:
                 color = "#FFFFFF"
@@ -250,7 +250,7 @@ def gen():
             #hidraulicas mayores
             columna1, columna2 = st.columns([1,5])
             with columna1:
-                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'represa.png')
+                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'hidraulico.png')
                 st.image(ruta_archivo, width=70,use_container_width =True)
             with columna2:
                 color = "#356CD3"
@@ -267,7 +267,7 @@ def gen():
             #Eolico
             columna1, columna2 = st.columns([1,5])
             with columna1:
-                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'eolico1.png')
+                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'eolico.png')
                 st.image(ruta_archivo, width=70,use_container_width =True)
             with columna2:
                 pass
@@ -338,7 +338,15 @@ def area(data,key = "Generacion"):
         ))
 
     fig.update_layout(
-        title=key,
+        title=dict(
+            text=key,
+            x=0.3,  # Centrado
+            font=dict(
+                family="Arial",
+                size=28,        # Cambia el tamaño aquí
+                color="#FFFFFF" # Cambia el color si lo deseas
+            )
+        ),
         xaxis_title="Día",
         yaxis_title="Energía kWh",
         legend_title="Planta",
@@ -346,7 +354,7 @@ def area(data,key = "Generacion"):
         height=200,   # Alto en píxeles
         plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de datos transparente
         paper_bgcolor='rgba(0,0,0,0)',  # Fondo total de la figura transparente
-        margin=dict(t=20, b=0, l=10, r=10)  # Márgenes pequeños
+        margin=dict(t=40, b=0, l=10, r=10)  # Márgenes pequeños
     )
 
     st.plotly_chart(fig, key = key)
@@ -389,7 +397,15 @@ def areaGen(data,key):
         ))
 
     fig.update_layout(
-        title=key,
+        title=dict(
+            text=key,
+            x=0.25,  # Centrado
+            font=dict(
+                family="Arial",
+                size=28,        # Cambia el tamaño aquí
+                color="#FFFFFF" # Cambia el color si lo deseas
+            )
+        ),
         xaxis_title="Día",
         yaxis_title="Energía kWh",
         legend_title="Planta",
@@ -397,7 +413,7 @@ def areaGen(data,key):
         height=200,   # Alto en píxeles
         plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de datos transparente
         paper_bgcolor='rgba(0,0,0,0)',  # Fondo total de la figura transparente
-        margin=dict(t=20, b=0, l=10, r=10)  # Márgenes pequeños
+        margin=dict(t=40, b=0, l=10, r=10)  # Márgenes pequeños
 
     )
 
@@ -432,7 +448,7 @@ def barras(data, dia, key, color):
             title="",
             xaxis_title="Día",
             yaxis_title="kWh",
-            width=300,
+            width=600,
             height=150,
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
