@@ -27,3 +27,18 @@ def mostrar_despacho(fecha):
         "contenidoFTP":[],
         "error":{"Mensaje":"","Bandera":False}}
     return Data
+
+def mostrar_agc(fecha):
+    #st.header("Despacho")
+    fechatext = fecha.strftime("%m%d")
+    
+    ruta='DESPACHO/'
+    archivo="dAGC"+fechatext+".txt"
+    ruta+= fecha.strftime("%Y-%m")
+    #st.write("Ruta del archivo:", ruta)
+    Data={"seleccionado":"Despacho","ruta":ruta,"archivo":archivo,
+        "contenidoFTP":[],
+        "error":{"Mensaje":"","Bandera":False}}
+    return Data
+
+

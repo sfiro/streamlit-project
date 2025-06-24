@@ -197,9 +197,12 @@ def app():
         Data=mostrar_oferta(fecha)   
 
     if seleccion!="Oferta":
-        df2=CargarInformacion(Data,force_reload=True)
+        df_redespacho=CargarInformacion(Data,force_reload=True)
+        ProcesarInformacion(df_redespacho,Data)
     else:
-        df2=CargarInformacionOferta(Data,force_reload=True)    
+        df_oferta=CargarInformacionOferta(Data,force_reload=True)
+        ProcesarInformacion(df_oferta,Data)
+
     horaderecarga = datetime.now()
     print(f"📥 Datos recargados a las {st.session_state['UltimaCarga'] .strftime('%H:%M:%S')}")
     with col3:
@@ -209,38 +212,24 @@ def app():
 
     if seleccion !="Oferta":
         st.button("cambiar vista", on_click=DetectarCambio, args=("transponer",))
-    ProcesarInformacion(df2,Data)
+
+    
 
     if seleccion == "Redespacho":
         Data2 = mostrar_despacho(fecha)
-        df3=CargarInformacion(Data2,force_reload=True)
-        #st.dataframe(df3)
+        df_despacho=CargarInformacion(Data2,force_reload=True)
+        #st.dataframe(df_despacho)
+        selectorPlantas(df_despacho,df_redespacho)
 
-        seleccion = st.selectbox(
-        "Seleccione una opción",
-        ("Alban", "Calima", "Salvajina","Prado","Cucuana","Merilectrica","Tesorito"))
+         
 
-        if seleccion == "Alban":
-            barras(df3,df2, "Alban",key = "Generación barras"+seleccion)
-        elif seleccion == "Calima":
-            barras(df3,df2, "Calima",key = "Generación barras"+seleccion)
-        elif seleccion == "Salvajina":
-            barras(df3,df2, "Salvajina",key = "Generación barras"+seleccion) 
-        elif seleccion == "Prado":
-            barras(df3,df2, "Prado",key = "Generación barras"+seleccion)
-        elif seleccion=="Cucuana":
-            barras(df3,df2, "Cucuana",key = "Generación barras"+seleccion)
-        elif seleccion=="Merilectrica":
-            barras(df3,df2, "Merilectrica",key = "Generación barras"+seleccion)  
-        elif seleccion=="Tesorito":
-            barras(df3,df2, "Tesorito",key = "Generación barras"+seleccion)    
+    elif seleccion == "AGC":
+        Data2 = mostrar_agc(fecha)
+        df_despacho=CargarInformacion(Data2,force_reload=True)
+        #st.write(Data2)
+        #st.dataframe(df_despacho)
+        selectorPlantas(df_despacho,df_redespacho)
 
-
-        #barras(df3,df2, "Prado",key = "Generación barras Alban")
-
-        #lineas(df3,df2, "Prado",key = "Generación lineas Alban")
-
-        #area(df3,df2, "Prado",key = "Generación Area Alban")
 
 
     
@@ -268,9 +257,36 @@ st_autorefresh(interval=interval_ms, key="precise_refresh")
 if __name__ == '__main__':
     app()
 
+def selectorPlantas(despacho,redespacho):
+    seleccion = st.selectbox(
+        "Seleccione una opción",
+        ("Alban", "Calima", "Salvajina","Prado","Cucuana","Merilectrica","Tesorito"))
+
+    if seleccion == "Alban":
+        barras(despacho,redespacho, "Alban",key = "Generación barras"+seleccion)
+    elif seleccion == "Calima":
+        barras(despacho,redespacho, "Calima",key = "Generación barras"+seleccion)
+    elif seleccion == "Salvajina":
+        barras(despacho,redespacho, "Salvajina",key = "Generación barras"+seleccion) 
+    elif seleccion == "Prado":
+        barras(despacho,redespacho, "Prado",key = "Generación barras"+seleccion)
+    elif seleccion=="Cucuana":
+        barras(despacho,redespacho, "Cucuana",key = "Generación barras"+seleccion)
+    elif seleccion=="Merilectrica":
+        barras(despacho,redespacho, "Merilectrica",key = "Generación barras"+seleccion)  
+    elif seleccion=="Tesorito":
+        barras(despacho,redespacho, "Tesorito",key = "Generación barras"+seleccion)   
 
 
 def barras(despacho,redespacho,planta,key = "Generación Alban"):
+
+    # Verificar que la planta existe en ambos DataFrames y tiene datos
+    if planta not in despacho.columns or planta not in redespacho.columns:
+        st.warning(f"La planta '{planta}' no existe en los datos.")
+        return
+    if despacho[planta].dropna().empty or redespacho[planta].dropna().empty:
+        st.warning(f"No hay datos para la planta '{planta}'.")
+        return
     
     redespacho[planta] = redespacho[planta].replace(0, 0.01)
     despacho[planta] = despacho[planta].replace(0, 0.01)
