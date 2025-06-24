@@ -19,6 +19,7 @@ from Dashboard import dashboard
 from gestion import gestion
 from mapa import mapas
 from generacion import gen
+from xm import xm_data
 
 import os
 import time
@@ -48,8 +49,8 @@ alt.themes.enable("dark")
 def cargar_datos():
     #base_path = os.path.dirname(os.path.abspath(__file__))
     #print(base_path)
-    base_path = "\\Users\\gestioncc\\OneDrive - CELSIA S.A E.S.P"
-    #base_path = "\\Users\\accontrol\\OneDrive - CELSIA S.A E.S.P"
+    #base_path = "\\Users\\gestioncc\\OneDrive - CELSIA S.A E.S.P"
+    base_path = "\\Users\\accontrol\\OneDrive - CELSIA S.A E.S.P"
     consignaciones_path = os.path.join(base_path, 'BICC', 'Consignaciones.csv')
     incidentes_path = os.path.join(base_path,'BICC', 'IncidentesActual.csv')
     saidi_path = os.path.join(base_path, 'BICC', 'SAIDIPendientes.csv')
@@ -107,7 +108,7 @@ def main():
    
         st.image(logo_path, width=150)  # Cambia la ruta a tu imagen
         #opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Mapa","Resumen","Consignaciones","Incidentes", "Saidi", "Entrega turno","Gestion"])
-        opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Mapa","Consignaciones", "Saidi", "Entrega turno","Gestion","FTP","Generación"])
+        opcion = st.sidebar.selectbox("Selecciona una opción", ["Dashboard","Mapa","XM","Consignaciones", "Saidi", "Entrega turno","Gestion","FTP","Generación"])
 
 
         st.markdown("---")  # Línea divisoria
@@ -125,6 +126,9 @@ def main():
 
     if opcion == "Consignaciones":
         consignaciones(consignaciones_datos)
+
+    if opcion == "XM":
+        xm_data()
 
     if opcion == "Incidentes":
         incidentes(incidentes_datos)
