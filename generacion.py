@@ -172,7 +172,7 @@ def gen():
         
         plantas_mayores=df_plantas[plantas_mayor_gen]
         plantas_mayores.columns = plantas_mayor
-        #st.dataframe(plantas_mayores)
+        plantas_mayores = plantas_mayores.apply(pd.to_numeric, errors='coerce')
         #lineas(plantas_mayores.T,"Generacion plantas")
         
         #st.dataframe(plantas_mayores.T)
@@ -406,24 +406,24 @@ def areaGen(data,key):
     st.plotly_chart(fig, key=key)
 
 
-def barras(data,dia,key, color):
-    data = data.iloc[0, 1:][data.iloc[0, 1:] > 0]
+def barras(data, dia, key, color):
+    data = data.iloc[0, 1:].astype(float)
+    data = data[data > 0]
 
     if data.eq(0).all():
         pass
     else:
         fig = go.Figure()
         fig.add_trace(go.Bar(
-            x=data.index,   # Nombres de las columnas
-            y=data.values,  # Valores numéricos
+            x=data.index,
+            y=data.values,
             name='Generación solar > 0',
-            marker_color=color          # Amarillo
+            marker_color=color
         ))
-        # Agrega el número como anotación centrada arriba
         fig.add_annotation(
-            text=f"<b>{data.iloc[-1]:.0f} kWh</b>",  # HTML para negrita
+            text=f"<b>{data.iloc[-1]:.0f} kWh</b>",
             xref="paper", yref="paper",
-            x=0.5, y=2.15,  # Ajusta y para que quede fuera del área del gráfico
+            x=0.5, y=2.15,
             showarrow=False,
             font=dict(size=32, color=color, family="Arial"),
             align="center"
@@ -432,10 +432,10 @@ def barras(data,dia,key, color):
             title="",
             xaxis_title="Día",
             yaxis_title="kWh",
-            width=300,   # Ancho en píxeles
-            height=150,   # Alto en píxeles
-            plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de datos transparente
-            paper_bgcolor='rgba(0,0,0,0)',  # Fondo total de la figura transparente
-            margin=dict(t=100, b=10, l=10, r=10)  # Márgenes pequeños
+            width=300,
+            height=150,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            margin=dict(t=100, b=10, l=10, r=10)
         )
-        st.plotly_chart(fig,use_container_width=False)
+        st.plotly_chart(fig, use_container_width=False)

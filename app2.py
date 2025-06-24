@@ -151,8 +151,6 @@ def main():
 
 
 
-    
-
   # Cargar datos de ejemplo
 if __name__ == '__main__':
   
