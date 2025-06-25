@@ -8,11 +8,15 @@ from pydataxm.pydatasimem import ReadSIMEM, CatalogSIMEM
 from pydataxm.pydataxm import ReadDB
 from pydataxm import *          # Importa la libreria que fue instalada con pip install pydataxm o tambien desde GitHub
 import plotly.express as px
+import requests
+import json
 
 
 objetoAPI = pydataxm.ReadDB()     # Construir la clase que contiene los métodos de pydataxm
 
 def xm_data():
+
+    
     # Importación
 
     #objetoAPI.get_collections('DemaCome') # Revisar los cruces disponibles para demanda comercial
@@ -127,11 +131,11 @@ def xm_data():
 
 
 
-###---------------EMBALSES ----------
+###---------------EMBALSES NACIONAL ----------
     st.dataframe(objetoAPI.get_collections('VoluUtilDiarMasa')) # Revisar los cruces disponibles para demanda comercial
 
     df_vol_util = objetoAPI.request_data('VoluUtilDiarMasa', 'Embalse',
-                                    dt(2024, 1, 1).date(),
+                                    dt(2025, 1, 1).date(),
                                     dt(2025, 6, 25).date())
     #st.dataframe(df_vol_util)
 
@@ -148,7 +152,7 @@ def xm_data():
         name='Embalse naciona'
     ))
     fig.update_layout(
-        title='Embalse 2025',
+        title='Embalse Nacional',
         xaxis_title='Fecha',
         yaxis_title='Embalse [m3]',
         height=400,
@@ -156,84 +160,35 @@ def xm_data():
     )
     st.plotly_chart(fig, use_container_width=True)
 
-###---------------EMBALSES ----------
-    st.dataframe(objetoAPI.get_collections('VoluUtilDiarEner')) # Revisar los cruces disponibles para demanda comercial
 
+    ### --------------EMBALSES CELSIA  -------------
 
+    plantas_filtrar = ['ALTOANCHICAYA', 'CALIMA1', 'SALVAJINA', 'PRADO']
+    df_vol_util_filtrado = df_vol_util[df_vol_util['Name'].isin(plantas_filtrar)].copy()
+    #st.dataframe(df_vol_util_filtrado)
 
-    df_vol_energia = objetoAPI.request_data('VoluUtilDiarEner', 'Sistema',
-                                    dt(2024, 1, 1).date(),
-                                    dt(2025, 6, 25).date())
-    #st.dataframe(df_vol_energia)
-
-    df_vol_energia['Date'] = pd.to_datetime(df_vol_energia['Date']).dt.date
-
-
-    suma_por_dia_V_Energia = df_vol_energia.groupby('Date')['Value'].sum().reset_index()
-
-    #st.dataframe(suma_por_dia_V_Energia)
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=suma_por_dia_V_Energia['Date'],
-        y=suma_por_dia_V_Energia['Value'],
-        mode='lines',
-        name='Volumen energia'
-    ))
+    for planta in plantas_filtrar:
+        fig.add_trace(go.Scatter(
+            x=df_vol_util_filtrado[df_vol_util_filtrado['Name'] == planta]['Date'],
+            y=df_vol_util_filtrado[df_vol_util_filtrado['Name'] == planta]['Value'],
+            mode='lines',
+            name=planta
+        ))
     fig.update_layout(
-        title='Volumen energia',
+        title='Embalses CELSIA',
         xaxis_title='Fecha',
-        yaxis_title='Embalse [kWh]',
+        yaxis_title='Celsia Embalse [m3]',
         height=400,
         width=900
     )
     st.plotly_chart(fig, use_container_width=True)
 
+    
 
-
-    ##
-
-    st.dataframe(objetoAPI.get_collections('CapaUtilDiarMasa')) # Revisar los cruces disponibles para demanda comercial
-
-
-
-    df_vol = objetoAPI.request_data('CapaUtilDiarMasa', 'Embalse',
-                                    dt(2025, 1, 1).date(),
-                                    dt(2025, 6, 25).date())
-    #st.dataframe(df_vol)
-
-    df_vol['Date'] = pd.to_datetime(df_vol['Date']).dt.date
-
-    suma_por_dia_Vtotal = df_vol.groupby('Date')['Value'].sum().reset_index()
-    #st.dataframe(suma_por_dia_Vtotal)
-
-    # fig = go.Figure()
-    # fig.add_trace(go.Scatter(
-    #     x=suma_por_dia_Vtotal['Date'],
-    #     y=suma_por_dia_Vtotal['Value'],
-    #     mode='lines',
-    #     name='Embalse naciona'
-    # ))
-    # fig.add_trace(go.Scatter(
-    #     x=suma_por_dia_Vutil['Date'],
-    #     y=suma_por_dia_Vutil['Value'],
-    #     mode='lines',
-    #     name='Embalse naciona'
-    # ))
-    # fig.add_trace(go.Scatter(
-    #     x=suma_por_dia_Vutil['Date'],
-    #     y=suma_por_dia_Vutil['Value']/suma_por_dia_Vtotal['Value'],
-    #     mode='lines',
-    #     name='Embalse naciona'
-    # ))
-    # fig.update_layout(
-    #     title='Embalse 2025',
-    #     xaxis_title='Fecha',
-    #     yaxis_title='Embalse [m3]',
-    #     height=400,
-    #     width=900
-    # )
-    # st.plotly_chart(fig, use_container_width=True)
+    
 
 
 
+ 
 
