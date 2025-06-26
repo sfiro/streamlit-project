@@ -66,7 +66,20 @@ def xm_data():
     df_precio_bolsa.drop(columns=['Id', 'Values_code'], inplace=True)             #Eliminación de columnas innecesarias para los cálculos requeridos
     df_precio_bolsa.set_index('Date', inplace=True)                               #Uso de la columna de 'Date' como índice
     df_resumen_anual = df_precio_bolsa.aggregate(['mean', 'max', 'min'], axis=1)  #Cálculo del promedio, máximo y mínimo del precio de bolsa nacional
+    #st.dataframe(df_resumen_anual)
 
+
+    ultimo_valor = df_resumen_anual['mean'].iloc[-1]
+    valor_anterior = df_resumen_anual['mean'].iloc[-2]
+    fecha = df_resumen_anual.index[-1] 
+    delta = ultimo_valor - valor_anterior
+
+    st.metric(
+        "💰 Precio de BOLSA TX1",
+        f"{ultimo_valor:,.2f} COP/kWh",
+        delta=f"{delta:+.2f} COP/kWh",
+        help=f"Fecha: {fecha}"
+    )
     #st.dataframe(df_precio_bolsa)
     #st.dataframe(df_resumen_anual)
 
@@ -132,7 +145,7 @@ def xm_data():
 
 
 ###---------------EMBALSES NACIONAL ----------
-    st.dataframe(objetoAPI.get_collections('VoluUtilDiarMasa')) # Revisar los cruces disponibles para demanda comercial
+    #st.dataframe(objetoAPI.get_collections('VoluUtilDiarMasa')) # Revisar los cruces disponibles para demanda comercial
 
     df_vol_util = objetoAPI.request_data('VoluUtilDiarMasa', 'Embalse',
                                     dt(2025, 1, 1).date(),
@@ -149,7 +162,11 @@ def xm_data():
         x=suma_por_dia_Vutil['Date'],
         y=suma_por_dia_Vutil['Value'],
         mode='lines',
-        name='Embalse naciona'
+        name='Embalse naciona',
+            line=dict(
+            color="#080CE7",   # Verde neón
+            width=4,           # Más grueso para resaltar
+        )
     ))
     fig.update_layout(
         title='Embalse Nacional',
@@ -163,6 +180,27 @@ def xm_data():
 
     ### --------------EMBALSES CELSIA  -------------
 
+    # plantas_filtrar = ['ALTOANCHICAYA', 'CALIMA1', 'SALVAJINA', 'PRADO']
+    # df_vol_util_filtrado = df_vol_util[df_vol_util['Name'].isin(plantas_filtrar)].copy()
+    # #st.dataframe(df_vol_util_filtrado)
+
+    # fig = go.Figure()
+    # for planta in plantas_filtrar:
+    #     fig.add_trace(go.Scatter(
+    #         x=df_vol_util_filtrado[df_vol_util_filtrado['Name'] == planta]['Date'],
+    #         y=df_vol_util_filtrado[df_vol_util_filtrado['Name'] == planta]['Value'],
+    #         mode='lines',
+    #         name=planta
+    #     ))
+    # fig.update_layout(
+    #     title='Embalses CELSIA',
+    #     xaxis_title='Fecha',
+    #     yaxis_title='Celsia Embalse [m3]',
+    #     height=400,
+    #     width=900
+    # )
+    # st.plotly_chart(fig, use_container_width=True)
+
     plantas_filtrar = ['ALTOANCHICAYA', 'CALIMA1', 'SALVAJINA', 'PRADO']
     df_vol_util_filtrado = df_vol_util[df_vol_util['Name'].isin(plantas_filtrar)].copy()
     #st.dataframe(df_vol_util_filtrado)
@@ -173,22 +211,155 @@ def xm_data():
             x=df_vol_util_filtrado[df_vol_util_filtrado['Name'] == planta]['Date'],
             y=df_vol_util_filtrado[df_vol_util_filtrado['Name'] == planta]['Value'],
             mode='lines',
+            stackgroup='one',  # Área apilada
             name=planta
         ))
     fig.update_layout(
-        title='Embalses CELSIA',
+        title='Embalses CELSIA - Evolución Niveles',
         xaxis_title='Fecha',
-        yaxis_title='Celsia Embalse [m3]',
+        yaxis_title='Nivel Embalse [m3]',
         height=400,
         width=900
     )
     st.plotly_chart(fig, use_container_width=True)
 
+    fig = go.Figure()
+    for planta in plantas_filtrar:
+        fig.add_trace(go.Scatter(
+            x=df_vol_util_filtrado[df_vol_util_filtrado['Name'] == planta]['Date'],
+            y=df_vol_util_filtrado[df_vol_util_filtrado['Name'] == planta]['Value'],
+            mode='lines+markers',
+            name=planta
+        ))
+    fig.update_layout(
+        title='Embalses CELSIA - Evolución Niveles',
+        xaxis_title='Fecha',
+        yaxis_title='Nivel Embalse [m3]',
+        height=400,
+        width=900
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+
+
+###-------------------VOLUMEN UTIL DE ENERGÍA ----------------------------------------------------
+
+    #st.dataframe(objetoAPI.get_collections('VoluUtilDiarEner')) # Revisar los cruces disponibles para demanda comercial
+
+    df_vol_energ = objetoAPI.request_data('VoluUtilDiarEner', 'Embalse',
+                                    dt(2025, 1, 1).date(),
+                                    dt(2025, 6, 25).date())
+    #st.dataframe(df_vol_energ)
+
+    df_vol_energ['Date'] = pd.to_datetime(df_vol_energ['Date']).dt.date
+
+    suma_por_dia_VEnerg = df_vol_energ.groupby('Date')['Value'].sum().reset_index()
+    suma_por_dia_VEnerg['Value'] = suma_por_dia_VEnerg['Value'] / 1000000
     
+## -----------------METRICA DE ULTIMO VALOR DE ENERGÍA -------------------
+    # Mostrar la última energía diaria como métrica
+    ultimo_valor = suma_por_dia_VEnerg.iloc[-1]
+    valor_anterior = suma_por_dia_VEnerg.iloc[-2]['Value']
+    delta = ultimo_valor['Value'] - valor_anterior
+
+    st.metric(
+        "🔋 Energia Embalses Nacional",
+        f"{ultimo_valor['Value']:,.2f} GWh",
+        delta=f"{delta:+.2f} GWh",
+        help=f"Fecha: {ultimo_valor['Date']}"
+    )
+    #st.dataframe(suma_por_dia_Vutil)
+
+    barras(suma_por_dia_VEnerg,"Energia embalses Nacional")
+
+## -------------- Volumen de energía Celsia ---------------------
 
     
+    plantas_filtrar = ['ALTOANCHICAYA', 'CALIMA1', 'SALVAJINA', 'PRADO']
+    df_vol_util_celsia= df_vol_energ[df_vol_energ['Name'].isin(plantas_filtrar)].copy()
+    suma_por_dia_VEnerg_celsia = df_vol_util_celsia.groupby('Date')['Value'].sum().reset_index()
+    suma_por_dia_VEnerg_celsia['Value'] = suma_por_dia_VEnerg_celsia['Value'] / 1000000
+    #st.dataframe(suma_por_dia_VEnerg_celsia)
+    
+
+    # Mostrar la última energía diaria como métrica
+    ultimo_valor = suma_por_dia_VEnerg_celsia.iloc[-1]
+    valor_anterior = suma_por_dia_VEnerg_celsia.iloc[-2]['Value']
+    delta = ultimo_valor['Value'] - valor_anterior
+
+    st.metric(
+        "🔋 Energia Embalses CELSIA",
+        f"{ultimo_valor['Value']:,.2f} GWh",
+        delta=f"{delta:+.2f} GWh",
+        help=f"Fecha: {ultimo_valor['Date']}"
+    )
+
+    barras(suma_por_dia_VEnerg_celsia,"Energia embalses CELSIA")
+
+    
+
+
+###-------------------Demanda del sistema Nacional ----------------------------------------------------
+    
+    #st.dataframe(objetoAPI.get_collections('DemaReal')) # Revisar los cruces disponibles para demanda comercial
+
+    df_demanda = objetoAPI.request_data('DemaReal', 'Sistema',
+                                    dt(2025, 1, 1).date(),
+                                    dt(2025, 6, 25).date())
+    #st.dataframe(df_demanda)
+
+    df_demanda['Date'] = pd.to_datetime(df_demanda['Date']).dt.date
+    df_demanda = df_demanda.drop(columns=['Id', 'Values_code'])
+    #st.dataframe(df_demanda)
+
+    # Selecciona solo las columnas numéricas (las 24 de datos)
+    cols_numericas = df_demanda.select_dtypes(include=[np.number]).columns
+
+    # Calcula el promedio diario de todas las columnas numéricas
+    df_demanda['Value'] = df_demanda[cols_numericas].sum(axis=1)
+
+    # Agrupa por fecha y calcula el promedio (en este caso, será igual al promedio_diario por fila)
+    df_demanda_dia = df_demanda.groupby('Date')['Value'].mean().reset_index()
+
+    # Si quieres mostrar en GWh (si tus datos están en kWh)
+    df_demanda_dia['Value'] = df_demanda_dia['Value'] / 1_000_000
+
+    #st.dataframe(df_demanda_dia)
+    
+  
+    
+## -----------------METRICA DE ULTIMO VALOR DE Demanda nacional -------------------
+    # Mostrar la última energía diaria como métrica
+    ultimo_valor = df_demanda_dia.iloc[-1]
+    valor_anterior = df_demanda_dia.iloc[-2]['Value']
+    delta = ultimo_valor['Value'] - valor_anterior
+
+    st.metric(
+        "💡 Demanda Nacional",
+        f"{ultimo_valor['Value']:,.2f} GWh",
+        delta=f"{delta:+.2f} GWh",
+        help=f"Fecha: {ultimo_valor['Date']}"
+    )
+
+    barras(df_demanda_dia,"Demanda nacional")
 
 
 
  
 
+def barras(datos,titulo):
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=datos['Date'],
+        y=datos['Value'],
+        name='Embalse naciona',
+        marker_color='royalblue'
+    ))
+    fig.update_layout(
+        title=titulo,
+        xaxis_title='Fecha',
+        yaxis_title='Energia [GWh]',
+        height=400,
+        width=900
+    )
+    st.plotly_chart(fig, use_container_width=True)
