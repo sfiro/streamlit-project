@@ -139,8 +139,8 @@ def gen():
     ruta_proyecto = os.path.dirname(os.path.abspath(__file__))
 
     
-    ruta_base = r"C:\Users\accontrol\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
-    #ruta_base = r"C:\Users\gestioncc\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
+    #ruta_base = r"C:\Users\accontrol\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
+    ruta_base = r"C:\Users\gestioncc\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
   
     ruta_completa = fr"{ruta_base}\{nombre_archivo}"
 
@@ -148,6 +148,10 @@ def gen():
         df_plantas = pd.read_excel(ruta_completa, sheet_name="Plantas")
         df_cogeneradores = pd.read_excel(ruta_completa, sheet_name="Cogeneradores CELSIA")
         
+        df_cogeneradores = df_cogeneradores.iloc[:,:32] #filtrado de las primeras 32 columnas para asignar las columnas adecuadas
+        #st.dataframe(df_cogeneradores)
+        
+        df_plantas = df_plantas.iloc[:, :27]  #filtrado de las primeras 27 columnas para asignar las columnas adecuadas
         df_plantas.columns = Columnas_plantas
         df_plantas = df_plantas.iloc[1:].reset_index(drop=True)
         #st.dataframe(df_plantas)
