@@ -249,12 +249,13 @@ if next_interval_minute >= 60:
     next_time = now.replace(hour=(now.hour + 1) % 24, minute=0, second=0, microsecond=0)
 else:
     next_time = now.replace(minute=next_interval_minute, second=0, microsecond=0)
-delta = (next_time - now).total_seconds() * 1000
-interval_ms = int(delta)
-st_autorefresh(interval=interval_ms, key="precise_refresh")
+# delta = (next_time - now).total_seconds() * 1000
+# interval_ms = int(delta)
+# st_autorefresh(interval=interval_ms, key="precise_refresh")
 
 # Ejecutar la aplicación Streamlit
 if __name__ == '__main__':
+    count = st_autorefresh(interval=60000, limit=100, key="ftp_autorefresh")
     app()
 
 def selectorPlantas(despacho,redespacho):

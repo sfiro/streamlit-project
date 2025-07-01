@@ -144,145 +144,159 @@ def gen():
   
     ruta_completa = fr"{ruta_base}\{nombre_archivo}"
 
-    if os.path.exists(ruta_completa):
+    # Si no existe el archivo del mes actual, buscar el del mes anterior
+    # este bug sucede el primer día de cada mes
+    if not os.path.exists(ruta_completa):
+        # Calcular mes anterior
+        mes_anterior = int(mes) - 1
+        año_anterior = int(año)
+        if mes_anterior == 0:
+            mes_anterior = 12
+            año_anterior -= 1
+        mes_anterior_str = f"{mes_anterior:02d}"
+        nombre_archivo_anterior = f"GENERACION Y NIVELES {mes_anterior_str}-{año_anterior}.xlsm"
+        ruta_completa = fr"{ruta_base}\{nombre_archivo_anterior}"
+
+        if not os.path.exists(ruta_completa):
+            st.error(f"No existe archivo para el mes actual ni para el mes anterior: {nombre_archivo} / {nombre_archivo_anterior}")
+            return
+
         df_plantas = pd.read_excel(ruta_completa, sheet_name="Plantas")
         df_cogeneradores = pd.read_excel(ruta_completa, sheet_name="Cogeneradores CELSIA")
-        
-        df_cogeneradores = df_cogeneradores.iloc[:,:32] #filtrado de las primeras 32 columnas para asignar las columnas adecuadas
-        #st.dataframe(df_cogeneradores)
-        
-        df_plantas = df_plantas.iloc[:, :27]  #filtrado de las primeras 27 columnas para asignar las columnas adecuadas
-        df_plantas.columns = Columnas_plantas
-        df_plantas = df_plantas.iloc[1:].reset_index(drop=True)
-        #st.dataframe(df_plantas)
-        #st.dataframe(df_cogeneradores)
-
-        # Reemplaza saltos de línea y cambia la coma por punto antes de convertir a float
-        df_cogeneradores.iloc[:, 1:] = df_cogeneradores.iloc[:, 1:].applymap(
-            lambda x: str(x).replace('\n', '').replace(',', '.')
-        )
-        #lineas(df_cogeneradores,"Generación diaria")
-
-        # Filtrar las plantas de interés
-        df_hidro = filtrado(df_cogeneradores,plantas_hidro,"pequeñas hidro")
-        df_coge = filtrado(df_cogeneradores,cogeneradores,"cogeneradores")
-        df_sol = filtrado(df_cogeneradores,solares,"solar")
-        df_term = filtrado(df_cogeneradores,termicas,"Termicas")
-
-        df_generacion_menores = pd.concat([df_term, df_hidro, df_coge,df_sol], ignore_index=True)
-        
-        #lineas(df_resultado,"Generacion Cogeneradores")
-        
-        
-        plantas_mayores=df_plantas[plantas_mayor_gen]
-        plantas_mayores.columns = plantas_mayor
-        plantas_mayores = plantas_mayores.apply(pd.to_numeric, errors='coerce')
-        #lineas(plantas_mayores.T,"Generacion plantas")
-        
-        #st.dataframe(plantas_mayores.T)
-        #lineasGeneracion(plantas_mayores,"Generación por planta mayor")
-
-        # 1. Eliminar columnas cuya suma es cero
-        plantas_mayores_filtrado = plantas_mayores.loc[:, plantas_mayores.sum(axis=0) != 0]
-
-        # 2. Ordenar columnas por la suma de sus valores en orden descendente
-        suma_columnas = plantas_mayores_filtrado.sum(axis=0)
-        columnas_ordenadas = suma_columnas.sort_values(ascending=True).index
-        plantas_mayores_ordenado = plantas_mayores_filtrado[columnas_ordenadas]
-
-        #st.dataframe(plantas_mayores_ordenado)
-        
-
-        #columna1, columna2 = st.columns(2)
-        #with columna1:
-        area(df_generacion_menores,"Generación diaria")
-        #with columna2:
-        areaGen(plantas_mayores_ordenado,"Generación diaria plantas mayores")
-
-
-
-        dia_actual = datetime.now().day  # Día del mes (1-31)
-
-        # Construye la ruta al archivo deseado dentro del proyecto
-
-        columnaA, columnaB = st.columns(2)
-        with columnaA:
-            columna1, columna2 = st.columns([1,5])
-            with columna1:
-                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'solar1.png')
-                st.image(ruta_archivo, width=70, use_container_width =True)
-                
-                
-
-                
-            with columna2:
-                color = "#FFD700"
-                barras(df_sol,dia_actual,"sol", color)
-        with columnaB:
-            ## plantas termicas
-            columna1, columna2 = st.columns([1,5])
-            with columna1:
-                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'agua.png')
-                st.image(ruta_archivo, width=70,use_container_width =True)
-            with columna2:
-                color = "#356CD3"
-                barras(df_hidro,dia_actual,"hidro", color)
-
-        columnaA, columnaB = st.columns(2)
-        with columnaA:
-            ## plantas cogeneradoras
-            columna1, columna2 = st.columns([1,5])
-            with columna1:
-                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'cogenerador.png')
-                st.image(ruta_archivo, width=70,use_container_width =True)
-            with columna2:
-                color = "#F18509"
-                barras(df_coge,dia_actual,"coge", color)
-        with columnaB:
-            ## plantas termicas
-            columna1, columna2 = st.columns([1,5])
-            with columna1:
-                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'termica.png')
-                st.image(ruta_archivo, width=70,use_container_width =True)
-            with columna2:
-                color = "#FFFFFF"
-                #st.dataframe(df_term)
-                barras(df_term,dia_actual,"term", color)
-
-        columnaA, columnaB = st.columns(2)
-        with columnaA:
-            #hidraulicas mayores
-            columna1, columna2 = st.columns([1,5])
-            with columna1:
-                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'hidraulico.png')
-                st.image(ruta_archivo, width=70,use_container_width =True)
-            with columna2:
-                color = "#356CD3"
-                #st.dataframe(df_term)
-                # Si la primera columna es identificador y las demás son días:
-                suma_por_dia = plantas_mayores_ordenado.iloc[:, 1:].astype(float).sum(axis=1)
-
-                # Convertir la Serie resultante en DataFrame
-                df_suma_por_dia = suma_por_dia.reset_index()
-                df_suma_por_dia.columns = ['Día', 'Suma']
-                df_solo_suma = df_suma_por_dia[['Suma']].copy()
-                barras(df_solo_suma.T,dia_actual,"generacion", color)
-        with columnaB:
-            #Eolico
-            columna1, columna2 = st.columns([1,5])
-            with columna1:
-                ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'eolico.png')
-                st.image(ruta_archivo, width=70,use_container_width =True)
-            with columna2:
-                pass
-
-            
-
-            
-            
-
     else:
-        st.error(f"El archivo no existe: {ruta_completa}")
+        df_plantas = pd.read_excel(ruta_completa, sheet_name="Plantas")
+        df_cogeneradores = pd.read_excel(ruta_completa, sheet_name="Cogeneradores CELSIA")
+
+        
+    df_cogeneradores = df_cogeneradores.iloc[:,:32] #filtrado de las primeras 32 columnas para asignar las columnas adecuadas
+    #st.dataframe(df_cogeneradores)
+    
+    df_plantas = df_plantas.iloc[:, :27]  #filtrado de las primeras 27 columnas para asignar las columnas adecuadas
+    df_plantas.columns = Columnas_plantas
+    df_plantas = df_plantas.iloc[1:].reset_index(drop=True)
+    #st.dataframe(df_plantas)
+    #st.dataframe(df_cogeneradores)
+
+    # Reemplaza saltos de línea y cambia la coma por punto antes de convertir a float
+    df_cogeneradores.iloc[:, 1:] = df_cogeneradores.iloc[:, 1:].applymap(
+        lambda x: str(x).replace('\n', '').replace(',', '.')
+    )
+    #lineas(df_cogeneradores,"Generación diaria")
+
+    # Filtrar las plantas de interés
+    df_hidro = filtrado(df_cogeneradores,plantas_hidro,"pequeñas hidro")
+    df_coge = filtrado(df_cogeneradores,cogeneradores,"cogeneradores")
+    df_sol = filtrado(df_cogeneradores,solares,"solar")
+    df_term = filtrado(df_cogeneradores,termicas,"Termicas")
+
+    df_generacion_menores = pd.concat([df_term, df_hidro, df_coge,df_sol], ignore_index=True)
+    
+    #lineas(df_resultado,"Generacion Cogeneradores")
+    
+    
+    plantas_mayores=df_plantas[plantas_mayor_gen]
+    plantas_mayores.columns = plantas_mayor
+    plantas_mayores = plantas_mayores.apply(pd.to_numeric, errors='coerce')
+    #lineas(plantas_mayores.T,"Generacion plantas")
+    
+    #st.dataframe(plantas_mayores.T)
+    #lineasGeneracion(plantas_mayores,"Generación por planta mayor")
+
+    # 1. Eliminar columnas cuya suma es cero
+    plantas_mayores_filtrado = plantas_mayores.loc[:, plantas_mayores.sum(axis=0) != 0]
+
+    # 2. Ordenar columnas por la suma de sus valores en orden descendente
+    suma_columnas = plantas_mayores_filtrado.sum(axis=0)
+    columnas_ordenadas = suma_columnas.sort_values(ascending=True).index
+    plantas_mayores_ordenado = plantas_mayores_filtrado[columnas_ordenadas]
+
+    #st.dataframe(plantas_mayores_ordenado)
+    
+
+    #columna1, columna2 = st.columns(2)
+    #with columna1:
+    area(df_generacion_menores,"Generación diaria")
+    #with columna2:
+    areaGen(plantas_mayores_ordenado,"Generación diaria plantas mayores")
+
+
+
+    dia_actual = datetime.now().day  # Día del mes (1-31)
+
+    # Construye la ruta al archivo deseado dentro del proyecto
+
+    columnaA, columnaB = st.columns(2)
+    with columnaA:
+        columna1, columna2 = st.columns([1,5])
+        with columna1:
+            ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'solar1.png')
+            st.image(ruta_archivo, width=70, use_container_width =True)
+            
+            
+
+            
+        with columna2:
+            color = "#FFD700"
+            barras(df_sol,dia_actual,"sol", color)
+    with columnaB:
+        ## plantas termicas
+        columna1, columna2 = st.columns([1,5])
+        with columna1:
+            ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'agua.png')
+            st.image(ruta_archivo, width=70,use_container_width =True)
+        with columna2:
+            color = "#356CD3"
+            barras(df_hidro,dia_actual,"hidro", color)
+
+    columnaA, columnaB = st.columns(2)
+    with columnaA:
+        ## plantas cogeneradoras
+        columna1, columna2 = st.columns([1,5])
+        with columna1:
+            ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'cogenerador.png')
+            st.image(ruta_archivo, width=70,use_container_width =True)
+        with columna2:
+            color = "#F18509"
+            barras(df_coge,dia_actual,"coge", color)
+    with columnaB:
+        ## plantas termicas
+        columna1, columna2 = st.columns([1,5])
+        with columna1:
+            ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'termica.png')
+            st.image(ruta_archivo, width=70,use_container_width =True)
+        with columna2:
+            color = "#FFFFFF"
+            #st.dataframe(df_term)
+            barras(df_term,dia_actual,"term", color)
+
+    columnaA, columnaB = st.columns(2)
+    with columnaA:
+        #hidraulicas mayores
+        columna1, columna2 = st.columns([1,5])
+        with columna1:
+            ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'hidraulico.png')
+            st.image(ruta_archivo, width=70,use_container_width =True)
+        with columna2:
+            color = "#356CD3"
+            #st.dataframe(df_term)
+            # Si la primera columna es identificador y las demás son días:
+            suma_por_dia = plantas_mayores_ordenado.iloc[:, 1:].astype(float).sum(axis=1)
+
+            # Convertir la Serie resultante en DataFrame
+            df_suma_por_dia = suma_por_dia.reset_index()
+            df_suma_por_dia.columns = ['Día', 'Suma']
+            df_solo_suma = df_suma_por_dia[['Suma']].copy()
+            barras(df_solo_suma.T,dia_actual,"generacion", color)
+    with columnaB:
+        #Eolico
+        columna1, columna2 = st.columns([1,5])
+        with columna1:
+            ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'eolico.png')
+            st.image(ruta_archivo, width=70,use_container_width =True)
+        with columna2:
+            pass
+
+    
 
 
 
