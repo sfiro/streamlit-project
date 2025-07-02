@@ -192,17 +192,19 @@ def gestion():
         # Crear el output usando StringIO para redirigir la salida
         output_inc = io.StringIO()
         with contextlib.redirect_stdout(output_inc):
-            print(f'## ⚡ Con corte en el ADMS a las {hora_actual}, tenemos {sum(lista_incidentes.values)} incidentes pendientes\n')
+            print(f'*  Con corte en el ADMS a las {hora_actual}, tenemos {sum(lista_incidentes.values)} incidentes pendientes*\n')
 
             # Imprimir los incidentes para Valle, solo el más antiguo por sector
-            print(f'🚨 *Para **Valle** tenemos {total_valle} pendientes mtto, distribuidos por sector así:*\n')
+            print(f' *Para **Valle** tenemos {total_valle} pendientes mtto, distribuidos por sector así:*\n')
             for i in lista_valle:
                 print(f' - {i[0]}: {i[1]} (más antiguo del {i[2]} INC {i[3]} - {i[4]})')
             print("\n")
             # Imprimir los incidentes para Tolima, solo el más antiguo por sector
-            print(f'🚨 *Para **Tolima** tenemos {total_tolima} pendientes mtto, distribuidos por sector así:*\n')
+            print(f' *Para **Tolima** tenemos {total_tolima} pendientes mtto, distribuidos por sector así:*\n')
             for i in lista_tolima:
                 print(f' - {i[0]}: {i[1]} (más antiguo del {i[2]} INC {i[3]} - {i[4]})')
+            print(f'\n')
+           
 
         # Obtener el valor del output generado
         inc = output_inc.getvalue()
@@ -273,14 +275,16 @@ def gestion():
         output_inc_tr = io.StringIO()
         with contextlib.redirect_stdout(output_inc_tr):
             # Imprimir el total de incidentes por causa
-            print(f'🔧 *Por causa de **transformador de distribución averiado**, tenemos un total de {total_causa}.*')
-
+            print(f'\n')
+               
+            print(f' *Por causa de **transformador de distribución averiado**, tenemos un total de {total_causa}.*')
+            print(f'\n')
             # Imprimir los incidentes para Valle
             for i in lista_valle_tr:
                 print(f'- {i[0]}: {i[1]} (más antiguo del {i[2]} INC {i[3]})')
 
             # Salto de línea para separar las zonas
-            print('\n')
+            #print('\n')
 
             # Imprimir los incidentes para Tolima
             for i in lista_tolima_tr:
@@ -297,9 +301,12 @@ def gestion():
         #print(inc_tr)
         
 
-        st.markdown(inc)
+        #st.markdown(inc)
 
-        st.markdown(inc_tr)
+        #st.markdown(inc_tr)
+
+        st.text(inc)
+        st.text(inc_tr)
 
 
 
@@ -312,9 +319,11 @@ def gestion():
         df_wfm.rename(columns={'Tipo de actividad': 'actividad'}, inplace=True)
         df_wfm = df_wfm.loc[df_wfm['Tipo de actividad.1'].isin(['INCIDENTE-MT', 'INCIDENTE LLAMADA']) & (df_wfm['Estado de actividad']=='pendiente')]
         
+    
         
-        
-        df_bol = pd.read_excel('C:\\Users\\gestioncc\\Documents\\proyecto_streamlit\\streamlit-project\\datos\\bol.xlsx')
+        #df_bol = pd.read_excel('C:\\Users\\gestioncc\\Documents\\proyecto_streamlit\\streamlit-project\\datos\\bol.xlsx')
+ 
+        df_bol = pd.read_excel('C:\\Users\\accontrol\\Documents\\streamlit-project\\streamlit-project\\datos\\bol.xlsx')
         df_bol.rename(columns={'BOL': 'RECURSO'}, inplace=True)
         df_bol['sector'] = df_bol['Mercado'] + ' ' + df_bol['Sector']
         df_bol['sector'] = df_bol['sector'].str.title()
@@ -337,20 +346,18 @@ def gestion():
 
         output_wfm = io.StringIO()
         with contextlib.redirect_stdout(output_wfm):
-            print(f'🚨 *Incidentes pendientes BOL en el WFM a las {hora_actual} hrs.*\n')
+            print(f'*Incidentes pendientes BOL en el WFM a las {hora_actual} hrs.*\n')
             for key, value in lista_tolima_tr_wfm:
                 print(f'    {key}: {value}')
             print('\n')
             print(f'    *Total Tolima: {sum(i[1] for i in lista_tolima_tr_wfm)}*')
             print('\n')
-            
             for key, value in lista_valle_tr_wfm:
                 print(f'    {key}: {value}')
             print('\n')     
             print(f'    *Total Valle: {sum(i[1] for i in lista_valle_tr_wfm)}*')
             print('\n')
             total_ot = sum(lista_ot.to_dict().values())
-
             print(f'*Total incidentes con corte a las {hora_actual} h del {fecha_actual}: {total_ot}*')
 
 
@@ -362,4 +369,4 @@ def gestion():
         # ------------------------------------------------------------------------------
         output_wfm.close()
 
-        st.markdown(wfm)
+        st.text(wfm)
