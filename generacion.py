@@ -139,8 +139,8 @@ def gen():
     ruta_proyecto = os.path.dirname(os.path.abspath(__file__))
 
     
-    #ruta_base = r"C:\Users\accontrol\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
-    ruta_base = r"C:\Users\gestioncc\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
+    ruta_base = r"C:\Users\accontrol\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
+    #ruta_base = r"C:\Users\gestioncc\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
   
     ruta_completa = fr"{ruta_base}\{nombre_archivo}"
 
@@ -199,7 +199,7 @@ def gen():
     plantas_mayores = plantas_mayores.apply(pd.to_numeric, errors='coerce')
     #lineas(plantas_mayores.T,"Generacion plantas")
     
-    #st.dataframe(plantas_mayores.T)
+    #st.dataframe(plantas_mayores)
     #lineasGeneracion(plantas_mayores,"Generación por planta mayor")
 
     # 1. Eliminar columnas cuya suma es cero
@@ -231,9 +231,6 @@ def gen():
         with columna1:
             ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'solar1.png')
             st.image(ruta_archivo, width=70, use_container_width =True)
-            
-            
-
             
         with columna2:
             color = "#FFD700"
@@ -281,11 +278,16 @@ def gen():
             #st.dataframe(df_term)
             # Si la primera columna es identificador y las demás son días:
             suma_por_dia = plantas_mayores_ordenado.iloc[:, 1:].astype(float).sum(axis=1)
-
+            #st.dataframe(suma_por_dia)
             # Convertir la Serie resultante en DataFrame
             df_suma_por_dia = suma_por_dia.reset_index()
+            #st.dataframe(suma_por_dia)
             df_suma_por_dia.columns = ['Día', 'Suma']
             df_solo_suma = df_suma_por_dia[['Suma']].copy()
+            
+            df_solo_suma.iloc[1,0]= df_solo_suma.iloc[0,0]
+            df_solo_suma.iloc[0,0] = "Hidraulica"
+            #st.dataframe(df_solo_suma)
             barras(df_solo_suma.T,dia_actual,"generacion", color)
     with columnaB:
         #Eolico
@@ -441,6 +443,7 @@ def areaGen(data,key):
 
 
 def barras(data, dia, key, color):
+    #st.dataframe(data)
     data = data.iloc[0, 1:].astype(float)
     data = data[data > 0]
 
