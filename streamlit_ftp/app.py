@@ -65,7 +65,8 @@ def CargarInformacion2(Data,force_reload=False):
 
     return df2
 
-def ProcesarInformacion(df2, Data):
+
+def ProcesarInformacion(df2, Data, df_despacho):
     """Procesa y muestra la información en la tabla, aplica estilos y muestra advertencias o errores si corresponde."""
     if Data["error"]["Bandera"]:
         st.error(f"Error al cargar los datos: {Data['error']['Mensaje']}")
@@ -76,9 +77,25 @@ def ProcesarInformacion(df2, Data):
     if st.session_state.pagina_actual=="Oferta":
         return
 
+
+
+
+    #st.dataframe(df2)
+    #st.dataframe(df_despacho)
+
+    # Comparar los dataframes y crear un nuevo dataframe de diferencias (0: igual, 1: diferente)
+    if df2.shape == df_despacho.shape and list(df2.columns) == list(df_despacho.columns):
+        df_diff = (df2 != df_despacho).astype(int)
+        #st.dataframe(df_diff, use_container_width=True)
+    else:
+        st.warning("Los dataframes no tienen la misma estructura y no se pueden comparar.")
+    
+
     fila_a_marcar = int(datetime.now().hour+0) if st.session_state.estado else -1 
     # Mostrar la tabla
-    tabla_html= tabla_con_estilo(df2, fila_a_marcar)
+    tabla_html= tabla_con_estilo(df2, fila_a_marcar, df_diff)
+    #st.dataframe(df2)
+    #st.dataframe(df_diff)
     #st.markdown(tabla_html,unsafe_allow_html=True)
 
     # Mostrar todo en componente HTML
@@ -198,9 +215,15 @@ def app():
 
     if seleccion!="Oferta":
         df_redespacho=CargarInformacion(Data,force_reload=True)
-        ProcesarInformacion(df_redespacho,Data)
+        
+        Data2 = mostrar_despacho(fecha)
+        df_despacho=CargarInformacion(Data2,force_reload=True)
+
+
+        ProcesarInformacion(df_redespacho,Data,df_despacho)
     else:
         df_oferta=CargarInformacionOferta(Data,force_reload=True)
+   
         ProcesarInformacion(df_oferta,Data)
 
     horaderecarga = datetime.now()
@@ -216,8 +239,8 @@ def app():
     
 
     if seleccion == "Redespacho":
-        Data2 = mostrar_despacho(fecha)
-        df_despacho=CargarInformacion(Data2,force_reload=True)
+        # Data2 = mostrar_despacho(fecha)
+        # df_despacho=CargarInformacion(Data2,force_reload=True)
         #st.dataframe(df_despacho)
         selectorPlantas(df_despacho,df_redespacho)
 
@@ -255,7 +278,7 @@ else:
 
 # Ejecutar la aplicación Streamlit
 if __name__ == '__main__':
-    count = st_autorefresh(interval=60000, limit=100, key="ftp_autorefresh")
+    count = st_autorefresh(interval=60000, key="ftp_autorefresh")
     app()
 
 def selectorPlantas(despacho,redespacho):
