@@ -192,15 +192,15 @@ def gestion():
         # Crear el output usando StringIO para redirigir la salida
         output_inc = io.StringIO()
         with contextlib.redirect_stdout(output_inc):
-            print(f'*  Con corte en el ADMS a las {hora_actual}, tenemos {sum(lista_incidentes.values)} incidentes pendientes*\n')
+            print(f'*Con corte en el ADMS a las {hora_actual}, tenemos {sum(lista_incidentes.values)} incidentes pendientes*\n')
 
             # Imprimir los incidentes para Valle, solo el más antiguo por sector
-            print(f' *Para **Valle** tenemos {total_valle} pendientes mtto, distribuidos por sector así:*\n')
+            print(f' *Para Valle tenemos {total_valle} pendientes mtto, distribuidos por sector así:*\n')
             for i in lista_valle:
                 print(f' - {i[0]}: {i[1]} (más antiguo del {i[2]} INC {i[3]} - {i[4]})')
             print("\n")
             # Imprimir los incidentes para Tolima, solo el más antiguo por sector
-            print(f' *Para **Tolima** tenemos {total_tolima} pendientes mtto, distribuidos por sector así:*\n')
+            print(f' *Para Tolima tenemos {total_tolima} pendientes mtto, distribuidos por sector así:*\n')
             for i in lista_tolima:
                 print(f' - {i[0]}: {i[1]} (más antiguo del {i[2]} INC {i[3]} - {i[4]})')
             print(f'\n')
@@ -275,10 +275,9 @@ def gestion():
         output_inc_tr = io.StringIO()
         with contextlib.redirect_stdout(output_inc_tr):
             # Imprimir el total de incidentes por causa
-            print(f'\n')
+        
                
-            print(f' *Por causa de **transformador de distribución averiado**, tenemos un total de {total_causa}.*')
-            print(f'\n')
+            print(f' *Por causa de transformador de distribución averiado, tenemos un total de {total_causa}.*')
             # Imprimir los incidentes para Valle
             for i in lista_valle_tr:
                 print(f'- {i[0]}: {i[1]} (más antiguo del {i[2]} INC {i[3]})')
@@ -306,6 +305,8 @@ def gestion():
         #st.markdown(inc_tr)
 
         st.text(inc)
+        st.text("")
+        st.text("")
         st.text(inc_tr)
 
 
