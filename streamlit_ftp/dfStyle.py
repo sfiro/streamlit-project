@@ -6,12 +6,23 @@ import streamlit as st
 def tabla_con_estilo(df, fila_resaltada, df_diff):
 
     # Si la opción de transponer está activada, transpone el DataFrame y ajusta encabezados
+    
     if st.session_state.get("transponer", False):
+        
         df = df.T.reset_index()  # Transponer el DataFrame para que las columnas sean las filas y viceversa
         new_header = df.iloc[0].copy()  # Guardar la primera fila como encabezado
         new_header.iloc[0] = 'Unidad o Planta'  # Cambiar el nombre de la primera columna
         df = df[1:]
         df.columns = new_header  # Asignar la primera fila como encabezado
+
+        df_diff = df_diff.T.reset_index() 
+        df_diff = df_diff[1:]
+        df_diff.columns = new_header  # Asignar la primera fila como encabezado
+
+    else:
+        pass
+
+
     
     # Definir los estilos CSS para la tabla y las clases de resaltado
     html = """
@@ -46,8 +57,10 @@ def tabla_con_estilo(df, fila_resaltada, df_diff):
     # Cuerpo de la tabla
     html += '<tbody>'
     for i, row in df.iterrows():
+        #st.write("fila =",i)
         html += f'<tr>'
         for columname, val in row.items():
+            #st.write("column = ",columname)
             # Si la columna es 'Periodo', mostrar como entero sin decimales
             if columname == 'Periodo':
                 aux = format(int(val), '#d')
@@ -57,18 +70,13 @@ def tabla_con_estilo(df, fila_resaltada, df_diff):
             # Determinar si hay diferencia en este valor usando df_diff
             clase = ''
             if df_diff is not None:
-                try:
-                    # Si está transpuesto, ajustar índices y columnas
-                    if st.session_state.get("transponer", False):
-                        
-                        diff_val = df_diff.T.reset_index().iloc[i][columname] if columname in df_diff.columns else 0
-                        
-                    else: 
-                        diff_val = df_diff.iloc[i][columname] if columname in df_diff.columns else 0
-                except Exception:
-                    diff_val = 0
+
+                diff_val = df_diff.at[row.name, columname] if columname in df_diff.columns else 0
                 if diff_val == 1:
+                    #st.write("fila =",i)
+                    #st.write("column = ",columname)
                     clase = 'diferente'  # Resalta en rojo si hay diferencia
+                #st.write("diff_val =",diff_val)
             
             # Resaltado de fila seleccionada
             if i == fila_resaltada and not st.session_state.get("transponer", False):

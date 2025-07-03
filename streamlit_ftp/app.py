@@ -94,8 +94,7 @@ def ProcesarInformacion(df2, Data, df_despacho):
     fila_a_marcar = int(datetime.now().hour+0) if st.session_state.estado else -1 
     # Mostrar la tabla
     tabla_html= tabla_con_estilo(df2, fila_a_marcar, df_diff)
-    #st.dataframe(df2)
-    #st.dataframe(df_diff)
+
     #st.markdown(tabla_html,unsafe_allow_html=True)
 
     # Mostrar todo en componente HTML
@@ -224,7 +223,7 @@ def app():
     else:
         df_oferta=CargarInformacionOferta(Data,force_reload=True)
    
-        ProcesarInformacion(df_oferta,Data)
+        ProcesarInformacion(df_oferta,Data,0)
 
     horaderecarga = datetime.now()
     print(f"📥 Datos recargados a las {st.session_state['UltimaCarga'] .strftime('%H:%M:%S')}")
