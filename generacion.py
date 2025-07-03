@@ -139,8 +139,8 @@ def gen():
     ruta_proyecto = os.path.dirname(os.path.abspath(__file__))
 
     
-    ruta_base = r"C:\Users\accontrol\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
-    #ruta_base = r"C:\Users\gestioncc\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
+    #ruta_base = r"C:\Users\accontrol\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
+    ruta_base = r"C:\Users\gestioncc\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
   
     ruta_completa = fr"{ruta_base}\{nombre_archivo}"
 
@@ -278,15 +278,14 @@ def gen():
             #st.dataframe(df_term)
             # Si la primera columna es identificador y las demás son días:
             suma_por_dia = plantas_mayores_ordenado.iloc[:, 1:].astype(float).sum(axis=1)
-            #st.dataframe(suma_por_dia)
+            
             # Convertir la Serie resultante en DataFrame
             df_suma_por_dia = suma_por_dia.reset_index()
-            #st.dataframe(suma_por_dia)
             df_suma_por_dia.columns = ['Día', 'Suma']
             df_solo_suma = df_suma_por_dia[['Suma']].copy()
-            
-            df_solo_suma.iloc[1,0]= df_solo_suma.iloc[0,0]
-            df_solo_suma.iloc[0,0] = "Hidraulica"
+            nueva_fila = pd.DataFrame({"Suma": ["hidraulica"]})
+            df_solo_suma = pd.concat([nueva_fila, df_solo_suma], ignore_index=True)
+
             #st.dataframe(df_solo_suma)
             barras(df_solo_suma.T,dia_actual,"generacion", color)
     with columnaB:

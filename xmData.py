@@ -54,11 +54,12 @@ def datos_xm():
 
     with columna3:
         
-        metrica_personalizada(porcentaje_vol_Energia,  "🔋 Porcentaje Embalses","GWh", color="#F09001")
+        metrica_personalizada(porcentaje_vol_Energia,  "🔋 Porcentaje Embalses","%", color="#F09001")
 
         metrica_personalizada(df_demanda_dia,  "💡 Demanda Nacional","GWh", color="#F09001")
 
         metrica_personalizada(df_vert,  "💧 Vertimiento","GWh", color="#F09001")
+
     with columna4:
         pass
 
