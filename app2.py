@@ -21,6 +21,7 @@ from mapa import mapas
 from generacion import gen
 from xm import xm_data
 from xmData import datos_xm
+from xmData2 import datos_xm2
 
 import os
 import time
@@ -50,8 +51,8 @@ alt.themes.enable("dark")
 def cargar_datos():
     #base_path = os.path.dirname(os.path.abspath(__file__))
     #print(base_path)
-    base_path = "\\Users\\gestioncc\\OneDrive - CELSIA S.A E.S.P"
-    #base_path = "\\Users\\accontrol\\OneDrive - CELSIA S.A E.S.P"
+    #base_path = "\\Users\\gestioncc\\OneDrive - CELSIA S.A E.S.P"
+    base_path = "\\Users\\accontrol\\OneDrive - CELSIA S.A E.S.P"
     consignaciones_path = os.path.join(base_path, 'BICC', 'Consignaciones.csv')
     incidentes_path = os.path.join(base_path,'BICC', 'IncidentesActual.csv')
     saidi_path = os.path.join(base_path, 'BICC', 'SAIDIPendientes.csv')
@@ -85,7 +86,7 @@ def load_lottie_url(url: str):
 def main():
     utils.local_css('estilo.css')
 
-    count = st_autorefresh(interval=60000, limit=100, key="fizzbuzzcounter")
+    count = st_autorefresh(interval=300000, key="fizzbuzzcounter")
 
     last_update_time = time.time()
 
@@ -217,6 +218,20 @@ if __name__ == '__main__':
             unsafe_allow_html=True
         )
         datos_xm()
+    
+    elif page == "xm2":
+        #consignaciones_datos, incidentes_datos, saidi_datos, consignaciones_last_modified, incidentes_last_modified, saidi_last_modified = cargar_datos()
+        st.markdown(
+            """
+            <style>
+            body, [data-testid="stAppViewContainer"] {
+                zoom: 0.95; /* Cambia este valor para simular zoom (1.0 = 100%) */
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+        datos_xm2()
     else:
         st.title("Página no encontrada")
         st.write("El valor en la URL no es válido.")

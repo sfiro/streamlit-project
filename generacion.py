@@ -139,8 +139,8 @@ def gen():
     ruta_proyecto = os.path.dirname(os.path.abspath(__file__))
 
     
-    #ruta_base = r"C:\Users\accontrol\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
-    ruta_base = r"C:\Users\gestioncc\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
+    ruta_base = r"C:\Users\accontrol\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
+    #ruta_base = r"C:\Users\gestioncc\OneDrive - CELSIA S.A E.S.P\CSM_BACKUP\GENERACION TOTAL Y NIVELES PLANTAS\2025"
   
     ruta_completa = fr"{ruta_base}\{nombre_archivo}"
 
@@ -318,7 +318,7 @@ def lineas(datos,key):
     fig.update_layout(
         title=key,
         xaxis_title="Día",
-        yaxis_title="Energía kWh",
+        yaxis_title="Energía MWh",
         legend_title="Planta"
     )
 
@@ -367,7 +367,7 @@ def area(data,key = "Generacion"):
             )
         ),
         xaxis_title="Día",
-        yaxis_title="Energía kWh",
+        yaxis_title="Energía MWh",
         legend_title="Planta",
         width=300,   # Ancho en píxeles
         height=200,   # Alto en píxeles
@@ -395,7 +395,7 @@ def lineasGeneracion(datos,key):
     fig.update_layout(
         title=key,
         xaxis_title="Día",
-        yaxis_title="Energía kWh",
+        yaxis_title="Energía MWh",
         legend_title="Planta"
     )
 
@@ -426,7 +426,7 @@ def areaGen(data,key):
             )
         ),
         xaxis_title="Día",
-        yaxis_title="Energía kWh",
+        yaxis_title="Energía MWh",
         legend_title="Planta",
         width=300,   # Ancho en píxeles
         height=200,   # Alto en píxeles
@@ -457,7 +457,7 @@ def barras(data, dia, key, color):
             marker_color=color
         ))
         fig.add_annotation(
-            text=f"<b>{data.iloc[-1]:.0f} kWh</b>",
+            text=f"<b>{data.iloc[-1]:.0f} MWh</b>",
             xref="paper", yref="paper",
             x=0.5, y=2.15,
             showarrow=False,
@@ -467,7 +467,7 @@ def barras(data, dia, key, color):
         fig.update_layout(
             title="",
             xaxis_title="Día",
-            yaxis_title="kWh",
+            yaxis_title="MWh",
             width=600,
             height=150,
             plot_bgcolor='rgba(0,0,0,0)',
