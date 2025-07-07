@@ -32,9 +32,20 @@ def datos_xm2():
 
     #metrica_personalizada(df_data_precio_bolsa, "💰 Precio de BOLSA TX1","COP/kWh", color="#F09001", tam_titulo="3.0rem", tam_valor="4.0rem", tam_delta="2.5rem", delta_pos="right")
 
-    precioBolsa(df_data_precio_bolsa)
 
-    barras(df_vert,"Vertimientos","GWh")
+    columna1, columna2= st.columns([1,1])
+
+    with columna1:
+        precioBolsa(df_data_precio_bolsa)
+        barras(df_vert,"Vertimientos","GWh") 
+        
+    with columna2:
+        barras(porcentaje_vol_Energia,  "🔋 Porcentaje Embalse Nacional","%")
+        barras(df_demanda_dia,  "💡 Demanda Nacional","GWh")
+        barras(df_export_dia, "🔌 Exportación de energia","GWh")
+
+        
+        
 
 
    

@@ -27,7 +27,7 @@ def xm_data():
         fecha_inicio = st.date_input("Fecha inicio", value=dt(int(año), 1, 1))
     with col2:
         # Fecha fin por defecto: 5 días antes de la fecha actual
-        fecha_fin_default = fecha_actual - timedelta(days=4)
+        fecha_fin_default = fecha_actual - timedelta(days=0)
         fecha_fin = st.date_input("Fecha fin", value=fecha_fin_default)
 
     # Usar las fechas seleccionadas en los request
@@ -173,25 +173,62 @@ def barras(datos,titulo, Yaxis="Energia [GWh]"):
 
 def extraccionData(fecha_inicio, fecha_fin):
     #--- precios de bolsa -----
+    # Consulta mensual para Precio de Bolsa
     try:
-        df_precio_bolsa = objetoAPI.request_data("PrecBolsNaci", "Sistema", fecha_inicio, fecha_fin)
-    except Exception as e:
-        # Manejo especial para errores de endpoint o respuesta de la API
-        error_msg = f"Error al consultar Precio de Bolsa: {e}"
-        if hasattr(e, 'response') and e.response is not None:
+        # Convertir a fechas sin hora
+        fecha_inicio = pd.to_datetime(fecha_inicio).date()
+        #st.write(f"Fecha inicio: {fecha_inicio}")
+        fecha_fin = pd.to_datetime(fecha_fin).date()
+ 
+        # Siempre dividir en bloques mensuales para mayor robustez
+        # Generar los cortes de mes (inicio de cada mes)
+        fechas = list(pd.date_range(fecha_inicio, fecha_fin, freq='MS'))
+        # Asegurar que la fecha de inicio esté incluida como primer bloque
+        if fechas[0].date() != fecha_inicio:
+            fechas = [pd.to_datetime(fecha_inicio)] + fechas
+        # Asegurar que la fecha de fin esté incluida como último corte
+        if fechas[-1].date() < fecha_fin:
+            fechas.append(pd.to_datetime(fecha_fin))
+
+         
+        df_precio_bolsa = pd.DataFrame()
+        for i in range(len(fechas)-1):
+            f_ini = fechas[i].date()
+            f_fin = (fechas[i+1] - pd.Timedelta(days=1)).date()
+            if i == len(fechas)-2:
+                f_fin = fecha_fin
+            if f_ini < fecha_inicio:
+                f_ini = fecha_inicio
+            if f_fin > fecha_fin:
+                f_fin = fecha_fin
             try:
-                error_msg += f"\nRespuesta de la API: {e.response.text}"
-            except Exception:
-                pass
+                df_tmp = objetoAPI.request_data("PrecBolsNaci", "Sistema", f_ini, f_fin)
+            except Exception as e:
+                error_msg = f"Error al consultar Precio de Bolsa (bloque {f_ini} a {f_fin}): {e}"
+                if hasattr(e, 'response') and e.response is not None:
+                    try:
+                        error_msg += f"\nRespuesta de la API: {e.response.text}"
+                    except Exception:
+                        pass
+                st.error(error_msg)
+                continue
+            if df_tmp is not None and not df_tmp.empty:
+                df_precio_bolsa = pd.concat([df_precio_bolsa, df_tmp], ignore_index=True)
+        if df_precio_bolsa.empty:
+            st.warning("No se encontraron datos para Precio de Bolsa en el rango seleccionado.")
+            return [None] * 9
+        df_precio_bolsa.drop(columns=['Id', 'Values_code'], inplace=True)
+        df_precio_bolsa.set_index('Date', inplace=True)
+        df_data_precio_bolsa = df_precio_bolsa.aggregate(['mean', 'max', 'min'], axis=1)
+        
+        
+        #st.title("precio de bolsa")
+        #st.dataframe(df_data_precio_bolsa)
+
+    except Exception as e:
+        error_msg = f"Error general al consultar Precio de Bolsa: {e}"
         st.error(error_msg)
         return [None] * 9
-    if df_precio_bolsa is None or df_precio_bolsa.empty:
-        st.warning("No se encontraron datos para Precio de Bolsa en el rango seleccionado.")
-        return [None] * 9
-
-    df_precio_bolsa.drop(columns=['Id', 'Values_code'], inplace=True)
-    df_precio_bolsa.set_index('Date', inplace=True)
-    df_data_precio_bolsa = df_precio_bolsa.aggregate(['mean', 'max', 'min'], axis=1)
 
     #---  Volumen útil  -----
     try:
@@ -213,6 +250,9 @@ def extraccionData(fecha_inicio, fecha_fin):
     df_data_Vol_util = df_vol_util.groupby('Date')['Value'].sum().reset_index()
     plantas_filtrar = ['ALTOANCHICAYA', 'CALIMA1', 'SALVAJINA', 'PRADO']
     df_vol_util_filtrado = df_vol_util[df_vol_util['Name'].isin(plantas_filtrar)].copy()
+
+    #st.title("volumen util CELSIA")
+    #st.dataframe(df_vol_util_filtrado)
 
     # ---- Volumen útil de energía ----
     try:
@@ -246,10 +286,17 @@ def extraccionData(fecha_inicio, fecha_fin):
     suma_por_dia_VEnerg = df_vol_energ.groupby('Date')['Value'].sum().reset_index()
     suma_por_dia_VEnerg['Value'] = suma_por_dia_VEnerg['Value'] / 1_000_000
 
+    #st.title("volumen util")
+    #st.dataframe(suma_por_dia_VEnerg)
+
     # ----- volumen util energia celsia ---
     df_vol_util_celsia = df_vol_energia_emb[df_vol_energia_emb['Name'].isin(plantas_filtrar)].copy()
+    
     suma_por_dia_VEnerg_celsia = df_vol_util_celsia.groupby('Date')['Value'].sum().reset_index()
     suma_por_dia_VEnerg_celsia['Value'] = suma_por_dia_VEnerg_celsia['Value'] / 1_000_000
+
+    #st.title("Energia embalses CELSIA")
+    #st.dataframe(suma_por_dia_VEnerg_celsia)
 
     # --- capacidad útil de energía ----
     try:
@@ -272,7 +319,10 @@ def extraccionData(fecha_inicio, fecha_fin):
     suma_por_dia_CEnerg['Value'] = suma_por_dia_CEnerg['Value'] / 1_000_000
     porcentaje_vol_Energia = suma_por_dia_VEnerg.copy()
     porcentaje_vol_Energia['Value'] = (suma_por_dia_VEnerg['Value'] / suma_por_dia_CEnerg['Value']) * 100
-    #st.dataframe(suma_por_dia_VEnerg)
+    
+    
+    #st.title("Capacidad util embalses %")
+    #st.dataframe(porcentaje_vol_Energia)
 
     # ------ Demanda de energía  -------
     try:
@@ -297,40 +347,62 @@ def extraccionData(fecha_inicio, fecha_fin):
     df_demanda_dia = df_demanda.groupby('Date')['Value'].mean().reset_index()
     df_demanda_dia['Value'] = df_demanda_dia['Value'] / 1_000_000
 
+    #st.title("demanda del pais diaria")
+    #st.dataframe(df_demanda_dia)
+
     # -------- Exportaciones de energia ---------
-    # fecha_inicio_exp = fecha_fin - timedelta(days=20)
-    # st.write(fecha_inicio_exp)
+    
+
     try:
-        df_export = objetoAPI.request_data('ExpoEner', 'Enlace', fecha_inicio, fecha_fin)
-    except Exception as e:
-        error_msg = f"Error al consultar Exportaciones de Energía: {e}\n"
-        error_msg += f"\nParámetros enviados: endpoint='ExpoEner', nivel='Enlace', fecha_inicio={fecha_inicio}, fecha_fin={fecha_fin}"
-        # Si el error es de tipo ContentTypeError, mostrar el contenido de la respuesta si es posible
-        if hasattr(e, 'response') and e.response is not None:
+        #st.dataframe(fechas)  
+        df_export = pd.DataFrame()
+        for i in range(len(fechas)-1):
+            f_ini = fechas[i].date()
+            f_fin = (fechas[i+1] - pd.Timedelta(days=1)).date()
+            if i == len(fechas)-2:
+                f_fin = fecha_fin
+            if f_ini < fecha_inicio:
+                f_ini = fecha_inicio
+            if f_fin > fecha_fin:
+                f_fin = fecha_fin
             try:
-                error_msg += f"\nRespuesta de la API: {e.response.text}"
-            except Exception:
-                pass
-        # Si el error es de tipo ContentTypeError de aiohttp
-        if 'ContentTypeError' in str(type(e)) or 'Attempt to decode JSON with unexpected mimetype' in str(e):
-            st.error(error_msg)
-            st.info("La API devolvió un tipo de contenido inesperado (text/plain). Es posible que el endpoint esté mal, los parámetros sean incorrectos, o la API haya cambiado. Verifique la documentación oficial de XM.")
-        else:
-            st.error(error_msg)
-        return [None] * 9
-    if df_export is None or df_export.empty:
-        st.warning("No se encontraron datos de Exportaciones de Energía en el rango seleccionado.")
+                df_tmp = objetoAPI.request_data("ExpoEner", "Enlace", f_ini, f_fin)
+            except Exception as e:
+                error_msg = f"Error al consultar exportaciones (bloque {f_ini} a {f_fin}): {e}"
+                if hasattr(e, 'response') and e.response is not None:
+                    try:
+                        error_msg += f"\nRespuesta de la API: {e.response.text}"
+                    except Exception:
+                        pass
+                st.error(error_msg)
+                continue
+            if df_tmp is not None and not df_tmp.empty:
+                df_export = pd.concat([df_export, df_tmp], ignore_index=True)
+        if df_export.empty:
+            st.warning("No se encontraron datos para exportaciones en el rango seleccionado.")
+            return [None] * 9
+
+        df_export = df_export.drop(columns=['Id', 'Values_code'], errors='ignore')
+        cols_numericas = df_export.select_dtypes(include=[np.number]).columns
+        df_export['Value'] = df_export[cols_numericas].sum(axis=1)
+        df_export_dia = df_export.groupby('Date')['Value'].mean().reset_index()
+        df_export_dia['Value'] = df_export_dia['Value'] / 1_000_000
+
+
+        #st.title("exportacion de energía ")
+        #st.dataframe(df_export_dia)
+
+    except Exception as e:
+        error_msg = f"Error general al consultar Precio de Bolsa: {e}"
+        st.error(error_msg)
         return [None] * 9
 
-    df_export = df_export.drop(columns=['Id', 'Values_code'])
-    cols_numericas = df_export.select_dtypes(include=[np.number]).columns
-    df_export['Value'] = df_export[cols_numericas].sum(axis=1)
-    df_export_dia = df_export.groupby('Date')['Value'].mean().reset_index()
-    df_export_dia['Value'] = df_export_dia['Value'] / 1_000_000
 
     # -------- Vertimientos de energia ---------
     try:
         df_vert = objetoAPI.request_data('VertEner', 'Sistema', fecha_inicio, fecha_fin)
+        df_vert = df_vert.drop(columns=['Id'])
+        df_vert['Value'] = df_vert['Value'] / 1_000_000
     except Exception as e:
         error_msg = f"Error al consultar Vertimientos de Energía: {e}"
         if hasattr(e, 'response') and e.response is not None:
@@ -344,8 +416,7 @@ def extraccionData(fecha_inicio, fecha_fin):
         st.warning("No se encontraron datos de Vertimientos de Energía en el rango seleccionado.")
         return [None] * 9
 
-    df_vert = df_vert.drop(columns=['Id'])
-    df_vert['Value'] = df_vert['Value'] / 1_000_000
+    
 
     return df_data_precio_bolsa, df_vol_util_filtrado, df_vol_energia_emb, suma_por_dia_VEnerg_celsia, suma_por_dia_VEnerg, porcentaje_vol_Energia, df_demanda_dia, df_export_dia, df_vert
 
