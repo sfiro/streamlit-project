@@ -366,14 +366,8 @@ def extraccionData(fecha_inicio, fecha_fin):
                 f_fin = fecha_fin
             try:
                 df_tmp = objetoAPI.request_data("ExpoEner", "Enlace", f_ini, f_fin)
-            except Exception as e:
-                error_msg = f""#f"Error al consultar exportaciones (bloque {f_ini} a {f_fin}): {e}"
-                if hasattr(e, 'response') and e.response is not None:
-                    try:
-                        error_msg += f"\nRespuesta de la API: {e.response.text}"
-                    except Exception:
-                        pass
-                st.error(error_msg)
+            except Exception:
+                # Silenciar el error, no mostrar nada en la interfaz
                 continue
             if df_tmp is not None and not df_tmp.empty:
                 df_export = pd.concat([df_export, df_tmp], ignore_index=True)
