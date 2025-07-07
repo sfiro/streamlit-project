@@ -18,7 +18,7 @@ from entrega import entrega
 from Dashboard import dashboard
 from gestion import gestion
 from mapa import mapas
-from generacion import gen
+from generacion import gen, iconosGen
 from xm import xm_data
 from xmData import datos_xm
 from xmData2 import datos_xm2
@@ -205,6 +205,21 @@ if __name__ == '__main__':
             unsafe_allow_html=True
         )
         gen()
+    
+    elif page == "iconosGen":
+        #consignaciones_datos, incidentes_datos, saidi_datos, consignaciones_last_modified, incidentes_last_modified, saidi_last_modified = cargar_datos()
+        st.markdown(
+            """
+            <style>
+            body, [data-testid="stAppViewContainer"] {
+                zoom: 0.95; /* Cambia este valor para simular zoom (1.0 = 100%) */
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+        iconosGen()
+        
 
     elif page == "xm":
         #consignaciones_datos, incidentes_datos, saidi_datos, consignaciones_last_modified, incidentes_last_modified, saidi_last_modified = cargar_datos()

@@ -87,112 +87,57 @@ def mapas(datos):
         crs="EPSG:4326"
     )
 
-    #st.dataframe(Inc_substation)
-
-    column1, column2 = st.columns([1,1])
-
-    with column1:
-        # Graficar
-        fig, ax = plt.subplots(figsize=(8, 10))
-        fig.patch.set_facecolor('#0E1117')   ##0E1117
-        ax.set_facecolor('black')
-
-        # Dibujar mapa base con fondo oscuro
-        colombia_filtered.plot(ax=ax, color="#707072", edgecolor="#D5752D")
-        #color= '#D5752D'
-        #    color='#59595B',
-        
-        # Ordenar por 'count' descendente y tomar los tres primeros
-        top3 = Inc_substation.sort_values(by='count', ascending=False).head(3)
-
-        #st.dataframe(top3)
     
-        collection = subestation_gdf.plot(
-            ax=ax,
-            markersize=Inc_substation['count']*30,   # Tamaño proporcional
-            column='count',                          # Color según la columna 'count'
-            cmap='OrRd',                             # Puedes usar otros colormaps como 'viridis', 'plasma', etc.
-            alpha=0.7,
-            edgecolor='#D5752D',
-            legend=True                              # Muestra la leyenda de colores
-        )
-        # Hacer la barra de color más pequeña
-        if hasattr(collection, 'get_figure'):
-            cbar = collection.get_figure().axes[1]  # El colorbar es el último eje
-            cbar.set_position([0.75, 0.33, 0.03, 0.3])  # [left, bottom, width, height] (ajusta a tu gusto)
+    # Graficar
+    fig, ax = plt.subplots(figsize=(8, 10))
+    fig.patch.set_facecolor('#0E1117')   ##0E1117
+    ax.set_facecolor('black')
+
+    # Dibujar mapa base con fondo oscuro
+    colombia_filtered.plot(ax=ax, color="#707072", edgecolor="#D5752D")
+    #color= '#D5752D'
+    #    color='#59595B',
+    
+    # Ordenar por 'count' descendente y tomar los tres primeros
+    top3 = Inc_substation.sort_values(by='count', ascending=False).head(3)
+
+    #st.dataframe(top3)
+
+    collection = subestation_gdf.plot(
+        ax=ax,
+        markersize=Inc_substation['count']*30,   # Tamaño proporcional
+        column='count',                          # Color según la columna 'count'
+        cmap='OrRd',                             # Puedes usar otros colormaps como 'viridis', 'plasma', etc.
+        alpha=0.7,
+        edgecolor='#D5752D',
+        legend=True                              # Muestra la leyenda de colores
+    )
+    # Hacer la barra de color más pequeña
+    if hasattr(collection, 'get_figure'):
+        cbar = collection.get_figure().axes[1]  # El colorbar es el último eje
+        cbar.set_position([0.75, 0.33, 0.03, 0.3])  # [left, bottom, width, height] (ajusta a tu gusto)
 
 
-        for x, y in zip(subestation_gdf.geometry.x, subestation_gdf.geometry.y):
-            ax.text(x, y, "", color='white', fontsize=10, ha='right', va='bottom')
-        # Título y visualización
+    for x, y in zip(subestation_gdf.geometry.x, subestation_gdf.geometry.y):
+        ax.text(x, y, "", color='white', fontsize=10, ha='right', va='bottom')
+    # Título y visualización
 
-        # Anotar solo los tres con más datos
-        for _, row in top3.iterrows():
-            x = row['LONGITUDE']
-            y = row['LATITUDE']
-            label = row['SubstationName']
-            ax.text(x, y, label, color='white', fontsize=10, ha='right', va='bottom', fontweight='bold')
+    # Anotar solo los tres con más datos
+    for _, row in top3.iterrows():
+        x = row['LONGITUDE']
+        y = row['LATITUDE']
+        label = row['SubstationName']
+        ax.text(x, y, label, color='white', fontsize=10, ha='right', va='bottom', fontweight='bold')
 
 
-        plt.title(
-            "Incidentes",
-            fontsize=22,
-            color='#D5752D',
-            fontname='Arial',
-            fontweight='bold'
-        )
-        plt.axis('off')
-        st.pyplot(fig)
+    plt.title(
+        "Incidentes",
+        fontsize=22,
+        color='#D5752D',
+        fontname='Arial',
+        fontweight='bold'
+    )
+    plt.axis('off')
+    st.pyplot(fig, use_container_width=False)
 
-    ##------------prueba de mapa con pydeck----------------
-    with column2:         
-
-        # Crear DataFrame para pydeck
-        map_data = Inc_substation[['LATITUDE', 'LONGITUDE', 'count', 'SubstationName']].rename(
-            columns={'LATITUDE': 'lat', 'LONGITUDE': 'lon'}
-        )
-
-        with st.container(border=True):
-            #st.subheader("🟣 Mapa de Operaciones en Tiempo Real")
-            
-            # Configurar vista inicial centrada entre Valle del Cauca y Tolima
-            view_state = pdk.ViewState(
-                latitude=4.2,   # Aproximadamente entre ambos departamentos
-                longitude=-75.5,
-                zoom=7,
-                pitch=0,
-            )
-
-            # Capa de puntos de calor
-            heatmap_layer = pdk.Layer(
-                "HeatmapLayer",
-                data=map_data,
-                get_position='[lon, lat]',
-                get_weight="count",
-                radius_pixels=50,
-                aggregation='"SUM"',
-                threshold=0.10,
-            )
-
-            # Capa de puntos (opcional, para ver las subestaciones)
-            scatter_layer = pdk.Layer(
-                "ScatterplotLayer",
-                data=map_data,
-                get_position='[lon, lat]',
-                get_radius=200,
-                get_fill_color='[255, 140, 0, 160]',
-                pickable=True,
-                tooltip=True,
-            )
-
-            #st.subheader("🟣 Mapa de incidentes por subestación (Valle del Cauca y Tolima)")
-            st.pydeck_chart(
-                pdk.Deck(
-                    map_style="mapbox://styles/mapbox/dark-v11",
-                    #map_style="mapbox://styles/mapbox/light-v11",
-                    initial_view_state=view_state,
-                    layers=[heatmap_layer, scatter_layer],
-                    tooltip={"text": "{SubstationName}\nIncidentes: {count}"}
-                ),
-                use_container_width=True,
-            )
+   

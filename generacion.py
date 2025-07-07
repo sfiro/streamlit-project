@@ -298,7 +298,77 @@ def gen():
         with columna2:
             pass
 
+def iconosGen():
+    pass
+
+    # fecha_actual = datetime.now()
+    # mes = fecha_actual.strftime("%m")
+    # año = fecha_actual.strftime("%Y")
+    # nombre_archivo = f"GENERACION Y NIVELES {mes}-{año}.xlsm"
+
+    # # Obtén la ruta absoluta del directorio del proyecto (donde está este script)
+    # ruta_proyecto = os.path.dirname(os.path.abspath(__file__))
+
+    # base_path = os.path.expanduser("~")
+    # ruta_base = os.path.join(base_path, 'OneDrive - CELSIA S.A E.S.P', 'CSM_BACKUP','GENERACION TOTAL Y NIVELES PLANTAS','2025')
+    # ruta_completa = fr"{ruta_base}\{nombre_archivo}"
+
+    # if not os.path.exists(ruta_completa):
+    #     # Calcular mes anterior
+    #     mes_anterior = int(mes) - 1
+    #     año_anterior = int(año)
+    #     if mes_anterior == 0:
+    #         mes_anterior = 12
+    #         año_anterior -= 1
+    #     mes_anterior_str = f"{mes_anterior:02d}"
+    #     nombre_archivo_anterior = f"GENERACION Y NIVELES {mes_anterior_str}-{año_anterior}.xlsm"
+    #     ruta_completa = fr"{ruta_base}\{nombre_archivo_anterior}"
+
+    #     if not os.path.exists(ruta_completa):
+    #         st.error(f"No existe archivo para el mes actual ni para el mes anterior: {nombre_archivo} / {nombre_archivo_anterior}")
+    #         return
+
+    #     df_plantas = pd.read_excel(ruta_completa, sheet_name="Plantas")
+    #     df_cogeneradores = pd.read_excel(ruta_completa, sheet_name="Cogeneradores CELSIA")
+    # else:
+    #     df_plantas = pd.read_excel(ruta_completa, sheet_name="Plantas")
+    #     df_cogeneradores = pd.read_excel(ruta_completa, sheet_name="Cogeneradores CELSIA")
+
+        
+    # df_cogeneradores = df_cogeneradores.iloc[:,:32] #filtrado de las primeras 32 columnas para asignar las columnas adecuadas
+    # st.dataframe(df_cogeneradores)
     
+    # df_plantas = df_plantas.iloc[:, :27]  #filtrado de las primeras 27 columnas para asignar las columnas adecuadas
+    # df_plantas.columns = Columnas_plantas
+    # df_plantas = df_plantas.iloc[1:].reset_index(drop=True)
+    # #st.dataframe(df_plantas)
+    # #st.dataframe(df_cogeneradores)
+
+    # # Reemplaza saltos de línea y cambia la coma por punto antes de convertir a float
+    # df_cogeneradores.iloc[:, 1:] = df_cogeneradores.iloc[:, 1:].applymap(
+    #     lambda x: str(x).replace('\n', '').replace(',', '.')
+    # )
+    # #lineas(df_cogeneradores,"Generación diaria")
+
+    # # Filtrar las plantas de interés
+    # df_hidro = filtrado(df_cogeneradores,plantas_hidro,"pequeñas hidro")
+    # df_coge = filtrado(df_cogeneradores,cogeneradores,"cogeneradores")
+    # df_sol = filtrado(df_cogeneradores,solares,"solar")
+    # df_term = filtrado(df_cogeneradores,termicas,"Termicas")
+    # st.dataframe(df_hidro)
+
+
+
+
+    # columnaA, columnaB = st.columns(2)
+    # with columnaA:
+    #     columna1, columna2 = st.columns([1,5])
+    #     with columna1:
+    #         ruta_archivo = os.path.join(ruta_proyecto, 'logo', 'solar1.png')
+    #         st.image(ruta_archivo, width=70, use_container_width =True)
+            
+    #     with columna2:
+    #         pass
 
 
 
@@ -371,10 +441,21 @@ def area(data,key = "Generacion"):
         yaxis_title="Energía MWh",
         legend_title="Planta",
         width=300,   # Ancho en píxeles
-        height=200,   # Alto en píxeles
+        height=250,   # Alto en píxeles
         plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de datos transparente
         paper_bgcolor='rgba(0,0,0,0)',  # Fondo total de la figura transparente
-        margin=dict(t=40, b=0, l=10, r=10)  # Márgenes pequeños
+        margin=dict(t=40, b=0, l=10, r=10),  # Márgenes pequeños
+        xaxis=dict(
+            tickfont=dict(size=22),  # Tamaño de los valores del eje X
+            title_font=dict(size=20)
+        ),
+        yaxis=dict(
+            tickfont=dict(size=22),  # Tamaño de los valores del eje Y
+            title_font=dict(size=20)
+        ),
+        legend=dict(
+            font=dict(size=20)  # Tamaño de la letra de la leyenda
+        )
     )
 
     st.plotly_chart(fig, key = key)
@@ -430,11 +511,21 @@ def areaGen(data,key):
         yaxis_title="Energía MWh",
         legend_title="Planta",
         width=300,   # Ancho en píxeles
-        height=200,   # Alto en píxeles
+        height=250,   # Alto en píxeles
         plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de datos transparente
         paper_bgcolor='rgba(0,0,0,0)',  # Fondo total de la figura transparente
-        margin=dict(t=40, b=0, l=10, r=10)  # Márgenes pequeños
-
+        margin=dict(t=40, b=0, l=10, r=10),  # Márgenes pequeños
+        xaxis=dict(
+            tickfont=dict(size=22),  # Tamaño de los valores del eje X
+            title_font=dict(size=20)
+        ),
+        yaxis=dict(
+            tickfont=dict(size=22),  # Tamaño de los valores del eje Y
+            title_font=dict(size=20)
+        ),
+        legend=dict(
+            font=dict(size=20)  # Tamaño de la letra de la leyenda
+        )
     )
 
 
@@ -473,6 +564,14 @@ def barras(data, dia, key, color):
             height=150,
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
-            margin=dict(t=100, b=10, l=10, r=10)
+            margin=dict(t=100, b=10, l=10, r=10),
+            xaxis=dict(
+                tickfont=dict(size=22),  # Tamaño de los valores del eje X
+                title_font=dict(size=20)
+            ),
+            yaxis=dict(
+                tickfont=dict(size=22),  # Tamaño de los valores del eje Y
+                title_font=dict(size=20)
+            )
         )
         st.plotly_chart(fig, use_container_width=False)
