@@ -52,10 +52,11 @@ def cargar_datos():
     #base_path = os.path.dirname(os.path.abspath(__file__))
     #print(base_path)
     #base_path = "\\Users\\gestioncc\\OneDrive - CELSIA S.A E.S.P"
-    base_path = "\\Users\\accontrol\\OneDrive - CELSIA S.A E.S.P"
-    consignaciones_path = os.path.join(base_path, 'BICC', 'Consignaciones.csv')
-    incidentes_path = os.path.join(base_path,'BICC', 'IncidentesActual.csv')
-    saidi_path = os.path.join(base_path, 'BICC', 'SAIDIPendientes.csv')
+    # base_path dinámico para cualquier usuario
+    base_path = os.path.expanduser("~")
+    consignaciones_path = os.path.join(base_path,'OneDrive - CELSIA S.A E.S.P', 'BICC', 'Consignaciones.csv')
+    incidentes_path = os.path.join(base_path,'OneDrive - CELSIA S.A E.S.P','BICC', 'IncidentesActual.csv')
+    saidi_path = os.path.join(base_path, 'OneDrive - CELSIA S.A E.S.P','BICC', 'SAIDIPendientes.csv')
     #consignaciones_path = os.path.join(base_path,'datos', 'BICC', 'Consignaciones.csv')
     #incidentes_path = os.path.join(base_path,'datos','BICC', 'IncidentesActual.csv')
     #saidi_path = os.path.join(base_path,'datos', 'BICC', 'SAIDIPendientes.csv')

@@ -320,11 +320,12 @@ def gestion():
         df_wfm.rename(columns={'Tipo de actividad': 'actividad'}, inplace=True)
         df_wfm = df_wfm.loc[df_wfm['Tipo de actividad.1'].isin(['INCIDENTE-MT', 'INCIDENTE LLAMADA']) & (df_wfm['Estado de actividad']=='pendiente')]
         
-    
+        base_path = os.path.expanduser("~")
         
         #df_bol = pd.read_excel('C:\\Users\\gestioncc\\Documents\\proyecto_streamlit\\streamlit-project\\datos\\bol.xlsx')
- 
-        df_bol = pd.read_excel('C:\\Users\\accontrol\\Documents\\streamlit-project\\streamlit-project\\datos\\bol.xlsx')
+        ruta = os.path.join(base_path, 'Documents', 'streamlit-project','streamlit-project','datos','bol.xlsx')
+  
+        df_bol = pd.read_excel(ruta)
         df_bol.rename(columns={'BOL': 'RECURSO'}, inplace=True)
         df_bol['sector'] = df_bol['Mercado'] + ' ' + df_bol['Sector']
         df_bol['sector'] = df_bol['sector'].str.title()
