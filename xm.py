@@ -354,7 +354,6 @@ def extraccionData(fecha_inicio, fecha_fin):
     
 
     try:
-        #st.dataframe(fechas)  
         df_export = pd.DataFrame()
         for i in range(len(fechas)-1):
             f_ini = fechas[i].date()
@@ -368,7 +367,7 @@ def extraccionData(fecha_inicio, fecha_fin):
             try:
                 df_tmp = objetoAPI.request_data("ExpoEner", "Enlace", f_ini, f_fin)
             except Exception as e:
-                error_msg = f"Error al consultar exportaciones (bloque {f_ini} a {f_fin}): {e}"
+                error_msg = f""#f"Error al consultar exportaciones (bloque {f_ini} a {f_fin}): {e}"
                 if hasattr(e, 'response') and e.response is not None:
                     try:
                         error_msg += f"\nRespuesta de la API: {e.response.text}"
@@ -381,19 +380,15 @@ def extraccionData(fecha_inicio, fecha_fin):
         if df_export.empty:
             st.warning("No se encontraron datos para exportaciones en el rango seleccionado.")
             return [None] * 9
-
         df_export = df_export.drop(columns=['Id', 'Values_code'], errors='ignore')
         cols_numericas = df_export.select_dtypes(include=[np.number]).columns
         df_export['Value'] = df_export[cols_numericas].sum(axis=1)
         df_export_dia = df_export.groupby('Date')['Value'].mean().reset_index()
         df_export_dia['Value'] = df_export_dia['Value'] / 1_000_000
-
-
         #st.title("exportacion de energía ")
         #st.dataframe(df_export_dia)
-
     except Exception as e:
-        error_msg = f"Error general al consultar Precio de Bolsa: {e}"
+        error_msg = f"Error general al consultar exportaciones: {e}"
         st.error(error_msg)
         return [None] * 9
 
