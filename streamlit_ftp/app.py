@@ -63,6 +63,8 @@ def CargarInformacion2(Data,force_reload=False):
         df2 = st.session_state["df"]
         print(f"✅ Usando datos cacheados a las {st.session_state['UltimaCarga'].strftime('%H:%M:%S')}")
 
+    #st.dataframe(df2, use_container_width=True)  # Mostrar el DataFrame cargado
+
     return df2
 
 
@@ -76,8 +78,6 @@ def ProcesarInformacion(df2, Data, df_despacho):
         return
     if st.session_state.pagina_actual=="Oferta":
         return
-
-
 
 
     #st.dataframe(df2)
@@ -214,9 +214,14 @@ def app():
 
     if seleccion!="Oferta":
         df_redespacho=CargarInformacion(Data,force_reload=True)
-        
-        Data2 = mostrar_despacho(fecha)
-        df_despacho=CargarInformacion(Data2,force_reload=True)
+        #st.write(df_redespacho)
+        #print(Data)
+
+        if seleccion != "Pruebas":
+            Data2 = mostrar_despacho(fecha)
+            df_despacho=CargarInformacion(Data2,force_reload=True)
+        else:
+            df_despacho = df_redespacho.copy()
 
 
         ProcesarInformacion(df_redespacho,Data,df_despacho)

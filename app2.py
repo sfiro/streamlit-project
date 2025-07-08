@@ -18,7 +18,7 @@ from entrega import entrega
 from Dashboard import dashboard
 from gestion import gestion
 from mapa import mapas
-from generacion import gen, iconosGen
+from generacion import gen
 from xm import xm_data
 from xmData import datos_xm
 from xmData2 import datos_xm2
@@ -85,6 +85,7 @@ def load_lottie_url(url: str):
 
 
 def main():
+
     utils.local_css('estilo.css')
 
     count = st_autorefresh(interval=300000, key="fizzbuzzcounter")
@@ -218,7 +219,7 @@ if __name__ == '__main__':
             """,
             unsafe_allow_html=True
         )
-        iconosGen()
+        pass
         
 
     elif page == "xm":

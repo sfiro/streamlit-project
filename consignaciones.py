@@ -47,6 +47,7 @@ def consignaciones(datos):
     st.subheader('Cantidad de consignaciones por zona')
     description_counts = datos.groupby('SubstationName')['SubstationName'].count().reset_index(name='count')
     description_counts = description_counts.sort_values(by='count', ascending=False).head(10)
+
     st.dataframe(description_counts)
 
 

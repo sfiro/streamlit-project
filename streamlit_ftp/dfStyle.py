@@ -6,7 +6,7 @@ import streamlit as st
 def tabla_con_estilo(df, fila_resaltada, df_diff):
 
     # Si la opción de transponer está activada, transpone el DataFrame y ajusta encabezados
-    
+    #st.dataframe(df_diff)
     if st.session_state.get("transponer", False):
         
         df = df.T.reset_index()  # Transponer el DataFrame para que las columnas sean las filas y viceversa
