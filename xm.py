@@ -168,7 +168,7 @@ def barras(datos,titulo, Yaxis="Energia [GWh]"):
         height=400,
         width=900
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
 
 def extraccionData(fecha_inicio, fecha_fin):
@@ -504,4 +504,4 @@ def precioBolsa(df_data_precio_bolsa):
     fig.update_layout(title={'text': titulo_grafico, 'y':0.92, 'x':0.5, 'xanchor': 'center', 'yanchor': 'top', 'font': dict(size=32, color='#F09001')})
     fig.update_layout(title={'text': titulo_grafico, 'y':0.92, 'x':0.5, 'xanchor': 'center', 'yanchor': 'top'}, title_font=dict(size=32, color='#F09001'), title_x=0.5)
     fig.update_layout(title={'text': titulo_grafico, 'y':0.92, 'x':0.5, 'xanchor': 'center', 'yanchor': 'top', 'font': dict(size=32, color='#F09001')}, title_x=0.5)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})

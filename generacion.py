@@ -129,6 +129,13 @@ Columnas_plantas = [
 
 
 def gen():
+    st.markdown("""
+    <style>
+    .block-container {
+        padding-top: 0rem !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     fecha_actual = datetime.now()
     mes = fecha_actual.strftime("%m")
@@ -216,11 +223,9 @@ def gen():
 
     #columna1, columna2 = st.columns(2)
     #with columna1:
-    area(df_generacion_menores,"Generación diaria")
+    #area(df_generacion_menores,"Generación diaria")
     #with columna2:
     areaGen(plantas_mayores_ordenado,"Generación diaria plantas mayores")
-
-
 
     dia_actual = datetime.now().day  # Día del mes (1-31)
 
@@ -369,7 +374,7 @@ def area(data,key = "Generacion"):
         yaxis_title="Energía MWh",
         legend_title="Planta",
         width=300,   # Ancho en píxeles
-        height=250,   # Alto en píxeles
+        height=200,   # Alto en píxeles
         plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de datos transparente
         paper_bgcolor='rgba(0,0,0,0)',  # Fondo total de la figura transparente
         margin=dict(t=40, b=0, l=10, r=10),  # Márgenes pequeños
@@ -386,7 +391,7 @@ def area(data,key = "Generacion"):
         )
     )
 
-    st.plotly_chart(fig, key = key)
+    st.plotly_chart(fig, key = key, config={"displayModeBar": False})
 
 
 def lineasGeneracion(datos,key):
@@ -409,7 +414,7 @@ def lineasGeneracion(datos,key):
         legend_title="Planta"
     )
 
-    st.plotly_chart(fig, key=key)
+    st.plotly_chart(fig, key=key, config={"displayModeBar": False})
 
 def areaGen(data,key):
     nombre_columna = data.columns
@@ -439,7 +444,7 @@ def areaGen(data,key):
         yaxis_title="Energía MWh",
         legend_title="Planta",
         width=300,   # Ancho en píxeles
-        height=250,   # Alto en píxeles
+        height=300,   # Alto en píxeles
         plot_bgcolor='rgba(0,0,0,0)',   # Fondo del área de datos transparente
         paper_bgcolor='rgba(0,0,0,0)',  # Fondo total de la figura transparente
         margin=dict(t=40, b=0, l=10, r=10),  # Márgenes pequeños
@@ -458,7 +463,7 @@ def areaGen(data,key):
 
 
 
-    st.plotly_chart(fig, key=key)
+    st.plotly_chart(fig, key=key, config={"displayModeBar": False})
 
 
 def barras(data, dia, key, color):
@@ -489,7 +494,7 @@ def barras(data, dia, key, color):
             xaxis_title="Día",
             yaxis_title="MWh",
             width=600,
-            height=150,
+            height=200,
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
             margin=dict(t=100, b=10, l=10, r=10),
@@ -502,4 +507,4 @@ def barras(data, dia, key, color):
                 title_font=dict(size=20)
             )
         )
-        st.plotly_chart(fig, use_container_width=False)
+        st.plotly_chart(fig, use_container_width=False, config={"displayModeBar": False})

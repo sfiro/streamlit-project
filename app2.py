@@ -172,7 +172,7 @@ if __name__ == '__main__':
             """
             <style>
             body, [data-testid="stAppViewContainer"] {
-                zoom: 1.05; /* Cambia este valor para simular zoom (1.0 = 100%) */
+                zoom: 1.00; /* Cambia este valor para simular zoom (1.0 = 100%) */
             }
             </style>
             """,
@@ -185,7 +185,7 @@ if __name__ == '__main__':
             """
             <style>
             body, [data-testid="stAppViewContainer"] {
-                zoom: 1.05; /* Cambia este valor para simular zoom (1.0 = 100%) */
+                zoom: 1.00; /* Cambia este valor para simular zoom (1.0 = 100%) */
             }
             </style>
             """,
@@ -213,7 +213,7 @@ if __name__ == '__main__':
             """
             <style>
             body, [data-testid="stAppViewContainer"] {
-                zoom: 0.95; /* Cambia este valor para simular zoom (1.0 = 100%) */
+                zoom: 1.00; /* Cambia este valor para simular zoom (1.0 = 100%) */
             }
             </style>
             """,
@@ -242,7 +242,7 @@ if __name__ == '__main__':
             """
             <style>
             body, [data-testid="stAppViewContainer"] {
-                zoom: 0.95; /* Cambia este valor para simular zoom (1.0 = 100%) */
+                zoom: 1.00; /* Cambia este valor para simular zoom (1.0 = 100%) */
             }
             </style>
             """,

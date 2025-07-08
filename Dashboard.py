@@ -341,7 +341,7 @@ def grafico_donut(datos, zona):
     )
 
     # Mostrar el gráfico en Streamlit
-    st.plotly_chart(fig_donut)
+    st.plotly_chart(fig_donut, config={"displayModeBar": False})
 
 
 def gauge_chart(value, titulo="SAIDI", min_val=0, max_val=100):
@@ -415,7 +415,7 @@ def incidentesDonut(datos, titulo="Incidentes por Subregión"):
         ),
     )
     # Mostrar el gráfico en Streamlit
-    st.plotly_chart(fig_donut)
+    st.plotly_chart(fig_donut, config={"displayModeBar": False})
 
 def incidentesRadar(inc, titulo="Incidentes por Subregión"):
     # Agrupa los datos por subregión y cuenta los incidentes
@@ -471,7 +471,7 @@ def incidentesRadar(inc, titulo="Incidentes por Subregión"):
         )
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
 
 def consignacionesRadar(datos, titulo="Incidentes por Subregión"):
@@ -577,7 +577,7 @@ def consignacionesRadar(datos, titulo="Incidentes por Subregión"):
         )
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
 def usuariosRadar(datos, titulo="Incidentes por Subregión"):
 
@@ -636,4 +636,4 @@ def usuariosRadar(datos, titulo="Incidentes por Subregión"):
         )
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
